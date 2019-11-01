@@ -19,7 +19,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using MongoDB.Driver;
 using Newtonsoft.Json.Serialization;
+using Swashbuckle.AspNetCore.Swagger;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace Com.Danliris.Service.Inventory.WebApi
@@ -132,9 +135,32 @@ namespace Com.Danliris.Service.Inventory.WebApi
 
             services
                 .AddMvcCore()
+                .AddApiExplorer()
                 .AddAuthorization()
                 .AddJsonOptions(options => options.SerializerSettings.ContractResolver = new DefaultContractResolver())
                 .AddJsonFormatters();
+
+            #region Swagger
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Info() { Title = "My API", Version = "v1" });
+                c.AddSecurityDefinition("Bearer", new ApiKeyScheme()
+                {
+                    In = "header",
+                    Description = "Please enter into field the word 'Bearer' following by space and JWT",
+                    Name = "Authorization",
+                    Type = "apiKey",
+                });
+                c.AddSecurityRequirement(new Dictionary<string, IEnumerable<string>>()
+                {
+                    {
+                        "Bearer",
+                        Enumerable.Empty<string>()
+                    }
+                });
+                c.CustomSchemaIds(i => i.FullName);
+            });
+            #endregion
 
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             services.AddCors(options => options.AddPolicy("InventoryPolicy", builder =>
@@ -161,6 +187,12 @@ namespace Com.Danliris.Service.Inventory.WebApi
             app.UseAuthentication();
             app.UseCors("InventoryPolicy");
             app.UseMvc();
+
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "API V1");
+            });
         }
     }
 }
