@@ -12,6 +12,7 @@ using Moq;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Xunit;
@@ -216,9 +217,12 @@ namespace Com.Danliris.Service.Inventory.Test.Service.GarmentLeftoverWarehouse.G
                 UENNo = null,
                 ReceiptDate = DateTimeOffset.MinValue,
                 Items = new List<GarmentLeftoverWarehouseReceiptFabricItemViewModel>()
+                {
+                    new GarmentLeftoverWarehouseReceiptFabricItemViewModel()
+                }
             };
             var result = viewModel.Validate(null);
-            Assert.NotEmpty(result);
+            Assert.True(result.Count() > 0);
         }
     }
 }
