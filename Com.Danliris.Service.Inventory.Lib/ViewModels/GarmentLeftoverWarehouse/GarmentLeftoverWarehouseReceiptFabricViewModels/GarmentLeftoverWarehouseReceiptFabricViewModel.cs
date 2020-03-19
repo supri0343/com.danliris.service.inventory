@@ -20,7 +20,7 @@ namespace Com.Danliris.Service.Inventory.Lib.ViewModels.GarmentLeftoverWarehouse
         public StorageViewModel StorageFrom { get; set; }
 
         public DateTimeOffset ExpenditureDate { get; set; }
-        public DateTimeOffset ReceiptDate { get; set; }
+        public DateTimeOffset? ReceiptDate { get; set; }
 
         public string Remark { get; set; }
 
@@ -47,7 +47,7 @@ namespace Com.Danliris.Service.Inventory.Lib.ViewModels.GarmentLeftoverWarehouse
                 }
             }
 
-            if (ReceiptDate <= DateTimeOffset.MinValue)
+            if (ReceiptDate == null || ReceiptDate <= DateTimeOffset.MinValue)
             {
                 yield return new ValidationResult("Tanggal Penerimaan tidak boleh kosong", new List<string> { "ReceiptDate" });
             }
