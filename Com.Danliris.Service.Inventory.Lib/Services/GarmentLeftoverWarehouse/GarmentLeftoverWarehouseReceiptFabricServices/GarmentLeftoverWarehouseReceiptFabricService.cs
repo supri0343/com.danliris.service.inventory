@@ -1,0 +1,286 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Com.Danliris.Service.Inventory.Lib.Helpers;
+using Com.Danliris.Service.Inventory.Lib.Models.GarmentLeftoverWarehouse.GarmentLeftoverWarehouseReceiptFabricModels;
+using Com.Danliris.Service.Inventory.Lib.ViewModels;
+using Com.Danliris.Service.Inventory.Lib.ViewModels.GarmentLeftoverWarehouse.GarmentLeftoverWarehouseReceiptFabricViewModels;
+using Com.Moonlay.Models;
+using Com.Moonlay.NetCore.Lib;
+using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
+
+namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.GarmentLeftoverWarehouseReceiptFabricServices
+{
+    public class GarmentLeftoverWarehouseReceiptFabricService : IGarmentLeftoverWarehouseReceiptFabricService
+    {
+        private const string UserAgent = "GarmentLeftoverWarehouseReceiptFabricService";
+
+        private InventoryDbContext DbContext;
+        private DbSet<GarmentLeftoverWarehouseReceiptFabric> DbSet;
+
+        private readonly IServiceProvider ServiceProvider;
+        private readonly IIdentityService IdentityService;
+
+        public GarmentLeftoverWarehouseReceiptFabricService(InventoryDbContext dbContext, IServiceProvider serviceProvider)
+        {
+            DbContext = dbContext;
+            DbSet = DbContext.Set<GarmentLeftoverWarehouseReceiptFabric>();
+
+            ServiceProvider = serviceProvider;
+            IdentityService = (IIdentityService)serviceProvider.GetService(typeof(IIdentityService));
+        }
+
+        public GarmentLeftoverWarehouseReceiptFabric MapToModel(GarmentLeftoverWarehouseReceiptFabricViewModel viewModel)
+        {
+            GarmentLeftoverWarehouseReceiptFabric model = new GarmentLeftoverWarehouseReceiptFabric();
+            PropertyCopier<GarmentLeftoverWarehouseReceiptFabricViewModel, GarmentLeftoverWarehouseReceiptFabric>.Copy(viewModel, model);
+
+            if (viewModel.UnitFrom != null)
+            {
+                model.UnitFromId = long.Parse(viewModel.UnitFrom.Id);
+                model.UnitFromCode = viewModel.UnitFrom.Code;
+                model.UnitFromName = viewModel.UnitFrom.Name;
+            }
+
+            if (viewModel.StorageFrom != null)
+            {
+                model.StorageFromId = long.Parse(viewModel.StorageFrom._id);
+                model.StorageFromCode = viewModel.StorageFrom.code;
+                model.StorageFromName = viewModel.StorageFrom.name;
+            }
+
+            model.Items = new List<GarmentLeftoverWarehouseReceiptFabricItem>();
+            foreach (var viewModelItem in viewModel.Items)
+            {
+                GarmentLeftoverWarehouseReceiptFabricItem modelItem = new GarmentLeftoverWarehouseReceiptFabricItem();
+                PropertyCopier<GarmentLeftoverWarehouseReceiptFabricItemViewModel, GarmentLeftoverWarehouseReceiptFabricItem>.Copy(viewModelItem, modelItem);
+
+                if (viewModelItem.Product != null)
+                {
+                    modelItem.ProductId = long.Parse(viewModelItem.Product.Id);
+                    modelItem.ProductCode = viewModelItem.Product.Code;
+                    modelItem.ProductName = viewModelItem.Product.Name;
+                }
+
+                if (viewModelItem.Uom != null)
+                {
+                    modelItem.UomId = long.Parse(viewModelItem.Uom.Id);
+                    modelItem.UomUnit = viewModelItem.Uom.Unit;
+                }
+
+                model.Items.Add(modelItem);
+            }
+
+            return model;
+        }
+
+        public GarmentLeftoverWarehouseReceiptFabricViewModel MapToViewModel(GarmentLeftoverWarehouseReceiptFabric model)
+        {
+            GarmentLeftoverWarehouseReceiptFabricViewModel viewModel = new GarmentLeftoverWarehouseReceiptFabricViewModel();
+            PropertyCopier<GarmentLeftoverWarehouseReceiptFabric, GarmentLeftoverWarehouseReceiptFabricViewModel>.Copy(model, viewModel);
+
+            viewModel.UnitFrom = new UnitViewModel
+            {
+                Id = model.UnitFromId.ToString(),
+                Code = model.UnitFromCode,
+                Name = model.UnitFromName
+            };
+
+            viewModel.StorageFrom = new StorageViewModel
+            {
+                _id = model.StorageFromId.ToString(),
+                code = model.StorageFromCode,
+                name = model.StorageFromName
+            };
+
+            if (model.Items != null)
+            {
+                viewModel.Items = new List<GarmentLeftoverWarehouseReceiptFabricItemViewModel>();
+                foreach (var modelItem in model.Items)
+                {
+                    GarmentLeftoverWarehouseReceiptFabricItemViewModel viewModelItem = new GarmentLeftoverWarehouseReceiptFabricItemViewModel();
+                    PropertyCopier<GarmentLeftoverWarehouseReceiptFabricItem, GarmentLeftoverWarehouseReceiptFabricItemViewModel>.Copy(modelItem, viewModelItem);
+
+                    viewModelItem.Product = new ProductViewModel
+                    {
+                        Id = modelItem.ProductId.ToString(),
+                        Code = modelItem.ProductCode,
+                        Name = modelItem.ProductName
+                    };
+
+                    viewModelItem.Uom = new UomViewModel
+                    {
+                        Id = modelItem.UomId.ToString(),
+                        Unit = modelItem.UomUnit
+                    };
+
+                    viewModel.Items.Add(viewModelItem);
+                }
+            }
+
+            return viewModel;
+        }
+
+        public ReadResponse<GarmentLeftoverWarehouseReceiptFabric> Read(int page, int size, string order, List<string> select, string keyword, string filter)
+        {
+            IQueryable<GarmentLeftoverWarehouseReceiptFabric> Query = DbSet;
+
+            List<string> SearchAttributes = new List<string>()
+            {
+                "ReceiptNoteNo", "UnitFromName", "UENNo", "StorageFromName"
+            };
+            Query = QueryHelper<GarmentLeftoverWarehouseReceiptFabric>.Search(Query, SearchAttributes, keyword);
+
+            Dictionary<string, object> FilterDictionary = JsonConvert.DeserializeObject<Dictionary<string, object>>(filter);
+            Query = QueryHelper<GarmentLeftoverWarehouseReceiptFabric>.Filter(Query, FilterDictionary);
+
+            Dictionary<string, string> OrderDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(order);
+            Query = QueryHelper<GarmentLeftoverWarehouseReceiptFabric>.Order(Query, OrderDictionary);
+
+            List<string> SelectedFields = (select != null && select.Count > 0) ? select : new List<string>()
+            {
+                "Id", "ReceiptNoteNo", "UnitFrom", "UENNo", "StorageFrom", "ReceiptDate"
+            };
+
+            Query = Query.Select(s => new GarmentLeftoverWarehouseReceiptFabric
+            {
+                Id = s.Id,
+                ReceiptNoteNo = s.ReceiptNoteNo,
+                UnitFromId = s.UnitFromId,
+                UnitFromCode = s.UnitFromCode,
+                UnitFromName = s.UnitFromName,
+                UENNo = s.UENNo,
+                StorageFromId = s.StorageFromId,
+                StorageFromCode = s.StorageFromCode,
+                StorageFromName = s.StorageFromName,
+                ReceiptDate = s.ReceiptDate
+            });
+
+            Pageable<GarmentLeftoverWarehouseReceiptFabric> pageable = new Pageable<GarmentLeftoverWarehouseReceiptFabric>(Query, page - 1, size);
+            List<GarmentLeftoverWarehouseReceiptFabric> Data = pageable.Data.ToList();
+            int TotalData = pageable.TotalCount;
+
+            return new ReadResponse<GarmentLeftoverWarehouseReceiptFabric>(Data, TotalData, OrderDictionary, SelectedFields);
+        }
+
+        public async Task<GarmentLeftoverWarehouseReceiptFabric> ReadByIdAsync(int id)
+        {
+            return await DbSet
+                .Where(w => w.Id == id)
+                .Include(i => i.Items)
+                .FirstOrDefaultAsync();
+        }
+
+        public async Task<int> CreateAsync(GarmentLeftoverWarehouseReceiptFabric model)
+        {
+            int Created = 0;
+
+            using (var transaction = DbContext.Database.CurrentTransaction ?? DbContext.Database.BeginTransaction())
+            {
+                try
+                {
+                    model.FlagForCreate(IdentityService.Username, UserAgent);
+                    model.FlagForUpdate(IdentityService.Username, UserAgent);
+
+                    model.ReceiptNoteNo = GenerateNo(model);
+
+                    foreach (var item in model.Items)
+                    {
+                        item.FlagForCreate(IdentityService.Username, UserAgent);
+                        item.FlagForUpdate(IdentityService.Username, UserAgent);
+                    }
+                    DbSet.Add(model);
+
+                    Created = await DbContext.SaveChangesAsync();
+                    transaction.Commit();
+                }
+                catch (Exception e)
+                {
+                    transaction.Rollback();
+                    throw e;
+                }
+            }
+
+            return Created;
+        }
+
+        public async Task<int> UpdateAsync(int id, GarmentLeftoverWarehouseReceiptFabric model)
+        {
+            int Updated = 0;
+
+            using (var transaction = DbContext.Database.CurrentTransaction ?? DbContext.Database.BeginTransaction())
+            {
+                try
+                {
+                    GarmentLeftoverWarehouseReceiptFabric existingModel = await DbSet.Where(w => w.Id == id).FirstOrDefaultAsync();
+                    if (existingModel.ReceiptDate != model.ReceiptDate)
+                    {
+                        existingModel.ReceiptDate = model.ReceiptDate;
+                    }
+                    if (existingModel.Remark != model.Remark)
+                    {
+                        existingModel.Remark = model.Remark;
+                    }
+
+                    existingModel.FlagForUpdate(IdentityService.Username, UserAgent);
+
+                    Updated = await DbContext.SaveChangesAsync();
+                    transaction.Commit();
+                }
+                catch (Exception e)
+                {
+                    transaction.Rollback();
+                    throw e;
+                }
+            }
+
+            return Updated;
+        }
+
+        public async Task<int> DeleteAsync(int id)
+        {
+            int Deleted = 0;
+
+            using (var transaction = DbContext.Database.CurrentTransaction ?? DbContext.Database.BeginTransaction())
+            {
+                try
+                {
+                    GarmentLeftoverWarehouseReceiptFabric model = await ReadByIdAsync(id);
+                    model.FlagForDelete(IdentityService.Username, UserAgent);
+                    foreach (var item in model.Items)
+                    {
+                        item.FlagForDelete(IdentityService.Username, UserAgent);
+                    }
+
+                    Deleted = await DbContext.SaveChangesAsync();
+
+                    transaction.Commit();
+                }
+                catch (Exception e)
+                {
+                    transaction.Rollback();
+                    throw e;
+                }
+            }
+
+            return Deleted;
+        }
+
+        private string GenerateNo(GarmentLeftoverWarehouseReceiptFabric model)
+        {
+            string prefix = "BMF" + model.UnitFromCode.Trim() + model._CreatedUtc.ToString("yy") + model._CreatedUtc.ToString("MM");
+
+            var lastNo = DbSet.Where(w => w.ReceiptNoteNo.StartsWith(prefix))
+                .OrderByDescending(o => o.ReceiptNoteNo)
+                .Select(s => int.Parse(s.ReceiptNoteNo.Replace(prefix, "")))
+                .FirstOrDefault();
+
+            var curNo = $"{prefix}{(lastNo + 1).ToString("D4")}";
+
+            return curNo;
+        }
+    }
+}
