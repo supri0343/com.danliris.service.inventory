@@ -16,7 +16,7 @@ using Com.Danliris.Service.Inventory.Lib.Models.GarmentLeftoverWarehouse.Garment
 
 using Com.Danliris.Service.Inventory.Lib.Models.GarmentLeftoverWarehouse.GarmentLeftoverWarehouseReceiptFabricModels;
 using Com.Danliris.Service.Inventory.Lib.Configs.GarmentLeftoverWarehouse.GarmentLeftoverWarehouseReceiptFabricConfigs;
-using Com.Danliris.Service.Inventory.Lib.Configs.GarmentLeftoverWarehouseReceiptFinishedGoodConfig;
+using Com.Danliris.Service.Inventory.Lib.Configs.GarmentLeftoverWarehouse.GarmentLeftoverWarehouseReceiptFinishedGoodConfigs;
 
 namespace Com.Danliris.Service.Inventory.Lib
 {
@@ -42,12 +42,12 @@ namespace Com.Danliris.Service.Inventory.Lib
         public DbSet<InventoryDocumentItem> InventoryDocumentItems { get; set; }
         public DbSet<InventoryMovement> InventoryMovements { get; set; }
         public DbSet<InventorySummary> InventorySummaries { get; set; }
+        public DbSet<GarmentLeftoverWarehouseReceiptFabric> GarmentLeftoverWarehouseReceiptFabrics { get; set; }
+        public DbSet<GarmentLeftoverWarehouseReceiptFabricItem> GarmentLeftoverWarehouseReceiptFabricItems { get; set; }
 
         public DbSet<GarmentLeftoverWarehouseReceiptFinishedGood> GarmentLeftoverWarehouseReceiptFinishedGoods { get; set; }
         public DbSet<GarmentLeftoverWarehouseReceiptFinishedGoodItem> GarmentLeftoverWarehouseReceiptFinishedGoodItems { get; set; }
 
-        public DbSet<GarmentLeftoverWarehouseReceiptFabric> GarmentLeftoverWarehouseReceiptFabrics { get; set; }
-        public DbSet<GarmentLeftoverWarehouseReceiptFabricItem> GarmentLeftoverWarehouseReceiptFabricItems { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -68,11 +68,11 @@ namespace Com.Danliris.Service.Inventory.Lib
             modelBuilder.ApplyConfiguration(new InventoryDocumentItemConfig());
             modelBuilder.ApplyConfiguration(new InventoryMovementConfig());
             modelBuilder.ApplyConfiguration(new InventorySummaryConfig());
+            modelBuilder.ApplyConfiguration(new GarmentLeftoverWarehouseReceiptFabricConfig());
+            modelBuilder.ApplyConfiguration(new GarmentLeftoverWarehouseReceiptFabricItemConfig());
             modelBuilder.ApplyConfiguration(new GarmentLeftoverWarehouseReceiptFinishedGoodConfig());
             modelBuilder.ApplyConfiguration(new GarmentLeftoverWarehouseReceiptFinishedGoodItemConfig());
 
-            modelBuilder.ApplyConfiguration(new GarmentLeftoverWarehouseReceiptFabricConfig());
-            modelBuilder.ApplyConfiguration(new GarmentLeftoverWarehouseReceiptFabricItemConfig());
         }
     }
 }

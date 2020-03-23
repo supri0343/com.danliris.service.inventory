@@ -4,14 +4,16 @@ using Com.Danliris.Service.Inventory.Lib;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Com.Danliris.Service.Inventory.Lib.Migrations
 {
     [DbContext(typeof(InventoryDbContext))]
-    partial class InventoryDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200320061616_Initial_GarmentLeftoverWarehouse-FinishedGoods")]
+    partial class Initial_GarmentLeftoverWarehouseFinishedGoods
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -690,7 +692,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Migrations
 
                     b.Property<string>("BuyerCode");
 
-                    b.Property<long>("BuyerId");
+                    b.Property<int>("BuyerId");
 
                     b.Property<string>("BuyerName");
 
@@ -698,7 +700,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Migrations
 
                     b.Property<string>("ComodityCode");
 
-                    b.Property<long>("ComodityId");
+                    b.Property<int>("ComodityId");
 
                     b.Property<string>("ComodityName");
 
@@ -729,7 +731,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Migrations
                     b.Property<string>("UnitFromCode")
                         .HasMaxLength(25);
 
-                    b.Property<long>("UnitFromId");
+                    b.Property<int>("UnitFromId");
 
                     b.Property<string>("UnitFromName")
                         .HasMaxLength(100);
@@ -790,12 +792,15 @@ namespace Com.Danliris.Service.Inventory.Lib.Migrations
                     b.Property<string>("Remark")
                         .HasMaxLength(4000);
 
-                    b.Property<long>("SizeId");
+                    b.Property<string>("SizeCode")
+                        .HasMaxLength(50);
+
+                    b.Property<int>("SizeId");
 
                     b.Property<string>("SizeName")
                         .HasMaxLength(50);
 
-                    b.Property<long>("UomId");
+                    b.Property<int>("UomId");
 
                     b.Property<string>("UomUnit")
                         .HasMaxLength(255);

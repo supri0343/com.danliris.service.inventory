@@ -6,7 +6,7 @@ namespace Com.Danliris.Service.Inventory.Lib.ViewModels
 {
     public class BuyerViewModel
     {
-        public int Id { get; set; }
+        public long Id { get; set; }
         public string Code { get; set; }
         public string Name { get; set; }
     }
