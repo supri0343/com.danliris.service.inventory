@@ -6,6 +6,7 @@ using Com.Danliris.Service.Inventory.Lib.Services.FpRegradingResultDocs;
 using Com.Danliris.Service.Inventory.Lib.Services.FpReturnFromBuyers;
 using Com.Danliris.Service.Inventory.Lib.Services.FPReturnInvToPurchasingService;
 using Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.GarmentLeftoverWarehouseReceiptFabricServices;
+using Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.GarmentLeftoverWarehouseReceiptFinishedGoodServices;
 using Com.Danliris.Service.Inventory.Lib.Services.Inventory;
 using Com.Danliris.Service.Inventory.Lib.Services.MaterialDistributionNoteService;
 using Com.Danliris.Service.Inventory.Lib.Services.MaterialRequestNoteServices;
@@ -80,6 +81,8 @@ namespace Com.Danliris.Service.Inventory.WebApi
                 .AddTransient<IFpReturnFromBuyerService, FpReturnFromBuyerService>()
                 .AddTransient<IFPReturnInvToPurchasingService, NewFPReturnInvToPurchasingService>()
                 .AddTransient<IGarmentLeftoverWarehouseReceiptFabricService, GarmentLeftoverWarehouseReceiptFabricService>()
+                .AddTransient<IGarmentLeftoverWarehouseReceiptFinishedGoodService, GarmentLeftoverWarehouseReceiptFinishedGoodService>()
+                .AddScoped<IIdentityService, IdentityService>()
                 .AddScoped<IIdentityService, IdentityService>()
                 .AddScoped<IValidateService, ValidateService>()
                 .AddScoped<IHttpService, HttpService>()

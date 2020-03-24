@@ -4,14 +4,16 @@ using Com.Danliris.Service.Inventory.Lib;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Com.Danliris.Service.Inventory.Lib.Migrations
 {
     [DbContext(typeof(InventoryDbContext))]
-    partial class InventoryDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200323050019_Update_GarmentLeftoverWarehouseReceiptFinishedGoodItems")]
+    partial class Update_GarmentLeftoverWarehouseReceiptFinishedGoodItems
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -786,8 +788,6 @@ namespace Com.Danliris.Service.Inventory.Lib.Migrations
                     b.Property<Guid>("ExpenditureGoodItemId");
 
                     b.Property<int>("FinishedGoodReceiptId");
-
-                    b.Property<double>("Quantity");
 
                     b.Property<string>("Remark")
                         .HasMaxLength(4000);
