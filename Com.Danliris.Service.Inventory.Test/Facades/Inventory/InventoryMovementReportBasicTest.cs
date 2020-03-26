@@ -211,5 +211,37 @@ namespace Com.Danliris.Service.Inventory.Test.Facades.Inventory
             var result = await inventoryMovementService.RefreshInventoryMovement();
             Assert.NotEqual(0, result);
         }
+
+        [Fact]
+        public void Should_Success_GenerateExcel_Dystuff()
+        {
+            var serviceProvider = GetServiceProvider();
+            InventorySummaryService inventorySummaryService = new InventorySummaryService(serviceProvider.Object, _dbContext(GetCurrentMethod()));
+            serviceProvider.Setup(s => s.GetService(typeof(IInventorySummaryService)))
+                .Returns(inventorySummaryService);
+
+            InventoryMovementService service = new InventoryMovementService(serviceProvider.Object, _dbContext(GetCurrentMethod()));
+            var data = _dataUtil(service).GetTestData();
+
+            InventoryDystuffService facade = new InventoryDystuffService(serviceProvider.Object, _dbContext(GetCurrentMethod()));
+            var Response = facade.GenerateExcel(null, null, null, 7);
+            Assert.NotNull(Response);
+        }
+
+        [Fact]
+        public void Should_Success_GetReport_Dystuff()
+        {
+            var serviceProvider = GetServiceProvider();
+            InventorySummaryService inventorySummaryService = new InventorySummaryService(serviceProvider.Object, _dbContext(GetCurrentMethod()));
+            serviceProvider.Setup(s => s.GetService(typeof(IInventorySummaryService)))
+                .Returns(inventorySummaryService);
+
+            InventoryMovementService service = new InventoryMovementService(serviceProvider.Object, _dbContext(GetCurrentMethod()));
+            var data = _dataUtil(service).GetTestData();
+
+            InventoryDystuffService facade = new InventoryDystuffService(serviceProvider.Object, _dbContext(GetCurrentMethod()));
+            var Response = facade.GetReport(null, null, null, 1, 25, "{}", 7);
+            Assert.NotNull(Response);
+        }
     }
 }
