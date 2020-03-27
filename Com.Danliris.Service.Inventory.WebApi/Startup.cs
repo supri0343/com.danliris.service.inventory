@@ -77,6 +77,7 @@ namespace Com.Danliris.Service.Inventory.WebApi
                 .AddTransient<IFpRegradingResultDocsService, NewFpRegradingResultDocsService>()
                 .AddTransient<IInventoryDocumentService, InventoryDocumentService>()
                 .AddTransient<IInventoryMovementService, InventoryMovementService>()
+                .AddTransient<IInventoryDystuffService, InventoryDystuffService>()
                 .AddTransient<IInventorySummaryService, InventorySummaryService>()
                 .AddTransient<IFpReturnFromBuyerService, FpReturnFromBuyerService>()
                 .AddTransient<IFPReturnInvToPurchasingService, NewFPReturnInvToPurchasingService>()
