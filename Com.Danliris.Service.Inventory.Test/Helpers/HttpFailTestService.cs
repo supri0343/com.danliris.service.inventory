@@ -1,4 +1,5 @@
 ﻿using Com.Danliris.Service.Inventory.Lib.Services;
+using Newtonsoft.Json;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -24,7 +25,13 @@ namespace Com.Danliris.Service.Inventory.Test.Helpers
 
         public Task<HttpResponseMessage> PatchAsync(string url, HttpContent content)
         {
-            return Task.Run(() => new HttpResponseMessage(System.Net.HttpStatusCode.InternalServerError));
+            return Task.Run(() => new HttpResponseMessage(System.Net.HttpStatusCode.InternalServerError) {
+                Content = new StringContent(JsonConvert.SerializeObject(new
+                {
+                    error = "error",
+                    message = "message"
+                }))
+            });
         }
     }
 }
