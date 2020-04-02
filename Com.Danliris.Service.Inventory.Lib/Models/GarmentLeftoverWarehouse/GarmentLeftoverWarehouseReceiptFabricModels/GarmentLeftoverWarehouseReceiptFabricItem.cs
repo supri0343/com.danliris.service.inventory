@@ -9,6 +9,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Models.GarmentLeftoverWarehouse.Gar
 
         public long UENItemId { get; set; }
 
+        public string POSerialNumber { get; set; }
+
         public long ProductId { get; set; }
         public string ProductCode { get; set; }
         public string ProductName { get; set; }

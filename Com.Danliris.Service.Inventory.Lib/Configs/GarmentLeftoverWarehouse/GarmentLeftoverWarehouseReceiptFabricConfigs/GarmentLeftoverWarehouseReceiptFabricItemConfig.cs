@@ -8,6 +8,10 @@ namespace Com.Danliris.Service.Inventory.Lib.Configs.GarmentLeftoverWarehouse.Ga
     {
         public void Configure(EntityTypeBuilder<GarmentLeftoverWarehouseReceiptFabricItem> builder)
         {
+            builder.Property(p => p.POSerialNumber)
+                .HasMaxLength(25)
+                .IsRequired();
+
             builder.Property(p => p.ProductCode).HasMaxLength(25);
             builder.Property(p => p.ProductName).HasMaxLength(100);
             builder.Property(p => p.ProductRemark).HasMaxLength(3000);

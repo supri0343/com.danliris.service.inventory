@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Com.Danliris.Service.Inventory.Lib.Enums;
 using Com.Danliris.Service.Inventory.Lib.Helpers;
 using Com.Danliris.Service.Inventory.Lib.Models.GarmentLeftoverWarehouse.GarmentLeftoverWarehouseReceiptFabricModels;
+using Com.Danliris.Service.Inventory.Lib.Models.GarmentLeftoverWarehouse.Stock;
+using Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.Stock;
 using Com.Danliris.Service.Inventory.Lib.ViewModels;
 using Com.Danliris.Service.Inventory.Lib.ViewModels.GarmentLeftoverWarehouse.GarmentLeftoverWarehouseReceiptFabricViewModels;
 using Com.Moonlay.Models;
@@ -24,6 +27,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
         private readonly IServiceProvider ServiceProvider;
         private readonly IIdentityService IdentityService;
 
+        private readonly IGarmentLeftoverWarehouseStockService StockService;
+
         public GarmentLeftoverWarehouseReceiptFabricService(InventoryDbContext dbContext, IServiceProvider serviceProvider)
         {
             DbContext = dbContext;
@@ -31,6 +36,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
 
             ServiceProvider = serviceProvider;
             IdentityService = (IIdentityService)serviceProvider.GetService(typeof(IIdentityService));
+
+            StockService = (IGarmentLeftoverWarehouseStockService)serviceProvider.GetService(typeof(IGarmentLeftoverWarehouseStockService));
         }
 
         public GarmentLeftoverWarehouseReceiptFabric MapToModel(GarmentLeftoverWarehouseReceiptFabricViewModel viewModel)
@@ -176,12 +183,12 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
 
         public async Task<int> CreateAsync(GarmentLeftoverWarehouseReceiptFabric model)
         {
-            int Created = 0;
-
             using (var transaction = DbContext.Database.CurrentTransaction ?? DbContext.Database.BeginTransaction())
             {
                 try
                 {
+                    int Created = 0;
+
                     model.FlagForCreate(IdentityService.Username, UserAgent);
                     model.FlagForUpdate(IdentityService.Username, UserAgent);
 
@@ -193,9 +200,25 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
                         item.FlagForUpdate(IdentityService.Username, UserAgent);
                     }
                     DbSet.Add(model);
-
                     Created = await DbContext.SaveChangesAsync();
+
+                    foreach (var item in model.Items)
+                    {
+                        GarmentLeftoverWarehouseStock stock = new GarmentLeftoverWarehouseStock
+                        {
+                            ReferenceType = GarmentLeftoverWarehouseStockReferenceTypeEnum.FABRIC,
+                            UnitId = model.UnitFromId,
+                            UnitCode = model.UnitFromCode,
+                            UnitName = model.UnitFromName,
+                            PONo = item.POSerialNumber,
+                            Quantity = item.Quantity
+                        };
+                        await StockService.StockIn(stock, model.ReceiptNoteNo);
+                    }
+
                     transaction.Commit();
+
+                    return Created;
                 }
                 catch (Exception e)
                 {
@@ -203,18 +226,16 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
                     throw e;
                 }
             }
-
-            return Created;
         }
 
         public async Task<int> UpdateAsync(int id, GarmentLeftoverWarehouseReceiptFabric model)
         {
-            int Updated = 0;
-
             using (var transaction = DbContext.Database.CurrentTransaction ?? DbContext.Database.BeginTransaction())
             {
                 try
                 {
+                    int Updated = 0;
+
                     GarmentLeftoverWarehouseReceiptFabric existingModel = await DbSet.Where(w => w.Id == id).FirstOrDefaultAsync();
                     if (existingModel.ReceiptDate != model.ReceiptDate)
                     {
@@ -229,6 +250,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
 
                     Updated = await DbContext.SaveChangesAsync();
                     transaction.Commit();
+
+                    return Updated;
                 }
                 catch (Exception e)
                 {
@@ -236,18 +259,16 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
                     throw e;
                 }
             }
-
-            return Updated;
         }
 
         public async Task<int> DeleteAsync(int id)
         {
-            int Deleted = 0;
-
             using (var transaction = DbContext.Database.CurrentTransaction ?? DbContext.Database.BeginTransaction())
             {
                 try
                 {
+                    int Deleted = 0;
+
                     GarmentLeftoverWarehouseReceiptFabric model = await ReadByIdAsync(id);
                     model.FlagForDelete(IdentityService.Username, UserAgent);
                     foreach (var item in model.Items)
@@ -257,7 +278,23 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
 
                     Deleted = await DbContext.SaveChangesAsync();
 
+                    foreach (var item in model.Items)
+                    {
+                        GarmentLeftoverWarehouseStock stock = new GarmentLeftoverWarehouseStock
+                        {
+                            ReferenceType = GarmentLeftoverWarehouseStockReferenceTypeEnum.FABRIC,
+                            UnitId = model.UnitFromId,
+                            UnitCode = model.UnitFromCode,
+                            UnitName = model.UnitFromName,
+                            PONo = item.POSerialNumber,
+                            Quantity = item.Quantity
+                        };
+                        await StockService.StockOut(stock, model.ReceiptNoteNo);
+                    }
+
                     transaction.Commit();
+
+                    return Deleted;
                 }
                 catch (Exception e)
                 {
@@ -265,8 +302,6 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
                     throw e;
                 }
             }
-
-            return Deleted;
         }
 
         private string GenerateNo(GarmentLeftoverWarehouseReceiptFabric model)
