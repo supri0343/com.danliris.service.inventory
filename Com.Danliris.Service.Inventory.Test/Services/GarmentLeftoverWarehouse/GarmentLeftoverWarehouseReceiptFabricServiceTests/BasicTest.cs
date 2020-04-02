@@ -75,6 +75,10 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
                 .Setup(x => x.GetService(typeof(IGarmentLeftoverWarehouseStockService)))
                 .Returns(stockServiceMock.Object);
 
+            serviceProvider
+                .Setup(x => x.GetService(typeof(IHttpService)))
+                .Returns(new HttpTestService());
+
             GarmentLeftoverWarehouseReceiptFabricService service = new GarmentLeftoverWarehouseReceiptFabricService(_dbContext(GetCurrentMethod()), serviceProvider.Object);
 
             await _dataUtil(service).GetTestData();
@@ -97,6 +101,10 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
                 .Setup(x => x.GetService(typeof(IGarmentLeftoverWarehouseStockService)))
                 .Returns(stockServiceMock.Object);
 
+            serviceProvider
+                .Setup(x => x.GetService(typeof(IHttpService)))
+                .Returns(new HttpTestService());
+
             GarmentLeftoverWarehouseReceiptFabricService service = new GarmentLeftoverWarehouseReceiptFabricService(_dbContext(GetCurrentMethod()), serviceProvider.Object);
 
             var data = await _dataUtil(service).GetTestData();
@@ -118,6 +126,10 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
             serviceProvider
                 .Setup(x => x.GetService(typeof(IGarmentLeftoverWarehouseStockService)))
                 .Returns(stockServiceMock.Object);
+
+            serviceProvider
+                .Setup(x => x.GetService(typeof(IHttpService)))
+                .Returns(new HttpTestService());
 
             GarmentLeftoverWarehouseReceiptFabricService service = new GarmentLeftoverWarehouseReceiptFabricService(_dbContext(GetCurrentMethod()), serviceProvider.Object);
 
@@ -147,6 +159,10 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
             serviceProvider
                 .Setup(x => x.GetService(typeof(IGarmentLeftoverWarehouseStockService)))
                 .Returns(stockServiceMock.Object);
+
+            serviceProvider
+                .Setup(x => x.GetService(typeof(IHttpService)))
+                .Returns(new HttpTestService());
 
             GarmentLeftoverWarehouseReceiptFabricService service = new GarmentLeftoverWarehouseReceiptFabricService(_dbContext(GetCurrentMethod()), serviceProvider.Object);
 
@@ -181,6 +197,10 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
             serviceProvider
                 .Setup(x => x.GetService(typeof(IGarmentLeftoverWarehouseStockService)))
                 .Returns(stockServiceMock.Object);
+
+            serviceProvider
+                .Setup(x => x.GetService(typeof(IHttpService)))
+                .Returns(new HttpTestService());
 
             GarmentLeftoverWarehouseReceiptFabricService service = new GarmentLeftoverWarehouseReceiptFabricService(_dbContext(GetCurrentMethod()), serviceProvider.Object);
 
@@ -260,6 +280,10 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
             serviceProvider
                 .Setup(x => x.GetService(typeof(IGarmentLeftoverWarehouseStockService)))
                 .Returns(stockServiceMock.Object);
+
+            serviceProvider
+                .Setup(x => x.GetService(typeof(IHttpService)))
+                .Returns(new HttpTestService());
 
             GarmentLeftoverWarehouseReceiptFabricService service = new GarmentLeftoverWarehouseReceiptFabricService(_dbContext(GetCurrentMethod()), serviceProvider.Object);
 

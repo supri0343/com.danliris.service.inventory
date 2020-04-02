@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Com.Danliris.Service.Inventory.Lib.Enums;
@@ -29,6 +30,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
 
         private readonly IGarmentLeftoverWarehouseStockService StockService;
 
+        private readonly string GarmentUnitReceiptNoteUri;
+
         public GarmentLeftoverWarehouseReceiptFabricService(InventoryDbContext dbContext, IServiceProvider serviceProvider)
         {
             DbContext = dbContext;
@@ -38,6 +41,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
             IdentityService = (IIdentityService)serviceProvider.GetService(typeof(IIdentityService));
 
             StockService = (IGarmentLeftoverWarehouseStockService)serviceProvider.GetService(typeof(IGarmentLeftoverWarehouseStockService));
+
+            GarmentUnitReceiptNoteUri = APIEndpoint.Purchasing + "garment-unit-expenditure-notes/";
         }
 
         public GarmentLeftoverWarehouseReceiptFabric MapToModel(GarmentLeftoverWarehouseReceiptFabricViewModel viewModel)
@@ -216,6 +221,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
                         await StockService.StockIn(stock, model.ReceiptNoteNo);
                     }
 
+                    await UpdateUnitExpenditureNoteIsReceived(model.UENId, true);
+
                     transaction.Commit();
 
                     return Created;
@@ -292,6 +299,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
                         await StockService.StockOut(stock, model.ReceiptNoteNo);
                     }
 
+                    await UpdateUnitExpenditureNoteIsReceived(model.UENId, false);
+
                     transaction.Commit();
 
                     return Deleted;
@@ -316,6 +325,27 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
             var curNo = $"{prefix}{(lastNo + 1).ToString("D4")}";
 
             return curNo;
+        }
+
+        private async Task UpdateUnitExpenditureNoteIsReceived(long UENId, bool IsReceived)
+        {
+
+            var stringContentRequest = JsonConvert.SerializeObject(new List<object>
+            {
+                new { op = "replace", path = "/IsReceived", value = IsReceived }
+            });
+            var httpContentRequest = new StringContent(stringContentRequest, Encoding.UTF8, General.JsonMediaType);
+
+            var httpService = (IHttpService)ServiceProvider.GetService(typeof(IHttpService));
+
+            var response = await httpService.PatchAsync(GarmentUnitReceiptNoteUri + UENId, httpContentRequest);
+            if (!response.IsSuccessStatusCode)
+            {
+                var contentResponse = await response.Content.ReadAsStringAsync();
+                Dictionary<string, object> result = JsonConvert.DeserializeObject<Dictionary<string, object>>(contentResponse) ?? new Dictionary<string, object>();
+
+                throw new Exception(string.Concat("Error from '", GarmentUnitReceiptNoteUri, "' : ", (string)result.GetValueOrDefault("error") ?? "- ", ". Message : ", (string)result.GetValueOrDefault("message") ?? "- ", ". Status : ", response.StatusCode, "."));
+            }
         }
     }
 }

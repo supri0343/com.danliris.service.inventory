@@ -21,5 +21,10 @@ namespace Com.Danliris.Service.Inventory.Test.Helpers
         {
             return Task.Run(() => new HttpResponseMessage(System.Net.HttpStatusCode.InternalServerError));
         }
+
+        public Task<HttpResponseMessage> PatchAsync(string url, HttpContent content)
+        {
+            return Task.Run(() => new HttpResponseMessage(System.Net.HttpStatusCode.InternalServerError));
+        }
     }
 }
