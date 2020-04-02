@@ -1,5 +1,8 @@
-﻿using Com.Danliris.Service.Inventory.Lib.Helpers;
+﻿using Com.Danliris.Service.Inventory.Lib.Enums;
+using Com.Danliris.Service.Inventory.Lib.Helpers;
 using Com.Danliris.Service.Inventory.Lib.Models.GarmentLeftoverWarehouse.GarmentLeftoverWarehouseReceiptFinishedGoodModels;
+using Com.Danliris.Service.Inventory.Lib.Models.GarmentLeftoverWarehouse.Stock;
+using Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.Stock;
 using Com.Danliris.Service.Inventory.Lib.ViewModels;
 using Com.Danliris.Service.Inventory.Lib.ViewModels.GarmentLeftoverWarehouse.GarmentLeftoverWarehouseReceiptFinishedGoodViewModel;
 using Com.Moonlay.Models;
@@ -24,6 +27,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
         private readonly IServiceProvider ServiceProvider;
         private readonly IIdentityService IdentityService;
 
+        private readonly IGarmentLeftoverWarehouseStockService StockService;
+
         public GarmentLeftoverWarehouseReceiptFinishedGoodService(InventoryDbContext dbContext, IServiceProvider serviceProvider)
         {
             DbContext = dbContext;
@@ -31,6 +36,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
 
             ServiceProvider = serviceProvider;
             IdentityService = (IIdentityService)serviceProvider.GetService(typeof(IIdentityService));
+
+            StockService = (IGarmentLeftoverWarehouseStockService)serviceProvider.GetService(typeof(IGarmentLeftoverWarehouseStockService));
         }
 
         public GarmentLeftoverWarehouseReceiptFinishedGood MapToModel(GarmentLeftoverWarehouseReceiptFinishedGoodViewModel viewModel)
@@ -209,6 +216,18 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
                     DbSet.Add(model);
 
                     Created = await DbContext.SaveChangesAsync();
+
+                    GarmentLeftoverWarehouseStock stock = new GarmentLeftoverWarehouseStock
+                    {
+                        ReferenceType = GarmentLeftoverWarehouseStockReferenceTypeEnum.FINISHED_GOOD,
+                        UnitId = model.UnitFromId,
+                        UnitCode = model.UnitFromCode,
+                        UnitName = model.UnitFromName,
+                        RONo = model.RONo,
+                        Quantity = model.Items.Sum(i => i.Quantity)
+                    };
+                    await StockService.StockIn(stock, model.FinishedGoodReceiptNo);
+
                     transaction.Commit();
                 }
                 catch (Exception e)
@@ -270,6 +289,17 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
                     }
 
                     Deleted = await DbContext.SaveChangesAsync();
+
+                    GarmentLeftoverWarehouseStock stock = new GarmentLeftoverWarehouseStock
+                    {
+                        ReferenceType = GarmentLeftoverWarehouseStockReferenceTypeEnum.FINISHED_GOOD,
+                        UnitId = model.UnitFromId,
+                        UnitCode = model.UnitFromCode,
+                        UnitName = model.UnitFromName,
+                        RONo = model.RONo,
+                        Quantity = model.Items.Sum(i => i.Quantity)
+                    };
+                    await StockService.StockOut(stock, model.FinishedGoodReceiptNo);
 
                     transaction.Commit();
                 }
