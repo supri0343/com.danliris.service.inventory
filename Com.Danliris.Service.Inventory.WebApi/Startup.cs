@@ -47,6 +47,7 @@ namespace Com.Danliris.Service.Inventory.WebApi
             APIEndpoint.Production = Configuration.GetValue<string>("ProductionEndpoint") ?? Configuration["ProductionEndpoint"];
             APIEndpoint.Purchasing = Configuration.GetValue<string>("PurchasingEndpoint") ?? Configuration["PurchasingEndpoint"];
             APIEndpoint.Sales = Configuration.GetValue<string>("SalesEndpoint") ?? Configuration["SalesEndpoint"];
+            APIEndpoint.GarmentProduction= Configuration.GetValue<string>("GarmentProductionEndpoint") ?? Configuration["GarmentProductionEndpoint"];
         }
 
         public void RegisterFacades(IServiceCollection services)
