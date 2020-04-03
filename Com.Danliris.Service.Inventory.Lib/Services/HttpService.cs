@@ -31,5 +31,17 @@ namespace Com.Danliris.Service.Inventory.Lib.Services
         {
             return await _client.PostAsync(url, content);
         }
+
+        public async Task<HttpResponseMessage> PatchAsync(string url, HttpContent content)
+        {
+            var method = new HttpMethod("PATCH");
+
+            var request = new HttpRequestMessage(method, url)
+            {
+                Content = content
+            };
+
+            return await _client.SendAsync(request);
+        }
     }
 }
