@@ -325,6 +325,19 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
             };
             var result = viewModel.Validate(null);
             Assert.True(result.Count() > 0);
+
+            GarmentLeftoverWarehouseReceiptFabricViewModel viewModel1 = new GarmentLeftoverWarehouseReceiptFabricViewModel()
+            {
+                UnitFrom = null,
+                UENNo = null,
+                ReceiptDate = DateTimeOffset.Now.AddDays(4),
+                Items = new List<GarmentLeftoverWarehouseReceiptFabricItemViewModel>()
+                {
+                    new GarmentLeftoverWarehouseReceiptFabricItemViewModel()
+                }
+            };
+            var result1 = viewModel1.Validate(null);
+            Assert.True(result1.Count() > 0);
         }
 
         [Fact]

@@ -325,6 +325,19 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
             };
             var result = viewModel.Validate(null);
             Assert.True(result.Count() > 0);
+
+            GarmentLeftoverWarehouseReceiptFinishedGoodViewModel viewModel1 = new GarmentLeftoverWarehouseReceiptFinishedGoodViewModel()
+            {
+                UnitFrom = null,
+                ExpenditureGoodNo = null,
+                ReceiptDate = DateTimeOffset.Now.AddDays(4),
+                Items = new List<GarmentLeftoverWarehouseReceiptFinishedGoodItemViewModel>()
+                    {
+                        new GarmentLeftoverWarehouseReceiptFinishedGoodItemViewModel()
+                    }
+            };
+            var result1 = viewModel1.Validate(null);
+            Assert.True(result1.Count() > 0);
         }
 
         [Fact]
@@ -333,5 +346,7 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
             HttpService httpService = new HttpService(new IdentityService());
             await Assert.ThrowsAnyAsync<Exception>(() => httpService.PutAsync(null, null));
         }
+
+        
     }
 }
