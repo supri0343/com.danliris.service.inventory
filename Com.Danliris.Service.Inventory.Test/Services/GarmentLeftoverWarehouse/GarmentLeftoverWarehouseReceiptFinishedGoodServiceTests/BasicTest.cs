@@ -326,5 +326,12 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
             var result = viewModel.Validate(null);
             Assert.True(result.Count() > 0);
         }
+
+        [Fact]
+        private async Task TestPatchError()
+        {
+            HttpService httpService = new HttpService(new IdentityService());
+            await Assert.ThrowsAnyAsync<Exception>(() => httpService.PutAsync(null, null));
+        }
     }
 }
