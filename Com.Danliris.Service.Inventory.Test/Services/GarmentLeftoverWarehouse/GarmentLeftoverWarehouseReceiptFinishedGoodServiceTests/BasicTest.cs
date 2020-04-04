@@ -338,6 +338,16 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
             };
             var result1 = viewModel1.Validate(null);
             Assert.True(result1.Count() > 0);
+
+
+            GarmentLeftoverWarehouseReceiptFinishedGoodViewModel viewModel2 = new GarmentLeftoverWarehouseReceiptFinishedGoodViewModel()
+            {
+                UnitFrom = null,
+                ExpenditureGoodNo = null,
+                ReceiptDate = DateTimeOffset.Now.AddDays(4)
+            };
+            var result2 = viewModel2.Validate(null);
+            Assert.True(result2.Count() > 0);
         }
 
         [Fact]
