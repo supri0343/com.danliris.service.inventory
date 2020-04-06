@@ -36,15 +36,15 @@ namespace Com.Danliris.Service.Inventory.Lib.ViewModels.GarmentLeftoverWarehouse
 
             if (string.IsNullOrWhiteSpace(ExpenditureGoodNo))
             {
-                yield return new ValidationResult("No Bon Pengeluaran Barang Jadi tidak boleh kosong", new List<string> { "UENNo" });
+                yield return new ValidationResult("No Bon Pengeluaran Barang Jadi tidak boleh kosong", new List<string> { "ExpenditureGoodNo" });
             }
             else if (Id == 0)
             {
                 IGarmentLeftoverWarehouseReceiptFinishedGoodService service = (IGarmentLeftoverWarehouseReceiptFinishedGoodService)validationContext.GetService(typeof(IGarmentLeftoverWarehouseReceiptFinishedGoodService));
-                var existingByUENNo = service.Read(1, 1, "{}", new List<string>(), null, JsonConvert.SerializeObject(new { ExpenditureGoodNo }));
-                if (existingByUENNo.Count > 0)
+                var existingByExpenditureGood = service.Read(1, 1, "{}", new List<string>(), null, JsonConvert.SerializeObject(new { ExpenditureGoodNo }));
+                if (existingByExpenditureGood.Count > 0)
                 {
-                    yield return new ValidationResult("No Bon Pengeluaran Unit sudah dibuat Penerimaan Gudang Sisa", new List<string> { "UENNo" });
+                    yield return new ValidationResult("No Bon Pengeluaran Barang Jadi sudah dibuat Penerimaan Gudang Sisa", new List<string> { "ExpenditureGoodNo" });
                 }
             }
 

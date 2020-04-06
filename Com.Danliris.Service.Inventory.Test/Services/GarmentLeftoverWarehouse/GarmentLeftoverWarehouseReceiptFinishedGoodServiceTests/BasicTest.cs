@@ -6,6 +6,7 @@ using Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.Stock
 using Com.Danliris.Service.Inventory.Lib.ViewModels;
 using Com.Danliris.Service.Inventory.Lib.ViewModels.GarmentLeftoverWarehouse.GarmentLeftoverWarehouseReceiptFinishedGoodViewModel;
 using Com.Danliris.Service.Inventory.Test.DataUtils.GarmentLeftoverWarehouse.GarmentLeftoverWarehouseReceiptFinishedGoodDataUtils;
+using Com.Danliris.Service.Inventory.Test.Helpers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Moq;
@@ -74,6 +75,10 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
                 .Setup(x => x.GetService(typeof(IGarmentLeftoverWarehouseStockService)))
                 .Returns(stockServiceMock.Object);
 
+            serviceProvider
+                .Setup(x => x.GetService(typeof(IHttpService)))
+                .Returns(new HttpTestService());
+
             GarmentLeftoverWarehouseReceiptFinishedGoodService service = new GarmentLeftoverWarehouseReceiptFinishedGoodService(_dbContext(GetCurrentMethod()), serviceProvider.Object);
 
             await _dataUtil(service).GetTestData();
@@ -95,6 +100,11 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
             serviceProvider
                 .Setup(x => x.GetService(typeof(IGarmentLeftoverWarehouseStockService)))
                 .Returns(stockServiceMock.Object);
+
+
+            serviceProvider
+                .Setup(x => x.GetService(typeof(IHttpService)))
+                .Returns(new HttpTestService());
 
             GarmentLeftoverWarehouseReceiptFinishedGoodService service = new GarmentLeftoverWarehouseReceiptFinishedGoodService(_dbContext(GetCurrentMethod()), serviceProvider.Object);
 
@@ -118,6 +128,11 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
                 .Setup(x => x.GetService(typeof(IGarmentLeftoverWarehouseStockService)))
                 .Returns(stockServiceMock.Object);
 
+
+            serviceProvider
+                .Setup(x => x.GetService(typeof(IHttpService)))
+                .Returns(new HttpTestService());
+
             GarmentLeftoverWarehouseReceiptFinishedGoodService service = new GarmentLeftoverWarehouseReceiptFinishedGoodService(_dbContext(GetCurrentMethod()), serviceProvider.Object);
 
             var data = _dataUtil(service).GetNewData();
@@ -130,8 +145,25 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
         [Fact]
         public async Task Create_Error()
         {
-            GarmentLeftoverWarehouseReceiptFinishedGoodService service = new GarmentLeftoverWarehouseReceiptFinishedGoodService(_dbContext(GetCurrentMethod()), GetServiceProvider().Object);
-            await Assert.ThrowsAnyAsync<Exception>(() => service.CreateAsync(null));
+            var serviceProvider = GetServiceProvider();
+
+            var stockServiceMock = new Mock<IGarmentLeftoverWarehouseStockService>();
+            stockServiceMock.Setup(s => s.StockIn(It.IsAny<GarmentLeftoverWarehouseStock>(), It.IsAny<string>()))
+                .ReturnsAsync(1);
+
+            serviceProvider
+                .Setup(x => x.GetService(typeof(IGarmentLeftoverWarehouseStockService)))
+                .Returns(stockServiceMock.Object);
+
+            serviceProvider
+                .Setup(x => x.GetService(typeof(IHttpService)))
+                .Returns(new HttpFailTestService());
+
+            GarmentLeftoverWarehouseReceiptFinishedGoodService service = new GarmentLeftoverWarehouseReceiptFinishedGoodService(_dbContext(GetCurrentMethod()), serviceProvider.Object);
+
+            var data = _dataUtil(service).GetNewData();
+
+            await Assert.ThrowsAnyAsync<Exception>(() => service.CreateAsync(data));
         }
 
         [Fact]
@@ -146,6 +178,11 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
             serviceProvider
                 .Setup(x => x.GetService(typeof(IGarmentLeftoverWarehouseStockService)))
                 .Returns(stockServiceMock.Object);
+
+
+            serviceProvider
+                .Setup(x => x.GetService(typeof(IHttpService)))
+                .Returns(new HttpTestService());
 
             GarmentLeftoverWarehouseReceiptFinishedGoodService service = new GarmentLeftoverWarehouseReceiptFinishedGoodService(_dbContext(GetCurrentMethod()), serviceProvider.Object);
 
@@ -180,6 +217,11 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
             serviceProvider
                 .Setup(x => x.GetService(typeof(IGarmentLeftoverWarehouseStockService)))
                 .Returns(stockServiceMock.Object);
+
+
+            serviceProvider
+                .Setup(x => x.GetService(typeof(IHttpService)))
+                .Returns(new HttpTestService());
 
             GarmentLeftoverWarehouseReceiptFinishedGoodService service = new GarmentLeftoverWarehouseReceiptFinishedGoodService(_dbContext(GetCurrentMethod()), serviceProvider.Object);
 
@@ -271,6 +313,11 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
                 .Setup(x => x.GetService(typeof(IGarmentLeftoverWarehouseStockService)))
                 .Returns(stockServiceMock.Object);
 
+
+            serviceProvider
+                .Setup(x => x.GetService(typeof(IHttpService)))
+                .Returns(new HttpTestService());
+
             GarmentLeftoverWarehouseReceiptFinishedGoodService service = new GarmentLeftoverWarehouseReceiptFinishedGoodService(_dbContext(GetCurrentMethod()), serviceProvider.Object);
 
             var data = await _dataUtil(service).GetTestData();
@@ -295,6 +342,38 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
             };
             var result = viewModel.Validate(null);
             Assert.True(result.Count() > 0);
+
+            GarmentLeftoverWarehouseReceiptFinishedGoodViewModel viewModel1 = new GarmentLeftoverWarehouseReceiptFinishedGoodViewModel()
+            {
+                UnitFrom = null,
+                ExpenditureGoodNo = null,
+                ReceiptDate = DateTimeOffset.Now.AddDays(4),
+                Items = new List<GarmentLeftoverWarehouseReceiptFinishedGoodItemViewModel>()
+                    {
+                        new GarmentLeftoverWarehouseReceiptFinishedGoodItemViewModel()
+                    }
+            };
+            var result1 = viewModel1.Validate(null);
+            Assert.True(result1.Count() > 0);
+
+
+            GarmentLeftoverWarehouseReceiptFinishedGoodViewModel viewModel2 = new GarmentLeftoverWarehouseReceiptFinishedGoodViewModel()
+            {
+                UnitFrom = null,
+                ExpenditureGoodNo = null,
+                ReceiptDate = DateTimeOffset.Now.AddDays(4)
+            };
+            var result2 = viewModel2.Validate(null);
+            Assert.True(result2.Count() > 0);
         }
+
+        [Fact]
+        private async Task TestPatchError()
+        {
+            HttpService httpService = new HttpService(new IdentityService());
+            await Assert.ThrowsAnyAsync<Exception>(() => httpService.PutAsync(null, null));
+        }
+
+        
     }
 }

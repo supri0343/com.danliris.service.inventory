@@ -12,6 +12,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -29,6 +30,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
 
         private readonly IGarmentLeftoverWarehouseStockService StockService;
 
+        private readonly string GarmentExpenditureGoodUri;
+
         public GarmentLeftoverWarehouseReceiptFinishedGoodService(InventoryDbContext dbContext, IServiceProvider serviceProvider)
         {
             DbContext = dbContext;
@@ -38,6 +41,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
             IdentityService = (IIdentityService)serviceProvider.GetService(typeof(IIdentityService));
 
             StockService = (IGarmentLeftoverWarehouseStockService)serviceProvider.GetService(typeof(IGarmentLeftoverWarehouseStockService));
+            GarmentExpenditureGoodUri = APIEndpoint.GarmentProduction + "expenditure-goods/";
         }
 
         public GarmentLeftoverWarehouseReceiptFinishedGood MapToModel(GarmentLeftoverWarehouseReceiptFinishedGoodViewModel viewModel)
@@ -228,6 +232,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
                     };
                     await StockService.StockIn(stock, model.FinishedGoodReceiptNo);
 
+                    await UpdateExpenditureGoodIsReceived(model.ExpenditureGoodId, "true");
+
                     transaction.Commit();
                 }
                 catch (Exception e)
@@ -299,6 +305,9 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
                         RONo = model.RONo,
                         Quantity = model.Items.Sum(i => i.Quantity)
                     };
+
+                    await UpdateExpenditureGoodIsReceived(model.ExpenditureGoodId, "false");
+
                     await StockService.StockOut(stock, model.FinishedGoodReceiptNo);
 
                     transaction.Commit();
@@ -325,6 +334,24 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
             var curNo = $"{prefix}{(lastNo + 1).ToString("D4")}";
 
             return curNo;
+        }
+
+        private async Task UpdateExpenditureGoodIsReceived(Guid ExGoodId, string IsReceived)
+        {
+
+            var stringContentRequest = IsReceived;
+            var httpContentRequest = new StringContent(stringContentRequest, Encoding.UTF8, General.JsonMediaType);
+
+            var httpService = (IHttpService)ServiceProvider.GetService(typeof(IHttpService));
+
+            var response = await httpService.PutAsync(GarmentExpenditureGoodUri + "update-received/" + ExGoodId, httpContentRequest);
+            if (!response.IsSuccessStatusCode)
+            {
+                var contentResponse = await response.Content.ReadAsStringAsync();
+                Dictionary<string, object> result = JsonConvert.DeserializeObject<Dictionary<string, object>>(contentResponse) ?? new Dictionary<string, object>();
+
+                throw new Exception(string.Concat("Error from '", GarmentExpenditureGoodUri, "' : ", (string)result.GetValueOrDefault("error") ?? "- ", ". Message : ", (string)result.GetValueOrDefault("message") ?? "- ", ". Status : ", response.StatusCode, "."));
+            }
         }
     }
 }
