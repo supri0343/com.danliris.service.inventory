@@ -30,7 +30,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.S
             IdentityService = (IIdentityService)serviceProvider.GetService(typeof(IIdentityService));
         }
 
-        public async Task<int> StockIn(GarmentLeftoverWarehouseStock stock, string StockReferenceNo)
+        public async Task<int> StockIn(GarmentLeftoverWarehouseStock stock, string StockReferenceNo, int StockReferenceId, int StockReferenceItemId)
         {
             try
             {
@@ -63,6 +63,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.S
                     var stockHistory = new GarmentLeftoverWarehouseStockHistory
                     {
                         StockReferenceNo = StockReferenceNo,
+                        StockReferenceId = StockReferenceId,
+                        StockReferenceItemId = StockReferenceItemId,
                         StockType = GarmentLeftoverWarehouseStockTypeEnum.IN,
                         BeforeQuantity = 0,
                         Quantity = stock.Quantity,
@@ -86,6 +88,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.S
                     {
                         StockId = existingStock.Id,
                         StockReferenceNo = StockReferenceNo,
+                        StockReferenceId = StockReferenceId,
+                        StockReferenceItemId = StockReferenceItemId,
                         StockType = GarmentLeftoverWarehouseStockTypeEnum.IN,
                         BeforeQuantity = beforeQuantity,
                         Quantity = stock.Quantity,
@@ -106,7 +110,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.S
             }
         }
 
-        public async Task<int> StockOut(GarmentLeftoverWarehouseStock stock, string StockReferenceNo)
+        public async Task<int> StockOut(GarmentLeftoverWarehouseStock stock, string StockReferenceNo, int StockReferenceId, int StockReferenceItemId)
         {
             try
             {
@@ -140,6 +144,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.S
                 {
                     StockId = existingStock.Id,
                     StockReferenceNo = StockReferenceNo,
+                    StockReferenceId = StockReferenceId,
+                    StockReferenceItemId = StockReferenceItemId,
                     StockType = GarmentLeftoverWarehouseStockTypeEnum.OUT,
                     BeforeQuantity = beforeQuantity,
                     Quantity = -stock.Quantity,

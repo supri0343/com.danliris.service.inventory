@@ -67,8 +67,8 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
                 Quantity = 1
             };
 
-            var result = await service.StockIn(stock, "StockReferenceNo");
-            await service.StockOut(stock, "StockReferenceNo");
+            var result = await service.StockIn(stock, "StockReferenceNo", 1, 1);
+            await service.StockOut(stock, "StockReferenceNo", 1, 1);
 
             Assert.NotEqual(0, result);
         }
@@ -88,8 +88,8 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
                 Quantity = 1
             };
 
-            var result = await service.StockIn(stock, "StockReferenceNo");
-            await service.StockOut(stock, "StockReferenceNo");
+            var result = await service.StockIn(stock, "StockReferenceNo", 1, 1);
+            await service.StockOut(stock, "StockReferenceNo", 1, 1);
 
             Assert.NotEqual(0, result);
         }
@@ -108,8 +108,8 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
                 Quantity = 1
             };
 
-            var result = await service.StockIn(stock, "StockReferenceNo");
-            await service.StockOut(stock, "StockReferenceNo");
+            var result = await service.StockIn(stock, "StockReferenceNo", 1, 1);
+            await service.StockOut(stock, "StockReferenceNo", 1, 1);
 
             Assert.NotEqual(0, result);
         }
@@ -130,8 +130,8 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
                 Quantity = 1
             };
 
-            var result = await service.StockIn(stock, "StockReferenceNo");
-            await service.StockOut(stock, "StockReferenceNo");
+            var result = await service.StockIn(stock, "StockReferenceNo", 1, 1);
+            await service.StockOut(stock, "StockReferenceNo", 1, 1);
 
             Assert.NotEqual(0, result);
         }
@@ -141,7 +141,7 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
         {
             GarmentLeftoverWarehouseStockService service = new GarmentLeftoverWarehouseStockService(_dbContext(GetCurrentMethod()), GetServiceProvider().Object);
 
-            var result = await Assert.ThrowsAnyAsync<Exception>(() => service.StockOut(null, "StockReferenceNo"));
+            var result = await Assert.ThrowsAnyAsync<Exception>(() => service.StockOut(null, "StockReferenceNo", 1, 1));
 
             Assert.NotNull(result);
         }

@@ -9,6 +9,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Models.GarmentLeftoverWarehouse.Sto
         public GarmentLeftoverWarehouseStock Stock { get; set; }
 
         public string StockReferenceNo { get; set; }
+        public int StockReferenceId { get; set; }
+        public int StockReferenceItemId { get; set; }
 
         public GarmentLeftoverWarehouseStockTypeEnum StockType { get; set; }
 
