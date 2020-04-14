@@ -16,8 +16,6 @@ namespace Com.Danliris.Service.Inventory.Lib.Models.GarmentLeftoverWarehouse.Sto
 
         public string RONo { get; set; }
 
-        public double? KG { get; set; }
-
         public long? ProductId { get; set; }
         public string ProductCode { get; set; }
         public string ProductName { get; set; }

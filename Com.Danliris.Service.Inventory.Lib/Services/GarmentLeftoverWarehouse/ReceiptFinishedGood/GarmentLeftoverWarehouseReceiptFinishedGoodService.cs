@@ -221,16 +221,19 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
 
                     Created = await DbContext.SaveChangesAsync();
 
-                    GarmentLeftoverWarehouseStock stock = new GarmentLeftoverWarehouseStock
+                    foreach (var item in model.Items)
                     {
-                        ReferenceType = GarmentLeftoverWarehouseStockReferenceTypeEnum.FINISHED_GOOD,
-                        UnitId = model.UnitFromId,
-                        UnitCode = model.UnitFromCode,
-                        UnitName = model.UnitFromName,
-                        RONo = model.RONo,
-                        Quantity = model.Items.Sum(i => i.Quantity)
-                    };
-                    await StockService.StockIn(stock, model.FinishedGoodReceiptNo);
+                        GarmentLeftoverWarehouseStock stock = new GarmentLeftoverWarehouseStock
+                        {
+                            ReferenceType = GarmentLeftoverWarehouseStockReferenceTypeEnum.FINISHED_GOOD,
+                            UnitId = model.UnitFromId,
+                            UnitCode = model.UnitFromCode,
+                            UnitName = model.UnitFromName,
+                            RONo = model.RONo,
+                            Quantity = item.Quantity
+                        };
+                        await StockService.StockIn(stock, model.FinishedGoodReceiptNo, model.Id, item.Id);
+                    }
 
                     await UpdateExpenditureGoodIsReceived(model.ExpenditureGoodId, "true");
 
@@ -296,19 +299,22 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
 
                     Deleted = await DbContext.SaveChangesAsync();
 
-                    GarmentLeftoverWarehouseStock stock = new GarmentLeftoverWarehouseStock
+                    foreach (var item in model.Items)
                     {
-                        ReferenceType = GarmentLeftoverWarehouseStockReferenceTypeEnum.FINISHED_GOOD,
-                        UnitId = model.UnitFromId,
-                        UnitCode = model.UnitFromCode,
-                        UnitName = model.UnitFromName,
-                        RONo = model.RONo,
-                        Quantity = model.Items.Sum(i => i.Quantity)
-                    };
+                        GarmentLeftoverWarehouseStock stock = new GarmentLeftoverWarehouseStock
+                        {
+                            ReferenceType = GarmentLeftoverWarehouseStockReferenceTypeEnum.FINISHED_GOOD,
+                            UnitId = model.UnitFromId,
+                            UnitCode = model.UnitFromCode,
+                            UnitName = model.UnitFromName,
+                            RONo = model.RONo,
+                            Quantity = item.Quantity
+                        };
+
+                        await StockService.StockOut(stock, model.FinishedGoodReceiptNo, model.Id, item.Id);
+                    }
 
                     await UpdateExpenditureGoodIsReceived(model.ExpenditureGoodId, "false");
-
-                    await StockService.StockOut(stock, model.FinishedGoodReceiptNo);
 
                     transaction.Commit();
                 }
