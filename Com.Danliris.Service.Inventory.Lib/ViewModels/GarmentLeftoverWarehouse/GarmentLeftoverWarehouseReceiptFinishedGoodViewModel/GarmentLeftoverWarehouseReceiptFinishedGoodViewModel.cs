@@ -72,13 +72,13 @@ namespace Com.Danliris.Service.Inventory.Lib.ViewModels.GarmentLeftoverWarehouse
 
                     if (item.Size == null)
                     {
-                        errorItem["Size"] = "Produk tidak boleh kossong";
+                        errorItem["Size"] = "Produk tidak boleh kosong";
                         errorCount++;
                     }
 
                     if (item.Uom == null)
                     {
-                        errorItem["Uom"] = "Satuan tidak boleh kossong";
+                        errorItem["Uom"] = "Satuan tidak boleh kosong";
                         errorCount++;
                     }
 
