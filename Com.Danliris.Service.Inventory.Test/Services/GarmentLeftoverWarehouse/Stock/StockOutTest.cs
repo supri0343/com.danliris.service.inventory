@@ -105,7 +105,6 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
                 UnitId = 1,
                 UnitCode = "UnitFromCode",
                 UnitName = "UnitFromName",
-                KG = 1.5,
                 Quantity = 1
             };
 
