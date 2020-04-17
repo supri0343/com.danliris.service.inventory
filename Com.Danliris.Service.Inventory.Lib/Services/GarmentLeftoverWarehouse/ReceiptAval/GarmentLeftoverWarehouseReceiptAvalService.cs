@@ -200,7 +200,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
                         UnitName = model.UnitFromName,
                         Quantity = model.TotalAval
                     };
-                    await StockService.StockIn(stock, model.AvalReceiptNo);
+                    await StockService.StockIn(stock, model.AvalReceiptNo, model.Id, 0);
 
                     await UpdateAvalProductIsReceived(avalItemIds, true);
 
@@ -244,7 +244,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
                             UnitName = model.UnitFromName,
                             Quantity = existingModel.TotalAval
                         };
-                        await StockService.StockOut(stock, existingModel.AvalReceiptNo);
+                        await StockService.StockOut(stock, existingModel.AvalReceiptNo, model.Id, 0);
 
                         GarmentLeftoverWarehouseStock stock1 = new GarmentLeftoverWarehouseStock
                         {
@@ -254,7 +254,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
                             UnitName = model.UnitFromName,
                             Quantity = model.TotalAval
                         };
-                        await StockService.StockIn(stock1, model.AvalReceiptNo);
+                        await StockService.StockIn(stock1, model.AvalReceiptNo, model.Id, 0);
                         existingModel.TotalAval = model.TotalAval;
                     }
 
@@ -300,7 +300,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
                         UnitName = model.UnitFromName,
                         Quantity = model.TotalAval
                     };
-                    await StockService.StockOut(stock, model.AvalReceiptNo);
+                    await StockService.StockOut(stock, model.AvalReceiptNo, model.Id, 0);
                     await UpdateAvalProductIsReceived(avalItemIds, false);
 
                     transaction.Commit();

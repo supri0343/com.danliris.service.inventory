@@ -67,8 +67,8 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
                 Quantity = 1
             };
 
-            var result = await service.StockIn(stock, "StockReferenceNo");
-            await service.StockIn(stock, "StockReferenceNo");
+            var result = await service.StockIn(stock, "StockReferenceNo", 1, 1);
+            await service.StockIn(stock, "StockReferenceNo", 1, 1);
 
             Assert.NotEqual(0, result);
         }
@@ -88,8 +88,8 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
                 Quantity = 1
             };
 
-            var result = await service.StockIn(stock, "StockReferenceNo");
-            await service.StockIn(stock, "StockReferenceNo");
+            var result = await service.StockIn(stock, "StockReferenceNo", 1, 1);
+            await service.StockIn(stock, "StockReferenceNo", 1, 1);
 
             Assert.NotEqual(0, result);
         }
@@ -105,12 +105,11 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
                 UnitId = 1,
                 UnitCode = "UnitFromCode",
                 UnitName = "UnitFromName",
-                KG = 1.5,
                 Quantity = 1
             };
 
-            var result = await service.StockIn(stock, "StockReferenceNo");
-            await service.StockIn(stock, "StockReferenceNo");
+            var result = await service.StockIn(stock, "StockReferenceNo", 1, 1);
+            await service.StockIn(stock, "StockReferenceNo", 1, 1);
 
             Assert.NotEqual(0, result);
         }
@@ -131,8 +130,8 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
                 Quantity = 1
             };
 
-            var result = await service.StockIn(stock, "StockReferenceNo");
-            await service.StockIn(stock, "StockReferenceNo");
+            var result = await service.StockIn(stock, "StockReferenceNo", 1, 1);
+            await service.StockIn(stock, "StockReferenceNo", 1, 1);
 
             Assert.NotEqual(0, result);
         }
@@ -142,7 +141,7 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
         {
             GarmentLeftoverWarehouseStockService service = new GarmentLeftoverWarehouseStockService(_dbContext(GetCurrentMethod()), GetServiceProvider().Object);
 
-            var result = await Assert.ThrowsAnyAsync<Exception>(() => service.StockIn(null, "StockReferenceNo"));
+            var result = await Assert.ThrowsAnyAsync<Exception>(() => service.StockIn(null, "StockReferenceNo", 1, 1));
 
             Assert.NotNull(result);
         }

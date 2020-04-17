@@ -218,7 +218,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
                             PONo = item.POSerialNumber,
                             Quantity = item.Quantity
                         };
-                        await StockService.StockIn(stock, model.ReceiptNoteNo);
+                        await StockService.StockIn(stock, model.ReceiptNoteNo, model.Id, item.Id);
                     }
 
                     await UpdateUnitExpenditureNoteIsReceived(model.UENId, true);
@@ -296,7 +296,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
                             PONo = item.POSerialNumber,
                             Quantity = item.Quantity
                         };
-                        await StockService.StockOut(stock, model.ReceiptNoteNo);
+                        await StockService.StockOut(stock, model.ReceiptNoteNo, model.Id, item.Id);
                     }
 
                     await UpdateUnitExpenditureNoteIsReceived(model.UENId, false);
