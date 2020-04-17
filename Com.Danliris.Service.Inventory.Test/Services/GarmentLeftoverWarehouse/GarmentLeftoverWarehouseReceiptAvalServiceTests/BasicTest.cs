@@ -328,6 +328,9 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
                 Items = new List<GarmentLeftoverWarehouseReceiptAvalItemViewModel>()
                 {
                     new GarmentLeftoverWarehouseReceiptAvalItemViewModel()
+                    {
+                        RONo="error"
+                    }
                 }
             };
             var result1 = viewModel1.Validate(null);
