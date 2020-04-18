@@ -24,7 +24,7 @@ namespace Com.Danliris.Service.Inventory.Lib.ViewModels.GarmentLeftoverWarehouse
         public string ExpenditureDesc { get; set; }
         public DateTimeOffset ExpenditureDate { get; set; }
         public string Description { get; set; }
-        public DateTimeOffset ReceiptDate { get; set; }
+        public DateTimeOffset? ReceiptDate { get; set; }
         public List<GarmentLeftoverWarehouseReceiptFinishedGoodItemViewModel> Items { get; set; }
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)

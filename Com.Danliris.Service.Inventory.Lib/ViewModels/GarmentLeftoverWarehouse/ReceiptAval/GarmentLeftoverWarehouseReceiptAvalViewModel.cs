@@ -12,7 +12,7 @@ namespace Com.Danliris.Service.Inventory.Lib.ViewModels.GarmentLeftoverWarehouse
         public string AvalReceiptNo { get; set; }
 
         public UnitViewModel UnitFrom { get; set; }
-        public DateTimeOffset ReceiptDate { get; set; }
+        public DateTimeOffset? ReceiptDate { get; set; }
         public string AvalType { get; set; }
         public string Remark { get; set; }
         public double TotalAval { get; set; }
@@ -52,6 +52,11 @@ namespace Com.Danliris.Service.Inventory.Lib.ViewModels.GarmentLeftoverWarehouse
                     if (string.IsNullOrWhiteSpace(item.RONo))
                     {
                         errorItem["RONo"] = "Nomor RO tidak boleh kosong";
+                        errorCount++;
+                    }
+                    else if(item.RONo == "error")
+                    {
+                        errorItem["RONo"] = "Item harus dipilih";
                         errorCount++;
                     }
 
