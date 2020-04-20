@@ -54,6 +54,15 @@ namespace Com.Danliris.Service.Inventory.Test.DataUtils.GarmentLeftoverWarehouse
             return data;
         }
 
+        public async Task<GarmentLeftoverWarehouseReceiptAval> GetTestDataACC()
+        {
+            GarmentLeftoverWarehouseReceiptAval data = GetNewData();
+            data.AvalType = "AVAL ACCESSORIES";
+            await Service.CreateAsync(data);
+
+            return data;
+        }
+
         public GarmentLeftoverWarehouseReceiptAval CopyData(GarmentLeftoverWarehouseReceiptAval oldData)
         {
             GarmentLeftoverWarehouseReceiptAval newData = new GarmentLeftoverWarehouseReceiptAval();
