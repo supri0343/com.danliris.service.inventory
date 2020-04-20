@@ -211,6 +211,7 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
             var newData = dataUtil.CopyData(oldData);
             newData.ReceiptDate = DateTimeOffset.Now;
             newData.Remark = "New Remark";
+            newData.TotalAval = oldData.TotalAval + 3;
 
             var result = await service.UpdateAsync(newData.Id, newData);
 
