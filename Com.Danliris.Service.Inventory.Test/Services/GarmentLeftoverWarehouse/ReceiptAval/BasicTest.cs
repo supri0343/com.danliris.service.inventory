@@ -115,7 +115,7 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
         }
 
         [Fact]
-        public async Task Create_Success()
+        public async Task Create_Success_FABRIC()
         {
             var serviceProvider = GetServiceProvider();
 
@@ -135,6 +135,28 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
 
             var data = _dataUtil(service).GetNewData();
 
+            var result = await service.CreateAsync(data);
+
+            Assert.NotEqual(0, result);
+        }
+
+        [Fact]
+        public async Task Create_Success_ACC()
+        {
+            var serviceProvider = GetServiceProvider();
+
+            var stockServiceMock = new Mock<IGarmentLeftoverWarehouseStockService>();
+            stockServiceMock.Setup(s => s.StockIn(It.IsAny<GarmentLeftoverWarehouseStock>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>()))
+                .ReturnsAsync(1);
+
+            serviceProvider
+                .Setup(x => x.GetService(typeof(IGarmentLeftoverWarehouseStockService)))
+                .Returns(stockServiceMock.Object);
+
+            GarmentLeftoverWarehouseReceiptAvalService service = new GarmentLeftoverWarehouseReceiptAvalService(_dbContext(GetCurrentMethod()), serviceProvider.Object);
+
+            var data = _dataUtil(service).GetNewData();
+            data.AvalType = "AVAL ACCESSORIES";
             var result = await service.CreateAsync(data);
 
             Assert.NotEqual(0, result);
@@ -189,6 +211,7 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
             var newData = dataUtil.CopyData(oldData);
             newData.ReceiptDate = DateTimeOffset.Now;
             newData.Remark = "New Remark";
+            newData.TotalAval = oldData.TotalAval + 3;
 
             var result = await service.UpdateAsync(newData.Id, newData);
 
@@ -203,7 +226,7 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
         }
 
         [Fact]
-        public async Task Delete_Success()
+        public async Task Delete_Success_FABRIC()
         {
             var serviceProvider = GetServiceProvider();
 
@@ -222,6 +245,32 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
             GarmentLeftoverWarehouseReceiptAvalService service = new GarmentLeftoverWarehouseReceiptAvalService(_dbContext(GetCurrentMethod()), serviceProvider.Object);
 
             var data = await _dataUtil(service).GetTestData();
+            
+            var result = await service.DeleteAsync(data.Id);
+
+            Assert.NotEqual(0, result);
+        }
+
+        [Fact]
+        public async Task Delete_Success_ACC()
+        {
+            var serviceProvider = GetServiceProvider();
+
+            var stockServiceMock = new Mock<IGarmentLeftoverWarehouseStockService>();
+            stockServiceMock.Setup(s => s.StockIn(It.IsAny<GarmentLeftoverWarehouseStock>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>()))
+                .ReturnsAsync(1);
+
+            serviceProvider
+                .Setup(x => x.GetService(typeof(IGarmentLeftoverWarehouseStockService)))
+                .Returns(stockServiceMock.Object);
+
+            serviceProvider
+                .Setup(x => x.GetService(typeof(IHttpService)))
+                .Returns(new HttpTestService());
+
+            GarmentLeftoverWarehouseReceiptAvalService service = new GarmentLeftoverWarehouseReceiptAvalService(_dbContext(GetCurrentMethod()), serviceProvider.Object);
+
+            var data = await _dataUtil(service).GetTestDataACC();
 
             var result = await service.DeleteAsync(data.Id);
 
@@ -311,6 +360,7 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
             {
                 UnitFrom = null,
                 TotalAval = 0,
+                AvalType="AVAL FABRIC",
                 ReceiptDate = DateTimeOffset.MinValue,
                 Items = new List<GarmentLeftoverWarehouseReceiptAvalItemViewModel>()
                 {
@@ -324,6 +374,7 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
             {
                 UnitFrom = null,
                 TotalAval = 0,
+                AvalType = "AVAL FABRIC",
                 ReceiptDate = DateTimeOffset.Now.AddDays(4),
                 Items = new List<GarmentLeftoverWarehouseReceiptAvalItemViewModel>()
                 {
@@ -335,6 +386,24 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
             };
             var result1 = viewModel1.Validate(null);
             Assert.True(result1.Count() > 0);
+
+            GarmentLeftoverWarehouseReceiptAvalViewModel viewModel2 = new GarmentLeftoverWarehouseReceiptAvalViewModel()
+            {
+                UnitFrom = null,
+                AvalType = "AVAL ACCESSORIES",
+                ReceiptDate = DateTimeOffset.Now.AddDays(4),
+                Items = new List<GarmentLeftoverWarehouseReceiptAvalItemViewModel>()
+                {
+                    new GarmentLeftoverWarehouseReceiptAvalItemViewModel()
+                    {
+                        Product=null,
+                        Quantity=0,
+                        Uom=null
+                    }
+                }
+            };
+            var result2 = viewModel2.Validate(null);
+            Assert.True(result2.Count() > 0);
         }
     }
 }

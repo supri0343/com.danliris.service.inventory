@@ -32,7 +32,7 @@ namespace Com.Danliris.Service.Inventory.Lib.ViewModels.GarmentLeftoverWarehouse
             {
                 yield return new ValidationResult("Tanggal Penerimaan tidak boleh lebih dari ini", new List<string> { "ReceiptDate" });
             }
-            if (TotalAval <=0)
+            if (AvalType=="AVAL FABRIC" && TotalAval <= 0)
             {
                 yield return new ValidationResult("Total Aval Fabric (KG) harus lebih dari 0", new List<string> { "TotalAval" });
             }
@@ -48,16 +48,36 @@ namespace Com.Danliris.Service.Inventory.Lib.ViewModels.GarmentLeftoverWarehouse
                 foreach (var item in Items)
                 {
                     Dictionary<string, string> errorItem = new Dictionary<string, string>();
-
-                    if (string.IsNullOrWhiteSpace(item.RONo))
+                    if(AvalType == "AVAL FABRIC")
                     {
-                        errorItem["RONo"] = "Nomor RO tidak boleh kosong";
-                        errorCount++;
+                        if (string.IsNullOrWhiteSpace(item.RONo))
+                        {
+                            errorItem["RONo"] = "Nomor RO tidak boleh kosong";
+                            errorCount++;
+                        }
+                        else if (item.RONo == "error")
+                        {
+                            errorItem["RONo"] = "Item harus dipilih";
+                            errorCount++;
+                        }
                     }
-                    else if(item.RONo == "error")
+                    else
                     {
-                        errorItem["RONo"] = "Item harus dipilih";
-                        errorCount++;
+                        if (item.Product == null)
+                        {
+                            errorItem["Product"] = "Barang tidak boleh kosong";
+                            errorCount++;
+                        }
+                        if (item.Uom == null)
+                        {
+                            errorItem["Uom"] = "Satuan tidak boleh kosong";
+                            errorCount++;
+                        }
+                        if (item.Quantity <=0)
+                        {
+                            errorItem["Quantity"] = "Jumlah harus lebih dari 0";
+                            errorCount++;
+                        }
                     }
 
                     errorItems.Add(errorItem);
