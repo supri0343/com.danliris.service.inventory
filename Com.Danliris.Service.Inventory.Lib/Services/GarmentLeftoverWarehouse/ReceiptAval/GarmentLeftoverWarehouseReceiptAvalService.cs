@@ -221,9 +221,9 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
                                 ProductName=item.ProductName,
                                 ProductId=item.ProductId,
                                 UomId=item.UomId,
-                                UomUnit=item.UomUnit
+                                UomUnit=item.UomUnit,
                             };
-                            await StockService.StockIn(stock, model.AvalReceiptNo, model.Id, 0);
+                            await StockService.StockIn(stock, model.AvalReceiptNo, model.Id, item.Id);
                         }
                             
                     }
@@ -351,7 +351,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
                                 UomId = item.UomId,
                                 UomUnit = item.UomUnit
                             };
-                            await StockService.StockOut(stock, model.AvalReceiptNo, model.Id, 0);
+                            await StockService.StockOut(stock, model.AvalReceiptNo, model.Id, item.Id);
                         }
 
                     }
