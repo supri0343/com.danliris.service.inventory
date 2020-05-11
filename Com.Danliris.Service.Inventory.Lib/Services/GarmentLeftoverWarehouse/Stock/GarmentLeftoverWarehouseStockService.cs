@@ -1,7 +1,12 @@
 ﻿using Com.Danliris.Service.Inventory.Lib.Enums;
+using Com.Danliris.Service.Inventory.Lib.Helpers;
 using Com.Danliris.Service.Inventory.Lib.Models.GarmentLeftoverWarehouse.Stock;
+using Com.Danliris.Service.Inventory.Lib.ViewModels;
+using Com.Danliris.Service.Inventory.Lib.ViewModels.GarmentLeftoverWarehouse.Stock;
 using Com.Moonlay.Models;
+using Com.Moonlay.NetCore.Lib;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,6 +35,77 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.S
             IdentityService = (IIdentityService)serviceProvider.GetService(typeof(IIdentityService));
         }
 
+        public GarmentLeftoverWarehouseStockViewModel MapToViewModel(GarmentLeftoverWarehouseStock model)
+        {
+            GarmentLeftoverWarehouseStockViewModel viewModel = new GarmentLeftoverWarehouseStockViewModel();
+            PropertyCopier<GarmentLeftoverWarehouseStock, GarmentLeftoverWarehouseStockViewModel>.Copy(model, viewModel);
+
+            viewModel.Unit = new UnitViewModel
+            {
+                Id = model.UnitId.ToString(),
+                Code = model.UnitCode,
+                Name = model.UnitName
+            };
+
+            viewModel.Product = new ProductViewModel
+            {
+                Id = model.ProductId.ToString(),
+                Code = model.ProductCode,
+                Name = model.ProductName
+            };
+
+            viewModel.Uom = new UomViewModel
+            {
+                Id = model.UomId.ToString(),
+                Unit = model.UomUnit
+            };
+
+            if (model.Histories != null)
+            {
+                viewModel.Histories = new List<GarmentLeftoverWarehouseStockHistoryViewModel>();
+                foreach (var modelHistory in model.Histories)
+                {
+                    GarmentLeftoverWarehouseStockHistoryViewModel viewModelHistory = new GarmentLeftoverWarehouseStockHistoryViewModel();
+                    PropertyCopier<GarmentLeftoverWarehouseStockHistory, GarmentLeftoverWarehouseStockHistoryViewModel>.Copy(modelHistory, viewModelHistory);
+                }
+            }
+
+            return viewModel;
+        }
+
+        public GarmentLeftoverWarehouseStock MapToModel(GarmentLeftoverWarehouseStockViewModel viewModel)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ReadResponse<GarmentLeftoverWarehouseStock> Read(int page, int size, string order, List<string> select, string keyword, string filter)
+        {
+            IQueryable<GarmentLeftoverWarehouseStock> Query = DbSetStock;
+
+            List<string> SearchAttributes = new List<string>()
+            {
+                 "PONo","RONo", "ProductCode", "ProductName", "UomUnit"
+            };
+            Query = QueryHelper<GarmentLeftoverWarehouseStock>.Search(Query, SearchAttributes, keyword);
+
+            Dictionary<string, object> FilterDictionary = JsonConvert.DeserializeObject<Dictionary<string, object>>(filter);
+            Query = QueryHelper<GarmentLeftoverWarehouseStock>.Filter(Query, FilterDictionary);
+
+            Dictionary<string, string> OrderDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(order);
+            Query = QueryHelper<GarmentLeftoverWarehouseStock>.Order(Query, OrderDictionary);
+
+            List<string> SelectedFields = (select != null && select.Count > 0) ? select : new List<string>()
+            {
+                "Id", "ReferenceType", "Unit", "PONo","RONo", "Product", "Uom", "Quantity"
+            };
+
+            Pageable<GarmentLeftoverWarehouseStock> pageable = new Pageable<GarmentLeftoverWarehouseStock>(Query, page - 1, size);
+            List<GarmentLeftoverWarehouseStock> Data = pageable.Data.ToList();
+            int TotalData = pageable.TotalCount;
+
+            return new ReadResponse<GarmentLeftoverWarehouseStock>(Data, TotalData, OrderDictionary, SelectedFields);
+        }
+
         public async Task<int> StockIn(GarmentLeftoverWarehouseStock stock, string StockReferenceNo, int StockReferenceId, int StockReferenceItemId)
         {
             try
@@ -41,7 +117,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.S
                 switch (stock.ReferenceType)
                 {
                     case GarmentLeftoverWarehouseStockReferenceTypeEnum.FABRIC:
-                        Query = Query.Where(w => w.PONo == stock.PONo);
+                        Query = Query.Where(w => w.PONo == stock.PONo && w.UomId == stock.UomId);
                         break;
                     case GarmentLeftoverWarehouseStockReferenceTypeEnum.FINISHED_GOOD:
                         Query = Query.Where(w => w.RONo == stock.RONo);
