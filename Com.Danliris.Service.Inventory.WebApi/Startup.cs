@@ -148,7 +148,11 @@ namespace Com.Danliris.Service.Inventory.WebApi
                 .AddMvcCore()
                 .AddApiExplorer()
                 .AddAuthorization()
-                .AddJsonOptions(options => options.SerializerSettings.ContractResolver = new DefaultContractResolver())
+                .AddJsonOptions(options =>
+                {
+                    options.SerializerSettings.Converters.Add(new StringEnumConverter());
+                    options.SerializerSettings.ContractResolver = new DefaultContractResolver();
+                })
                 .AddJsonFormatters();
 
             #region Swagger
