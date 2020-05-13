@@ -106,6 +106,11 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.S
             return new ReadResponse<GarmentLeftoverWarehouseStock>(Data, TotalData, OrderDictionary, SelectedFields);
         }
 
+        public GarmentLeftoverWarehouseStock ReadById(int Id)
+        {
+            return DbSetStock.Where(s => s.Id == Id).FirstOrDefault();
+        }
+
         public async Task<int> StockIn(GarmentLeftoverWarehouseStock stock, string StockReferenceNo, int StockReferenceId, int StockReferenceItemId)
         {
             try
