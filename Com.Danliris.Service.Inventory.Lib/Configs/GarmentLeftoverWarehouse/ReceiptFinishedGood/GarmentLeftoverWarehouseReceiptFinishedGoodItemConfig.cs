@@ -7,7 +7,7 @@ using System.Text;
 
 namespace Com.Danliris.Service.Inventory.Lib.Configs.GarmentLeftoverWarehouse.GarmentLeftoverWarehouseReceiptFinishedGoodConfigs
 {
-    class GarmentLeftoverWarehouseReceiptFinishedGoodItemConfig : IEntityTypeConfiguration<GarmentLeftoverWarehouseReceiptFinishedGoodItem>
+    public class GarmentLeftoverWarehouseReceiptFinishedGoodItemConfig : IEntityTypeConfiguration<GarmentLeftoverWarehouseReceiptFinishedGoodItem>
     {
         public void Configure(EntityTypeBuilder<GarmentLeftoverWarehouseReceiptFinishedGoodItem> builder)
         {
