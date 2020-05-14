@@ -296,6 +296,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
                             UnitCode = model.UnitFromCode,
                             UnitName = model.UnitFromName,
                             PONo = item.POSerialNumber,
+                            UomId = item.UomId,
+                            UomUnit = item.UomUnit,
                             Quantity = item.Quantity
                         };
                         await StockService.StockOut(stock, model.ReceiptNoteNo, model.Id, item.Id);

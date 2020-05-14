@@ -11,6 +11,7 @@ using Moq;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -73,6 +74,32 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
             var result = service.Read(1, 1, "{}", new List<string>(), "", "{}");
 
             Assert.NotEmpty(result.Data);
+        }
+
+        [Fact]
+        public async Task ReadById_Success()
+        {
+            GarmentLeftoverWarehouseStockService service = new GarmentLeftoverWarehouseStockService(_dbContext(GetCurrentMethod()), GetServiceProvider().Object);
+
+            GarmentLeftoverWarehouseStock stock = new GarmentLeftoverWarehouseStock
+            {
+                ReferenceType = GarmentLeftoverWarehouseStockReferenceTypeEnum.FABRIC,
+                UnitId = 1,
+                UnitCode = "UnitFromCode",
+                UnitName = "UnitFromName",
+                PONo = "POSerialNumber",
+                Quantity = 1
+            };
+
+            await service.StockIn(stock, "StockReferenceNo", 1, 1);
+            var result = service.Read(1, 1, "{}", new List<string>(), "", "{}");
+
+            Assert.NotEmpty(result.Data);
+
+            var id = result.Data.Select(d => d.Id).First();
+            var data = service.ReadById(id);
+
+            Assert.NotNull(data);
         }
 
         [Fact]
