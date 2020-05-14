@@ -160,7 +160,7 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
             GarmentLeftoverWarehouseExpenditureFinishedGoodService service = new GarmentLeftoverWarehouseExpenditureFinishedGoodService(_dbContext(GetCurrentMethod()), serviceProvider.Object);
 
             var dataUtil = _dataUtil(service);
-            var oldData = await dataUtil.GetTestData();
+            var oldData = dataUtil.GetNewData();
 
             oldData.Items.Add(new GarmentLeftoverWarehouseExpenditureFinishedGoodItem
             {
