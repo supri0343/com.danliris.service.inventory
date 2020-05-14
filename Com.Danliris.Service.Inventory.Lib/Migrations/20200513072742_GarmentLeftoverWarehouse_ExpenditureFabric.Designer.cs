@@ -4,14 +4,16 @@ using Com.Danliris.Service.Inventory.Lib;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Com.Danliris.Service.Inventory.Lib.Migrations
 {
     [DbContext(typeof(InventoryDbContext))]
-    partial class InventoryDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200513072742_GarmentLeftoverWarehouse_ExpenditureFabric")]
+    partial class GarmentLeftoverWarehouse_ExpenditureFabric
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -528,138 +530,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Migrations
                     b.ToTable("FpReturnFromBuyerModel");
                 });
 
-            modelBuilder.Entity("Com.Danliris.Service.Inventory.Lib.Models.GarmentLeftoverWarehouse.ExpenditureFinishedGood.GarmentLeftoverWarehouseExpenditureFinishedGood", b =>
-             {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<bool>("Active");
-
-                    b.Property<string>("BuyerCode")
-                    .HasMaxLength(20);
-
-                    b.Property<long>("BuyerId");
-
-                    b.Property<string>("BuyerName")
-                        .HasMaxLength(100);
-
-                    b.Property<string>("Description")
-                        .HasMaxLength(4000);
-
-                    b.Property<DateTimeOffset>("ExpenditureDate");
-
-                    b.Property<string>("ExpenditureTo")
-                        .HasMaxLength(50);
-
-                    b.Property<string>("FinishedGoodExpenditureNo")
-                        .IsRequired()
-                        .HasMaxLength(25);
-
-                    b.Property<string>("OtherDescription")
-                    .HasMaxLength(100);
-
-                    b.Property<string>("_CreatedAgent")
-                        .IsRequired()
-                        .HasMaxLength(255);
-
-                    b.Property<string>("_CreatedBy")
-                        .IsRequired()
-                        .HasMaxLength(255);
-
-                    b.Property<DateTime>("_CreatedUtc");
-
-                    b.Property<string>("_DeletedAgent")
-                        .IsRequired()
-                        .HasMaxLength(255);
-
-                    b.Property<string>("_DeletedBy")
-                        .IsRequired()
-                        .HasMaxLength(255);
-
-                    b.Property<DateTime>("_DeletedUtc");
-
-                    b.Property<bool>("_IsDeleted");
-
-                    b.Property<string>("_LastModifiedAgent")
-                        .IsRequired()
-                        .HasMaxLength(255);
-
-                    b.Property<string>("_LastModifiedBy")
-                        .IsRequired()
-                        .HasMaxLength(255);
-
-                    b.Property<DateTime>("_LastModifiedUtc");
-
-                    b.HasKey("Id");
-                    b.HasIndex("FinishedGoodExpenditureNo")
-                        .IsUnique()
-                        .HasFilter("[_IsDeleted]=(0)");
-
-                    b.ToTable("GarmentLeftoverWarehouseExpenditureFinishedGoods");
-                });
-
-            modelBuilder.Entity("Com.Danliris.Service.Inventory.Lib.Models.GarmentLeftoverWarehouse.ExpenditureFinishedGood.GarmentLeftoverWarehouseExpenditureFinishedGoodItem", b =>
-            {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<bool>("Active");
-                    b.Property<double>("ExpenditureQuantity");
-
-                    b.Property<int>("FinishedGoodExpenditureId");
-
-                    b.Property<string>("RONo")
-                        .HasMaxLength(50);
-
-                    b.Property<string>("UnitCode")
-                        .HasMaxLength(20);
-
-                    b.Property<long>("UnitId");
-
-                    b.Property<string>("UnitName")
-                    .HasMaxLength(255);
-
-                    b.Property<string>("_CreatedAgent")
-                        .IsRequired()
-                        .HasMaxLength(255);
-
-                    b.Property<string>("_CreatedBy")
-                        .IsRequired()
-                        .HasMaxLength(255);
-
-                    b.Property<DateTime>("_CreatedUtc");
-
-                    b.Property<string>("_DeletedAgent")
-                        .IsRequired()
-                        .HasMaxLength(255);
-
-                    b.Property<string>("_DeletedBy")
-                        .IsRequired()
-                        .HasMaxLength(255);
-
-                    b.Property<DateTime>("_DeletedUtc");
-
-                    b.Property<bool>("_IsDeleted");
-
-                    b.Property<string>("_LastModifiedAgent")
-                        .IsRequired()
-                        .HasMaxLength(255);
-
-                    b.Property<string>("_LastModifiedBy")
-                        .IsRequired()
-                        .HasMaxLength(255);
-
-                    b.Property<DateTime>("_LastModifiedUtc");
-
-                    b.HasKey("Id");
-                    b.HasIndex("FinishedGoodExpenditureId");
-
-                    b.ToTable("GarmentLeftoverWarehouseExpenditureFinishedGoodItems");
-            });
             modelBuilder.Entity("Com.Danliris.Service.Inventory.Lib.Models.GarmentLeftoverWarehouse.ExpenditureFabric.GarmentLeftoverWarehouseExpenditureFabric", b =>
-
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -730,6 +601,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Migrations
                     b.Property<DateTime>("_LastModifiedUtc");
 
                     b.HasKey("Id");
+
                     b.HasIndex("ExpenditureNo")
                         .IsUnique()
                         .HasFilter("[_IsDeleted]=(0)");
@@ -738,13 +610,13 @@ namespace Com.Danliris.Service.Inventory.Lib.Migrations
                 });
 
             modelBuilder.Entity("Com.Danliris.Service.Inventory.Lib.Models.GarmentLeftoverWarehouse.ExpenditureFabric.GarmentLeftoverWarehouseExpenditureFabricItem", b =>
-
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<bool>("Active");
+
                     b.Property<int>("ExpenditureId");
 
                     b.Property<string>("PONo")
@@ -756,6 +628,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Migrations
 
                     b.Property<string>("UnitCode")
                         .HasMaxLength(25);
+
                     b.Property<long>("UnitId");
 
                     b.Property<string>("UnitName")
@@ -765,6 +638,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Migrations
 
                     b.Property<string>("UomUnit")
                         .HasMaxLength(100);
+
                     b.Property<string>("_CreatedAgent")
                         .IsRequired()
                         .HasMaxLength(255);
@@ -798,6 +672,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Migrations
                     b.Property<DateTime>("_LastModifiedUtc");
 
                     b.HasKey("Id");
+
                     b.HasIndex("ExpenditureId", "StockId")
                         .IsUnique()
                         .HasFilter("[_IsDeleted]=(0)");
@@ -2280,13 +2155,6 @@ namespace Com.Danliris.Service.Inventory.Lib.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("Com.Danliris.Service.Inventory.Lib.Models.GarmentLeftoverWarehouse.ExpenditureFinishedGood.GarmentLeftoverWarehouseExpenditureFinishedGoodItem", b =>
-                {
-                    b.HasOne("Com.Danliris.Service.Inventory.Lib.Models.GarmentLeftoverWarehouse.ExpenditureFinishedGood.GarmentLeftoverWarehouseExpenditureFinishedGood", "GarmentLeftoverWarehouseExpenditureFinishedGood")
-                        .WithMany("Items")
-                        .HasForeignKey("FinishedGoodExpenditureId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
             modelBuilder.Entity("Com.Danliris.Service.Inventory.Lib.Models.GarmentLeftoverWarehouse.ExpenditureFabric.GarmentLeftoverWarehouseExpenditureFabricItem", b =>
                 {
                     b.HasOne("Com.Danliris.Service.Inventory.Lib.Models.GarmentLeftoverWarehouse.ExpenditureFabric.GarmentLeftoverWarehouseExpenditureFabric", "GarmentLeftoverWarehouseExpenditureFabric")

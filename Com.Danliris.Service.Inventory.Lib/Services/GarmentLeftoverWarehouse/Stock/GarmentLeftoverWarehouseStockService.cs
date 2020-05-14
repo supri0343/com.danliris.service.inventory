@@ -106,6 +106,11 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.S
             return new ReadResponse<GarmentLeftoverWarehouseStock>(Data, TotalData, OrderDictionary, SelectedFields);
         }
 
+        public GarmentLeftoverWarehouseStock ReadById(int Id)
+        {
+            return DbSetStock.Where(s => s.Id == Id).FirstOrDefault();
+        }
+
         public async Task<int> StockIn(GarmentLeftoverWarehouseStock stock, string StockReferenceNo, int StockReferenceId, int StockReferenceItemId)
         {
             try
@@ -197,7 +202,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.S
                 switch (stock.ReferenceType)
                 {
                     case GarmentLeftoverWarehouseStockReferenceTypeEnum.FABRIC:
-                        Query = Query.Where(w => w.PONo == stock.PONo);
+                        Query = Query.Where(w => w.PONo == stock.PONo && w.UomId == stock.UomId);
                         break;
                     case GarmentLeftoverWarehouseStockReferenceTypeEnum.FINISHED_GOOD:
                         Query = Query.Where(w => w.RONo == stock.RONo);
