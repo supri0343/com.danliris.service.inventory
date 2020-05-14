@@ -159,6 +159,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.E
                     modelItem.UnitName = viewModelItem.Unit.Name;
                 }
 
+
                 model.Items.Add(modelItem);
             }
 
@@ -192,7 +193,6 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.E
                         Code = modelItem.UnitCode,
                         Name = modelItem.UnitName
                     };
-
 
                     viewModel.Items.Add(viewModelItem);
                 }
@@ -251,74 +251,83 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.E
 
         public async Task<int> UpdateAsync(int id, GarmentLeftoverWarehouseExpenditureFinishedGood model)
         {
-            int Updated = 0;
-
             using (var transaction = DbContext.Database.CurrentTransaction ?? DbContext.Database.BeginTransaction())
             {
                 try
                 {
-                    GarmentLeftoverWarehouseExpenditureFinishedGood existingModel = await DbSet.AsNoTracking().Include(a=>a.Items).AsNoTracking().Where(w => w.Id == id).AsNoTracking().FirstOrDefaultAsync();
-                    
 
+                    int Updated = 0;
 
-                    foreach (var newItem in model.Items)
+                    GarmentLeftoverWarehouseExpenditureFinishedGood existingModel = await ReadByIdAsync(id);
+                    if (existingModel.ExpenditureDate != model.ExpenditureDate)
                     {
-                        //var oldItem = existingModel.Items.Where(x => x.Id == newItem.Id).FirstOrDefault();
-                        if (newItem.Id == 0)
-                        {
-                            newItem.FlagForCreate(IdentityService.Username, UserAgent);
-                            newItem.FlagForUpdate(IdentityService.Username, UserAgent);
-                        }
-                        else
-                        {
-                            newItem.FlagForUpdate(IdentityService.Username, UserAgent);
-                        }
+                        existingModel.ExpenditureDate = model.ExpenditureDate;
                     }
+                    if (existingModel.Description != model.Description)
+                    {
+                        existingModel.Description = model.Description;
+                    }
+                    existingModel.FlagForUpdate(IdentityService.Username, UserAgent);
 
-                    model.FlagForUpdate(IdentityService.Username, UserAgent);
-
-                    foreach (var oldItem in existingModel.Items)
+                    foreach (var existingItem in existingModel.Items)
                     {
                         GarmentLeftoverWarehouseStock stockIn = new GarmentLeftoverWarehouseStock
                         {
                             ReferenceType = GarmentLeftoverWarehouseStockReferenceTypeEnum.FINISHED_GOOD,
-                            UnitId = oldItem.UnitId,
-                            UnitCode = oldItem.UnitCode,
-                            UnitName = oldItem.UnitName,
-                            RONo = oldItem.RONo,
-                            Quantity = oldItem.ExpenditureQuantity
+                            UnitId = existingItem.UnitId,
+                            UnitCode = existingItem.UnitCode,
+                            UnitName = existingItem.UnitName,
+                            RONo = existingItem.RONo,
+                            Quantity = existingItem.ExpenditureQuantity
                         };
 
-                        await StockService.StockIn(stockIn, existingModel.FinishedGoodExpenditureNo, existingModel.Id, oldItem.Id);
+                        await StockService.StockIn(stockIn, model.FinishedGoodExpenditureNo, model.Id, existingItem.Id);
                     }
-                    DbSet.Update(model);
 
-                    foreach (var oldItem in existingModel.Items)
+                    foreach (var existingItem in existingModel.Items)
                     {
-                        var newItem = model.Items.Where(x => x.Id == oldItem.Id).FirstOrDefault();
-                        if (newItem == null)
+                        var item = model.Items.FirstOrDefault(i => i.Id == existingItem.Id);
+                        if (item == null)
                         {
-                            oldItem.FlagForDelete(IdentityService.Username, UserAgent);
-                            DbContext.GarmentLeftoverWarehouseExpenditureFinishedGoodItems.Update(oldItem);
+                            existingItem.FlagForDelete(IdentityService.Username, UserAgent);
+                        }
+                        else
+                        {
+                            if (existingItem.ExpenditureQuantity != item.ExpenditureQuantity)
+                            {
+                                existingItem.ExpenditureQuantity = item.ExpenditureQuantity;
+                            }
+                            existingItem.FlagForUpdate(IdentityService.Username, UserAgent);
                         }
                     }
+
+                    foreach (var item in model.Items.Where(i => i.Id == 0))
+                    {
+                        item.FlagForCreate(IdentityService.Username, UserAgent);
+                        item.FlagForUpdate(IdentityService.Username, UserAgent);
+                        existingModel.Items.Add(item);
+                    }
+
                     Updated = await DbContext.SaveChangesAsync();
 
-                    foreach (var newItem in model.Items.Where(a=>a._IsDeleted==false))
+                    foreach (var item in model.Items)
                     {
-                        GarmentLeftoverWarehouseStock stockOut = new GarmentLeftoverWarehouseStock
+                        GarmentLeftoverWarehouseStock stock = new GarmentLeftoverWarehouseStock
                         {
                             ReferenceType = GarmentLeftoverWarehouseStockReferenceTypeEnum.FINISHED_GOOD,
-                            UnitId = newItem.UnitId,
-                            UnitCode = newItem.UnitCode,
-                            UnitName = newItem.UnitName,
-                            RONo = newItem.RONo,
-                            Quantity = newItem.ExpenditureQuantity
+                            UnitId = item.UnitId,
+                            UnitCode = item.UnitCode,
+                            UnitName = item.UnitName,
+                            RONo = item.RONo,
+                            Quantity = item.ExpenditureQuantity
                         };
-                        await StockService.StockOut(stockOut, model.FinishedGoodExpenditureNo, model.Id, newItem.Id);
+
+                        await StockService.StockOut(stock, model.FinishedGoodExpenditureNo, model.Id, item.Id);
                     }
 
                     transaction.Commit();
+
+                    return Updated;
                 }
                 catch (Exception e)
                 {
@@ -326,8 +335,6 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.E
                     throw e;
                 }
             }
-
-            return Updated;
         }
 
         private string GenerateNo(GarmentLeftoverWarehouseExpenditureFinishedGood model)
