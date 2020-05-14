@@ -7,6 +7,7 @@ namespace Com.Danliris.Service.Inventory.Lib.ViewModels.GarmentLeftoverWarehouse
 {
     public class GarmentLeftoverWarehouseExpenditureFinishedGoodItemViewModel : BasicViewModel
     {
+        public int StockId { get; set; }
         public UnitViewModel Unit { get; set; }
         public string RONo { get; set; }
         public double ExpenditureQuantity { get; set; }

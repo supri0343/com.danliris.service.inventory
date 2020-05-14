@@ -7,6 +7,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Models.GarmentLeftoverWarehouse.Exp
 {
     public class GarmentLeftoverWarehouseExpenditureFinishedGoodItem : StandardEntity
     {
+        public int StockId { get; set; }
 
         public long UnitId { get; set; }
         public string UnitCode { get; set; }
