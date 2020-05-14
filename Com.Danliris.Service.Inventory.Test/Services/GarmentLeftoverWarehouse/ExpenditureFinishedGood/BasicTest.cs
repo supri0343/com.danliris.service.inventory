@@ -1,4 +1,5 @@
 ﻿using Com.Danliris.Service.Inventory.Lib;
+using Com.Danliris.Service.Inventory.Lib.Models.GarmentLeftoverWarehouse.ExpenditureFinishedGood;
 using Com.Danliris.Service.Inventory.Lib.Models.GarmentLeftoverWarehouse.Stock;
 using Com.Danliris.Service.Inventory.Lib.Services;
 using Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.ExpenditureFinishedGood;
@@ -161,11 +162,26 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
             var dataUtil = _dataUtil(service);
             var oldData = await dataUtil.GetTestData();
 
-            var newData = dataUtil.CopyData(oldData);
-            newData.ExpenditureDate = DateTimeOffset.Now;
-            newData.Description = "New Remark";
+            oldData.Items.Add(new GarmentLeftoverWarehouseExpenditureFinishedGoodItem
+            {
+                StockId = 2,
+                UnitId = 2,
+                UnitCode = "Unit",
+                UnitName = "Unit",
+                ExpenditureQuantity = 10,
+            });
 
-            var result = await service.UpdateAsync(oldData.Id, newData);
+            await service.CreateAsync(oldData);
+
+            var newData = dataUtil.CopyData(oldData);
+            newData.ExpenditureDate = newData.ExpenditureDate.AddDays(-1);
+            newData.Description = "New" + newData.Description;
+            var firsItem = newData.Items.First();
+            firsItem.ExpenditureQuantity++;
+            var lastItem = newData.Items.Last();
+            lastItem.Id = 0;
+
+            var result = await service.UpdateAsync(newData.Id, newData);
 
             Assert.NotEqual(0, result);
         }
