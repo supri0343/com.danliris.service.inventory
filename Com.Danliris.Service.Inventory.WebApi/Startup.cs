@@ -5,6 +5,7 @@ using Com.Danliris.Service.Inventory.Lib.Services;
 using Com.Danliris.Service.Inventory.Lib.Services.FpRegradingResultDocs;
 using Com.Danliris.Service.Inventory.Lib.Services.FpReturnFromBuyers;
 using Com.Danliris.Service.Inventory.Lib.Services.FPReturnInvToPurchasingService;
+using Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.ExpenditureFinishedGood;
 using Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.ExpenditureFabric;
 using Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.GarmentLeftoverWarehouseReceiptAvalServices;
 using Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.GarmentLeftoverWarehouseReceiptFabricServices;
@@ -90,6 +91,7 @@ namespace Com.Danliris.Service.Inventory.WebApi
                 .AddTransient<IGarmentLeftoverWarehouseReceiptFinishedGoodService, GarmentLeftoverWarehouseReceiptFinishedGoodService>()
                 .AddTransient<IGarmentLeftoverWarehouseReceiptAvalService, GarmentLeftoverWarehouseReceiptAvalService>()
                 .AddTransient<IGarmentLeftoverWarehouseStockService, GarmentLeftoverWarehouseStockService>()
+                .AddTransient<IGarmentLeftoverWarehouseExpenditureFinishedGoodService, GarmentLeftoverWarehouseExpenditureFinishedGoodService>()
                 .AddTransient<IGarmentLeftoverWarehouseExpenditureFabricService, GarmentLeftoverWarehouseExpenditureFabricService>()
                 .AddScoped<IIdentityService, IdentityService>()
                 .AddScoped<IValidateService, ValidateService>()

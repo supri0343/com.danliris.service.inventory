@@ -4,14 +4,16 @@ using Com.Danliris.Service.Inventory.Lib;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Com.Danliris.Service.Inventory.Lib.Migrations
 {
     [DbContext(typeof(InventoryDbContext))]
-    partial class InventoryDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200514040813_add_uom_ExpenditureFinishedGoodItems")]
+    partial class add_uom_ExpenditureFinishedGoodItems
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -774,6 +776,10 @@ namespace Com.Danliris.Service.Inventory.Lib.Migrations
 
                     b.Property<string>("UnitName")
                         .HasMaxLength(255);
+
+                    b.Property<long>("UomId");
+
+                    b.Property<string>("UomUnit");
 
                     b.Property<string>("_CreatedAgent")
                         .IsRequired()

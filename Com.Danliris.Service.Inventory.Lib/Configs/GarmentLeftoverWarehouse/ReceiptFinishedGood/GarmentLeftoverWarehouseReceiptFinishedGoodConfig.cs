@@ -7,7 +7,7 @@ using System.Text;
 
 namespace Com.Danliris.Service.Inventory.Lib.Configs.GarmentLeftoverWarehouse.GarmentLeftoverWarehouseReceiptFinishedGoodConfigs
 {
-    class GarmentLeftoverWarehouseReceiptFinishedGoodConfig : IEntityTypeConfiguration<GarmentLeftoverWarehouseReceiptFinishedGood>
+    public class GarmentLeftoverWarehouseReceiptFinishedGoodConfig : IEntityTypeConfiguration<GarmentLeftoverWarehouseReceiptFinishedGood>
     {
         public void Configure(EntityTypeBuilder<GarmentLeftoverWarehouseReceiptFinishedGood> builder)
         {
@@ -19,14 +19,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Configs.GarmentLeftoverWarehouse.Ga
                 .IsUnique()
                 .HasFilter("[_IsDeleted]=(0)");
 
-            builder.Property(p => p.UnitFromCode).HasMaxLength(25);
-            builder.Property(p => p.UnitFromName).HasMaxLength(100);
-
             builder.Property(p => p.ExpenditureGoodNo).HasMaxLength(25);
-
-            builder.Property(p => p.UnitFromCode).HasMaxLength(25);
-            builder.Property(p => p.UnitFromName).HasMaxLength(100);
-
             builder.Property(p => p.UnitFromCode).HasMaxLength(25);
             builder.Property(p => p.UnitFromName).HasMaxLength(100);
 
