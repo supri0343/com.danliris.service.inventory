@@ -1,4 +1,5 @@
 ﻿using Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.ExpenditureFabric;
+using Com.Danliris.Service.Inventory.Lib.ViewModels;
 using Com.Danliris.Service.Inventory.Lib.ViewModels.GarmentLeftoverWarehouse.ExpenditureFabric;
 using Moq;
 using System;
@@ -117,12 +118,14 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
                 {
                     new GarmentLeftoverWarehouseExpenditureFabricItemViewModel
                     {
-                        PONo = "PONp",
+                        PONo = "PONo",
+                        Uom = new UomViewModel(),
                         StockId = 1
                     },
                     new GarmentLeftoverWarehouseExpenditureFabricItemViewModel
                     {
-                        PONo = "PONp",
+                        PONo = "PONo",
+                        Uom = new UomViewModel(),
                         StockId = 1
                     },
                 }
@@ -140,6 +143,7 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
                 {
                     new GarmentLeftoverWarehouseExpenditureFabricItemViewModel
                     {
+                        StockId = 1,
                         Quantity = 2
                     }
                 }

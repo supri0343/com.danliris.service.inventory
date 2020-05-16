@@ -10,6 +10,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
 
 namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.Stock
@@ -104,6 +105,39 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.S
             int TotalData = pageable.TotalCount;
 
             return new ReadResponse<GarmentLeftoverWarehouseStock>(Data, TotalData, OrderDictionary, SelectedFields);
+        }
+
+        public ReadResponse<dynamic> ReadDistinct(int page, int size, string order, List<string> select, string keyword, string filter)
+        {
+            IQueryable<GarmentLeftoverWarehouseStock> Query = DbSetStock;
+
+            List<string> SearchAttributes = new List<string>()
+            {
+                "PONo", "RONo", "ProductCode", "ProductName", "UomUnit"
+            };
+            Query = QueryHelper<GarmentLeftoverWarehouseStock>.Search(Query, SearchAttributes, keyword);
+
+            Dictionary<string, object> FilterDictionary = JsonConvert.DeserializeObject<Dictionary<string, object>>(filter);
+            Query = QueryHelper<GarmentLeftoverWarehouseStock>.Filter(Query, FilterDictionary);
+
+            Dictionary<string, string> OrderDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(order);
+            Query = QueryHelper<GarmentLeftoverWarehouseStock>.Order(Query, OrderDictionary);
+
+            List<string> SelectedFields = (select != null && select.Count > 0) ? select : new List<string>()
+            {
+                "Id", "PONo"
+            };
+            var SelectedQuery = Query.Select($"new({string.Join(",", SelectedFields)})");
+
+            SelectedQuery = SelectedQuery.Distinct();
+
+            List<dynamic> Data = SelectedQuery
+                .Skip((page - 1) * size)
+                .Take(size)
+                .ToDynamicList();
+            int TotalData = SelectedQuery.Count();
+
+            return new ReadResponse<dynamic>(Data, TotalData, OrderDictionary, new List<string>());
         }
 
         public GarmentLeftoverWarehouseStock ReadById(int Id)

@@ -78,9 +78,15 @@ namespace Com.Danliris.Service.Inventory.Lib.ViewModels.GarmentLeftoverWarehouse
                         errorItem["PONo"] = "PONo tidak boleh kosong";
                         errorCount++;
                     }
+
+                    if (item.Uom == null || item.StockId == 0)
+                    {
+                        errorItem["Uom"] = "Satuan tidak boleh kosong";
+                        errorCount++;
+                    }
                     else if (Items.Count(i => i.StockId == item.StockId) > 1)
                     {
-                        errorItem["PONo"] = "PONo tidak boleh sama";
+                        errorItem["Uom"] = "Uom tidak boleh sama";
                         errorCount++;
                     }
 
@@ -89,7 +95,7 @@ namespace Com.Danliris.Service.Inventory.Lib.ViewModels.GarmentLeftoverWarehouse
                         errorItem["Quantity"] = "Jumlah tidak boleh 0";
                         errorCount++;
                     }
-                    else
+                    else if (item.StockId > 0)
                     {
                         IGarmentLeftoverWarehouseExpenditureFabricService service = (IGarmentLeftoverWarehouseExpenditureFabricService)validationContext.GetService(typeof(IGarmentLeftoverWarehouseExpenditureFabricService));
 

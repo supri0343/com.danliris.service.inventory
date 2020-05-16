@@ -85,5 +85,35 @@ namespace Com.Danliris.Service.Inventory.Test.Controllers.GarmentLeftoverWarehou
             int statusCode = GetStatusCodeGet(mocks);
             Assert.Equal((int)HttpStatusCode.InternalServerError, statusCode);
         }
+
+        private int GetStatusCodeGetDistinct((Mock<IIdentityService> IdentityService, Mock<IValidateService> ValidateService, Mock<IGarmentLeftoverWarehouseStockService> Service) mocks)
+        {
+            GarmentLeftoverWarehouseStockController controller = GetController(mocks);
+            IActionResult response = controller.GetDistinct();
+
+            return GetStatusCode(response);
+        }
+
+        [Fact]
+        public virtual void Get_Distinct_WithoutException_ReturnOK()
+        {
+            var mocks = GetMocks();
+            mocks.Service
+                .Setup(f => f.ReadDistinct(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<List<string>>(), It.IsAny<string>(), It.IsAny<string>()))
+                .Returns(new ReadResponse<dynamic>(new List<dynamic>() { }, 0, new Dictionary<string, string>(), new List<string>()));
+            int statusCode = GetStatusCodeGetDistinct(mocks);
+            Assert.Equal((int)HttpStatusCode.OK, statusCode);
+        }
+
+        [Fact]
+        public virtual void Get_Distinct_ReadThrowException_ReturnInternalServerError()
+        {
+            var mocks = GetMocks();
+            mocks.Service
+                .Setup(f => f.ReadDistinct(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<List<string>>(), It.IsAny<string>(), It.IsAny<string>()))
+                .Throws(new Exception());
+            int statusCode = GetStatusCodeGetDistinct(mocks);
+            Assert.Equal((int)HttpStatusCode.InternalServerError, statusCode);
+        }
     }
 }
