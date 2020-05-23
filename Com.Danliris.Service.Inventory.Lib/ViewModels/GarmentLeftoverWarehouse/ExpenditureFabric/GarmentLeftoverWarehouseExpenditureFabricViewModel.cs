@@ -86,7 +86,7 @@ namespace Com.Danliris.Service.Inventory.Lib.ViewModels.GarmentLeftoverWarehouse
                     }
                     else if (Items.Count(i => i.StockId == item.StockId) > 1)
                     {
-                        errorItem["Uom"] = "Uom tidak boleh sama";
+                        errorItem["Uom"] = "Satuan tidak boleh sama";
                         errorCount++;
                     }
 
@@ -99,7 +99,7 @@ namespace Com.Danliris.Service.Inventory.Lib.ViewModels.GarmentLeftoverWarehouse
                     {
                         IGarmentLeftoverWarehouseExpenditureFabricService service = (IGarmentLeftoverWarehouseExpenditureFabricService)validationContext.GetService(typeof(IGarmentLeftoverWarehouseExpenditureFabricService));
 
-                        var stockQuantity = service.CheckStockQuantity(item.Id, item.StockId);
+                        var stockQuantity = service.CheckStockQuantity(Id, item.StockId);
                         if (item.Quantity > stockQuantity)
                         {
                             errorItem["Quantity"] = "Jumlah tidak boleh lebih dari " + stockQuantity;

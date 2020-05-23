@@ -330,15 +330,15 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.E
             }
         }
 
-        public double CheckStockQuantity(int ItemId, int StockId)
+        public double CheckStockQuantity(int Id, int StockId)
         {
             var stock = StockService.ReadById(StockId);
             var stockQuantity = stock.Quantity;
 
-            if (ItemId > 0)
+            if (Id > 0)
             {
-                var existingItem = DbSetItem.First(i => i.Id == ItemId);
-                stockQuantity += existingItem.Quantity;
+                var existingQuantity = DbSetItem.Where(i => i.ExpenditureId == Id && i.StockId == StockId).Select(s => s.Quantity).FirstOrDefault();
+                stockQuantity += existingQuantity;
             }
 
             return stockQuantity;
