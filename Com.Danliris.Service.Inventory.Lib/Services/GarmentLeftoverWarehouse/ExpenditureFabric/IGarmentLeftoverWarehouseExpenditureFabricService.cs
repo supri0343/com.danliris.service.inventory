@@ -5,6 +5,6 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.E
 {
     public interface IGarmentLeftoverWarehouseExpenditureFabricService : IBaseService<GarmentLeftoverWarehouseExpenditureFabric, GarmentLeftoverWarehouseExpenditureFabricViewModel>
     {
-        double CheckStockQuantity(int ItemId, int StockId);
+        double CheckStockQuantity(int Id, int StockId);
     }
 }

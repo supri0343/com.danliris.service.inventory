@@ -130,5 +130,26 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
 
             Assert.NotNull(result);
         }
+
+        [Fact]
+        public async Task ReadDistinct_Success()
+        {
+            GarmentLeftoverWarehouseStockService service = new GarmentLeftoverWarehouseStockService(_dbContext(GetCurrentMethod()), GetServiceProvider().Object);
+
+            GarmentLeftoverWarehouseStock stock = new GarmentLeftoverWarehouseStock
+            {
+                ReferenceType = GarmentLeftoverWarehouseStockReferenceTypeEnum.FABRIC,
+                UnitId = 1,
+                UnitCode = "UnitFromCode",
+                UnitName = "UnitFromName",
+                PONo = "POSerialNumber",
+                Quantity = 1
+            };
+
+            await service.StockIn(stock, "StockReferenceNo", 1, 1);
+            var result = service.ReadDistinct(1, 1, "{}", new List<string>(), "", "{}");
+
+            Assert.NotEmpty(result.Data);
+        }
     }
 }

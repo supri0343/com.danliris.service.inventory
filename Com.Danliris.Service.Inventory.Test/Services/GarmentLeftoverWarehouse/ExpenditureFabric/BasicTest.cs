@@ -277,7 +277,7 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
 
             foreach (var item in data.Items)
             {
-                var result = service.CheckStockQuantity(item.Id, item.StockId);
+                var result = service.CheckStockQuantity(data.Id, item.StockId);
                 Assert.Equal(stockQuantity, result - item.Quantity);
             }
         }
