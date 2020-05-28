@@ -137,7 +137,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
 
             List<string> SelectedFields = (select != null && select.Count > 0) ? select : new List<string>()
             {
-                "Id", "AvalReceiptNo", "UnitFrom", "ReceiptDate","AvalType"
+                "Id", "AvalReceiptNo", "UnitFrom", "ReceiptDate","AvalType","TotalAval"
             };
 
             Query = Query.Select(s => new GarmentLeftoverWarehouseReceiptAval
@@ -148,6 +148,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
                 UnitFromCode = s.UnitFromCode,
                 UnitFromName = s.UnitFromName,
                 AvalType = s.AvalType,
+                TotalAval=s.TotalAval,
                 ReceiptDate = s.ReceiptDate
             });
 
