@@ -16,6 +16,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Models.GarmentLeftoverWarehouse.Gar
         public string AvalType { get; set; }
         public string Remark { get; set; }
         public double TotalAval { get; set; }
+        public bool IsUsed { get; set; }
         public virtual ICollection<GarmentLeftoverWarehouseReceiptAvalItem> Items { get; set; }
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
