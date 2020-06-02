@@ -18,6 +18,9 @@ namespace Com.Danliris.Service.Inventory.Lib.Models.GarmentLeftoverWarehouse.Exp
         public int AvalExpenditureId { get; set; }
         public long UomId { get; set; }
         public string UomUnit { get; set; }
+        public long ProductId { get; set; }
+        public string ProductCode { get; set; }
+        public string ProductName { get; set; }
         public virtual GarmentLeftoverWarehouseExpenditureAval GarmentLeftoverWarehouseExpenditureAval { get; set; }
     }
 }

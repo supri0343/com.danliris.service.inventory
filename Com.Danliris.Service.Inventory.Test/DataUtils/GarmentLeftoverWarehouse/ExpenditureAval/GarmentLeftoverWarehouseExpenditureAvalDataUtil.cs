@@ -75,6 +75,44 @@ namespace Com.Danliris.Service.Inventory.Test.DataUtils.GarmentLeftoverWarehouse
             return data;
         }
 
+        public GarmentLeftoverWarehouseExpenditureAval GetNewDataAcc()
+        {
+            return new GarmentLeftoverWarehouseExpenditureAval
+            {
+                ExpenditureTo = "JUAL LOKAL",
+                Description = "Remark",
+                AvalType = "AVAL ACCESSORIES",
+                BuyerId = 1,
+                BuyerCode = "BuyerCode",
+                BuyerName = "BuyerName",
+                Items = new List<GarmentLeftoverWarehouseExpenditureAvalItem>
+                {
+                    new GarmentLeftoverWarehouseExpenditureAvalItem
+                    {
+                        StockId = 1,
+                        UnitId = 1,
+                        UnitCode = "Unit",
+                        UnitName = "Unit",
+                        Quantity = 1,
+                        UomId = 1,
+                        UomUnit = "Uom",
+                        ProductCode="code",
+                        ProductId=1,
+                        ProductName="product"
+                    }
+                }
+            };
+        }
+
+        public async Task<GarmentLeftoverWarehouseExpenditureAval> GetTestDataAcc()
+        {
+            GarmentLeftoverWarehouseExpenditureAval data = GetNewDataAcc();
+
+            await Service.CreateAsync(data);
+
+            return data;
+        }
+
         public GarmentLeftoverWarehouseExpenditureAval CopyData(GarmentLeftoverWarehouseExpenditureAval oldData)
         {
             GarmentLeftoverWarehouseExpenditureAval newData = new GarmentLeftoverWarehouseExpenditureAval();

@@ -58,22 +58,46 @@ namespace Com.Danliris.Service.Inventory.Lib.ViewModels.GarmentLeftoverWarehouse
                         errorCount++;
                     }
 
-                    if (string.IsNullOrEmpty(item.AvalReceiptNo))
+                    if(AvalType=="AVAL FABRIC")
                     {
-                        errorItem["AvalReceiptNo"] = "No Bon tidak boleh kosong";
-                        errorCount++;
-                    }
+                        if (string.IsNullOrEmpty(item.AvalReceiptNo))
+                        {
+                            errorItem["AvalReceiptNo"] = "No Bon tidak boleh kosong";
+                            errorCount++;
+                        }
 
-                    if (item.Quantity <= 0)
-                    {
-                        errorItem["Quantity"] = "Jumlah Pengeluaran harus lebih dari 0";
-                        errorCount++;
+                        if (item.Quantity <= 0)
+                        {
+                            errorItem["Quantity"] = "Jumlah Pengeluaran harus lebih dari 0";
+                            errorCount++;
+                        }
                     }
-                    //else if (item.Quantity > item.StockQuantity)
-                    //{
-                    //    errorItem["Quantity"] = $"Jumlah Pengeluaran tidak boleh lebih dari {item.StockQuantity}";
-                    //    errorCount++;
-                    //}
+                    else
+                    {
+                        if (item.Quantity <= 0)
+                        {
+                            errorItem["Quantity"] = "Jumlah Pengeluaran harus lebih dari 0";
+                            errorCount++;
+                        }
+                        else if (item.Quantity > item.StockQuantity)
+                        {
+                            errorItem["Quantity"] = $"Jumlah Pengeluaran tidak boleh lebih dari {item.StockQuantity}";
+                            errorCount++;
+                        }
+
+                        if (item.Uom == null)
+                        {
+                            errorItem["Uom"] = "Satuan tidak boleh kosong";
+                            errorCount++;
+                        }
+
+                        if (item.Product == null)
+                        {
+                            errorItem["Product"] = "Barang tidak boleh kosong";
+                            errorCount++;
+                        }
+                    }
+                    
 
                     errorItems.Add(errorItem);
                 }

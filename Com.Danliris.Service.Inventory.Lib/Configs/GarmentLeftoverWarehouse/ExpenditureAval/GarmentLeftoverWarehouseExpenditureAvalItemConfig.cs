@@ -12,6 +12,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Configs.GarmentLeftoverWarehouse.Ex
             builder.Property(p => p.UnitName).HasMaxLength(100);
             builder.Property(p => p.AvalReceiptNo).HasMaxLength(25);
             builder.Property(p => p.UomUnit).HasMaxLength(100);
+            builder.Property(p => p.ProductCode).HasMaxLength(25);
+            builder.Property(p => p.ProductName).HasMaxLength(100);
 
             builder.HasIndex(p => new { p.AvalReceiptId, p.StockId })
                 .IsUnique()

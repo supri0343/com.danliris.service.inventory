@@ -154,6 +154,29 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
         }
 
         [Fact]
+        public async Task Create_Success_ACC()
+        {
+            var serviceProvider = GetServiceProvider();
+
+            var stockServiceMock = new Mock<IGarmentLeftoverWarehouseStockService>();
+            stockServiceMock.Setup(s => s.StockIn(It.IsAny<GarmentLeftoverWarehouseStock>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>()))
+                .ReturnsAsync(1);
+
+            serviceProvider
+                .Setup(x => x.GetService(typeof(IGarmentLeftoverWarehouseStockService)))
+                .Returns(stockServiceMock.Object);
+
+
+            GarmentLeftoverWarehouseExpenditureAvalService service = new GarmentLeftoverWarehouseExpenditureAvalService(_dbContext(GetCurrentMethod()), serviceProvider.Object);
+
+            var data =  _dataUtil(service, GetCurrentMethod()).GetNewDataAcc();
+
+            var result = await service.CreateAsync(data);
+
+            Assert.NotEqual(0, result);
+        }
+
+        [Fact]
         public async Task Create_Error()
         {
             var serviceProvider = GetServiceProvider();
@@ -200,6 +223,52 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
         }
 
         [Fact]
+        public async Task Update_Success_Acc()
+        {
+            var serviceProvider = GetServiceProvider();
+
+            var stockServiceMock = new Mock<IGarmentLeftoverWarehouseStockService>();
+            stockServiceMock.Setup(s => s.StockIn(It.IsAny<GarmentLeftoverWarehouseStock>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>()))
+                .ReturnsAsync(1);
+
+            serviceProvider
+                .Setup(x => x.GetService(typeof(IGarmentLeftoverWarehouseStockService)))
+                .Returns(stockServiceMock.Object);
+
+
+            GarmentLeftoverWarehouseExpenditureAvalService service = new GarmentLeftoverWarehouseExpenditureAvalService(_dbContext(GetCurrentMethod()), serviceProvider.Object);
+
+            var dataUtil = _dataUtil(service, GetCurrentMethod());
+            var oldData = dataUtil.GetNewDataAcc();
+            oldData.Items.Add(new GarmentLeftoverWarehouseExpenditureAvalItem
+            {
+                StockId = 1,
+                UnitId = 1,
+                UnitCode = "Unit",
+                UnitName = "Unit",
+                Quantity = 1,
+                UomId = 1,
+                UomUnit = "Uom",
+                ProductCode = "code",
+                ProductId = 1,
+                ProductName = "product"
+            });
+
+            await service.CreateAsync(oldData);
+
+            var newData = dataUtil.CopyData(oldData);
+            newData.Description = "New" + newData.Description;
+            var firsItem = newData.Items.First();
+            firsItem.Quantity++;
+            var lastItem = newData.Items.Last();
+            lastItem.Id = 0;
+
+            var result = await service.UpdateAsync(newData.Id, newData);
+
+            Assert.NotEqual(0, result);
+        }
+
+        [Fact]
         public async Task Update_Error()
         {
             GarmentLeftoverWarehouseExpenditureAvalService service = new GarmentLeftoverWarehouseExpenditureAvalService(_dbContext(GetCurrentMethod()), GetServiceProvider().Object);
@@ -223,6 +292,29 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
             GarmentLeftoverWarehouseExpenditureAvalService service = new GarmentLeftoverWarehouseExpenditureAvalService(_dbContext(GetCurrentMethod()), serviceProvider.Object);
 
             var data = await _dataUtil(service, GetCurrentMethod()).GetTestDataFabric();
+
+            var result = await service.DeleteAsync(data.Id);
+
+            Assert.NotEqual(0, result);
+        }
+
+        [Fact]
+        public async Task Delete_Success_ACC()
+        {
+            var serviceProvider = GetServiceProvider();
+
+            var stockServiceMock = new Mock<IGarmentLeftoverWarehouseStockService>();
+            stockServiceMock.Setup(s => s.StockIn(It.IsAny<GarmentLeftoverWarehouseStock>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>()))
+                .ReturnsAsync(1);
+
+            serviceProvider
+                .Setup(x => x.GetService(typeof(IGarmentLeftoverWarehouseStockService)))
+                .Returns(stockServiceMock.Object);
+
+
+            GarmentLeftoverWarehouseExpenditureAvalService service = new GarmentLeftoverWarehouseExpenditureAvalService(_dbContext(GetCurrentMethod()), serviceProvider.Object);
+
+            var data = _dataUtil(service, GetCurrentMethod()).GetTestDataAcc();
 
             var result = await service.DeleteAsync(data.Id);
 
@@ -265,7 +357,18 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
                                 Name = "Unit"
                             },
                             Quantity=1,
-                            AvalReceiptId=1
+                            AvalReceiptId=1,
+                            Product= new ProductViewModel
+                            {
+                                Id = "1",
+                                Code = "Product",
+                                Name = "Product"
+                            },
+                            Uom= new UomViewModel
+                            {
+                                Id="1",
+                                Unit="Uom"
+                            }
                         }
                     }
             };
@@ -298,12 +401,13 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
         }
 
         [Fact]
-        public void ValidateViewModel()
+        public void ValidateViewModel_Fabric()
         {
             GarmentLeftoverWarehouseExpenditureAvalViewModel viewModel = new GarmentLeftoverWarehouseExpenditureAvalViewModel()
             {
                 Buyer = null,
                 ExpenditureTo = "JUAL LOKAL",
+                AvalType="AVAL FABRIC",
                 ExpenditureDate = DateTimeOffset.MinValue,
                 Items = new List<GarmentLeftoverWarehouseExpenditureAvalItemViewModel>()
                     {
@@ -318,6 +422,7 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
                 Buyer = null,
                 ExpenditureTo = "LAIN-LAIN",
                 OtherDescription = "",
+                AvalType = "AVAL FABRIC",
                 ExpenditureDate = DateTimeOffset.Now.AddDays(4),
                 Items = new List<GarmentLeftoverWarehouseExpenditureAvalItemViewModel>()
                     {
@@ -336,6 +441,56 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
                 Buyer = null,
                 ExpenditureTo = "LAIN-LAIN",
                 OtherDescription = "",
+                AvalType = "AVAL FABRIC",
+                ExpenditureDate = DateTimeOffset.Now.AddDays(4)
+            };
+            var result2 = viewModel2.Validate(null);
+            Assert.True(result2.Count() > 0);
+        }
+
+        [Fact]
+        public void ValidateViewModel_Acc()
+        {
+            GarmentLeftoverWarehouseExpenditureAvalViewModel viewModel = new GarmentLeftoverWarehouseExpenditureAvalViewModel()
+            {
+                Buyer = null,
+                ExpenditureTo = "JUAL LOKAL",
+                AvalType = "AVAL ACCESSORIES",
+                ExpenditureDate = DateTimeOffset.MinValue,
+                Items = new List<GarmentLeftoverWarehouseExpenditureAvalItemViewModel>()
+                    {
+                        new GarmentLeftoverWarehouseExpenditureAvalItemViewModel()
+                    }
+            };
+            var result = viewModel.Validate(null);
+            Assert.True(result.Count() > 0);
+
+            GarmentLeftoverWarehouseExpenditureAvalViewModel viewModel1 = new GarmentLeftoverWarehouseExpenditureAvalViewModel()
+            {
+                Buyer = null,
+                ExpenditureTo = "LAIN-LAIN",
+                OtherDescription = "",
+                AvalType = "AVAL ACCESSORIES",
+                ExpenditureDate = DateTimeOffset.Now.AddDays(4),
+                Items = new List<GarmentLeftoverWarehouseExpenditureAvalItemViewModel>()
+                    {
+                        new GarmentLeftoverWarehouseExpenditureAvalItemViewModel()
+                        {
+                            Quantity=6,
+                            StockQuantity=1
+                        }
+                    }
+            };
+            var result1 = viewModel1.Validate(null);
+            Assert.True(result1.Count() > 0);
+
+
+            GarmentLeftoverWarehouseExpenditureAvalViewModel viewModel2 = new GarmentLeftoverWarehouseExpenditureAvalViewModel()
+            {
+                Buyer = null,
+                ExpenditureTo = "LAIN-LAIN",
+                OtherDescription = "",
+                AvalType = "AVAL ACCESSORIES",
                 ExpenditureDate = DateTimeOffset.Now.AddDays(4)
             };
             var result2 = viewModel2.Validate(null);
