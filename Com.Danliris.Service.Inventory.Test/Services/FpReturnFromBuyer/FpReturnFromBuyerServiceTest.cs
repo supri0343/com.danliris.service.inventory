@@ -164,7 +164,10 @@ namespace Com.Danliris.Service.Inventory.Test.Services.FpReturnFromBuyer
         public void Should_Success_ValidateNullVM()
         {
             var serviceProvider = GetServiceProvider();
-            var vm = new FpReturnFromBuyerViewModel();
+            var vm = new FpReturnFromBuyerViewModel()
+            {
+                Date = DateTimeOffset.Now.AddDays(1)
+            };
             ValidationContext validationContext = new ValidationContext(vm, serviceProvider.Object, null);
             var response = vm.Validate(validationContext);
 
@@ -176,6 +179,24 @@ namespace Com.Danliris.Service.Inventory.Test.Services.FpReturnFromBuyer
         {
             var serviceProvider = GetServiceProvider();
             var vm = new FpReturnFromBuyerViewModel();
+            ValidationContext validationContext = new ValidationContext(vm, serviceProvider.Object, null);
+            var response = vm.Validate(validationContext);
+
+            Assert.True(response.Count() > 0);
+        }
+
+        [Fact]
+        public void Should_Success_Validate_DetailExist()
+        {
+            var serviceProvider = GetServiceProvider();
+            var vm = new FpReturnFromBuyerViewModel()
+            {
+                Date = DateTimeOffset.Now.AddDays(1),
+                Details =new List<FpReturnFromBuyerDetailViewModel>()
+                {
+                    new FpReturnFromBuyerDetailViewModel()
+                }
+            };
             ValidationContext validationContext = new ValidationContext(vm, serviceProvider.Object, null);
             var response = vm.Validate(validationContext);
 

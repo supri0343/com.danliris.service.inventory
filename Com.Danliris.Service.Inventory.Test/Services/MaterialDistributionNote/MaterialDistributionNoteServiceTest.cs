@@ -382,6 +382,9 @@ namespace Com.Danliris.Service.Inventory.Test.Services.MaterialDistributionNote
             Assert.True(response);
         }
 
+
+       
+
         [Fact]
         public async Task Should_Success_ValidateVM()
         {
