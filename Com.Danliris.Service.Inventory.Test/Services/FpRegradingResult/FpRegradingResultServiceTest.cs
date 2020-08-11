@@ -300,6 +300,31 @@ namespace Com.Danliris.Service.Inventory.Test.Services.FpRegradingResult
         }
 
         [Fact]
+        public async Task CustomCodeGenerator()
+        {
+            var serviceProvider = GetServiceProvider();
+            InventoryDbContext dbContext = _dbContext(GetCurrentMethod());
+
+            InventorySummaryService inventorySummaryService = new InventorySummaryService(serviceProvider.Object, _dbContext(GetCurrentMethod()));
+            serviceProvider.Setup(s => s.GetService(typeof(IInventorySummaryService)))
+                .Returns(inventorySummaryService);
+
+            InventoryMovementService inventoryMovementService = new InventoryMovementService(serviceProvider.Object, _dbContext(GetCurrentMethod()));
+            serviceProvider.Setup(s => s.GetService(typeof(IInventoryMovementService)))
+                .Returns(inventoryMovementService);
+
+            InventoryDocumentService inventoryDocumentFacade = new InventoryDocumentService(serviceProvider.Object, _dbContext(GetCurrentMethod()));
+            serviceProvider.Setup(s => s.GetService(typeof(IInventoryDocumentService)))
+                .Returns(inventoryDocumentFacade);
+
+
+            NewFpRegradingResultDocsService service = new NewFpRegradingResultDocsService(serviceProvider.Object, dbContext);
+            var data = await _dataUtil(service).GetTestData();
+            var result = service.CustomCodeGenerator(data);
+            Assert.NotNull(result);
+        }
+
+        [Fact]
         public async Task Should_Success_UpdateIsReturnedToPurchasing()
         {
             var serviceProvider = GetServiceProvider();
