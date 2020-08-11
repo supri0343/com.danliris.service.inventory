@@ -195,6 +195,40 @@ namespace Com.Danliris.Service.Inventory.Test.Services.FpReturnFromBuyer
                 Details =new List<FpReturnFromBuyerDetailViewModel>()
                 {
                     new FpReturnFromBuyerDetailViewModel()
+                    {
+                        Items =new List<FpReturnFromBuyerItemViewModel>()
+                        {
+                            new FpReturnFromBuyerItemViewModel()
+                            {
+                                ProductId =0,
+                                
+                            }
+                        }
+                    }
+                }
+            };
+            ValidationContext validationContext = new ValidationContext(vm, serviceProvider.Object, null);
+            var response = vm.Validate(validationContext);
+
+            Assert.True(response.Count() > 0);
+        }
+
+        [Fact]
+        public void Should_Success_Validate_ItemProduct_notExist()
+        {
+            var serviceProvider = GetServiceProvider();
+            var vm = new FpReturnFromBuyerViewModel()
+            {
+                Date = DateTimeOffset.Now.AddDays(1),
+                Details = new List<FpReturnFromBuyerDetailViewModel>()
+                {
+                    new FpReturnFromBuyerDetailViewModel()
+                    {
+                        Items =new List<FpReturnFromBuyerItemViewModel>()
+                        {
+                            
+                        }
+                    }
                 }
             };
             ValidationContext validationContext = new ValidationContext(vm, serviceProvider.Object, null);

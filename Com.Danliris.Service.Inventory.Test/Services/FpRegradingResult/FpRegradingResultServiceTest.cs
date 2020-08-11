@@ -9,6 +9,7 @@ using Com.Danliris.Service.Inventory.Test.Helpers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Moq;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -341,6 +342,40 @@ namespace Com.Danliris.Service.Inventory.Test.Services.FpRegradingResult
             var data = await _dataUtil(service).GetTestData();
             var model = service.GetReport(null, null, null, null, null, null, null, 1, 25, "{}");
 
+            Assert.NotNull(model);
+        }
+
+        [Fact]
+        public async Task Should_Success_GetReport_with_order()
+        {
+            //Setup
+            var serviceProvider = GetServiceProvider();
+            InventoryDbContext dbContext =  _dbContext(GetCurrentMethod());
+            
+            InventorySummaryService inventorySummaryService = new InventorySummaryService(serviceProvider.Object, dbContext);
+            serviceProvider.Setup(s => s.GetService(typeof(IInventorySummaryService)))
+                .Returns(inventorySummaryService);
+
+            InventoryMovementService inventoryMovementService = new InventoryMovementService(serviceProvider.Object, dbContext);
+            serviceProvider.Setup(s => s.GetService(typeof(IInventoryMovementService)))
+                .Returns(inventoryMovementService);
+
+            InventoryDocumentService inventoryDocumentFacade = new InventoryDocumentService(serviceProvider.Object, dbContext);
+            serviceProvider.Setup(s => s.GetService(typeof(IInventoryDocumentService)))
+                .Returns(inventoryDocumentFacade);
+            
+            NewFpRegradingResultDocsService service = new NewFpRegradingResultDocsService(serviceProvider.Object, dbContext);
+            var data = await _dataUtil(service).GetTestData();
+            var orderProperty = new
+            {
+                Code ="desc"
+            };
+            string order = JsonConvert.SerializeObject(orderProperty);
+
+            //Act
+            var model = service.GetReport(null, null, null, null, null, null, null, 1, 25, order);
+
+            //Assert
             Assert.NotNull(model);
         }
 

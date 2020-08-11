@@ -423,5 +423,42 @@ namespace Com.Danliris.Service.Inventory.Test.Facades.FPReturnInvToPurchasing
 
 
         }
+
+        [Fact]
+        public async Task Validate_NecessaryLength()
+        {
+            var serviceProvider = GetServiceProvider();
+            NewFpRegradingResultDocsService serviceMrn = new NewFpRegradingResultDocsService(serviceProvider.Object, _dbContext(GetCurrentMethod()));
+            InventorySummaryService inventorySummaryService = new InventorySummaryService(serviceProvider.Object, _dbContext(GetCurrentMethod()));
+            serviceProvider.Setup(s => s.GetService(typeof(IInventorySummaryService)))
+                .Returns(inventorySummaryService);
+
+            InventoryMovementService inventoryMovementService = new InventoryMovementService(serviceProvider.Object, _dbContext(GetCurrentMethod()));
+            serviceProvider.Setup(s => s.GetService(typeof(IInventoryMovementService)))
+                .Returns(inventoryMovementService);
+
+            InventoryDocumentService inventoryDocumentFacade = new InventoryDocumentService(serviceProvider.Object, _dbContext(GetCurrentMethod()));
+            serviceProvider.Setup(s => s.GetService(typeof(IInventoryDocumentService)))
+                .Returns(inventoryDocumentFacade);
+            var mrn = await _dataUtilMrn(serviceMrn).GetTestData();
+            serviceProvider.Setup(x => x.GetService(typeof(IFpRegradingResultDocsService)))
+                .Returns(serviceMrn);
+            NewFPReturnInvToPurchasingService service = new NewFPReturnInvToPurchasingService(serviceProvider.Object, _dbContext(GetCurrentMethod()));
+            var vm = new FPReturnInvToPurchasingViewModel() { 
+                FPReturnInvToPurchasingDetails = new List<FPReturnInvToPurchasingDetailViewModel>() { 
+                    new FPReturnInvToPurchasingDetailViewModel()
+                    {
+                        FPRegradingResultDocsCode="FPRegradingResultDocsCode",
+                        NecessaryLength =0
+                    }
+                } 
+            };
+            ValidationContext validationContext = new ValidationContext(vm, serviceProvider.Object, null);
+            var response = vm.Validate(validationContext);
+
+            Assert.True(response.Count() > 0);
+
+
+        }
     }
 }

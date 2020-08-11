@@ -5,6 +5,7 @@ using Com.Danliris.Service.Inventory.Test.DataUtils.InventoryDataUtils;
 using Com.Danliris.Service.Inventory.Test.Helpers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
+using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using System;
 using System.Diagnostics;
@@ -30,9 +31,14 @@ namespace Com.Danliris.Service.Inventory.Test.Facades.Inventory
         private InventoryDbContext _dbContext(string testName)
         {
             DbContextOptionsBuilder<InventoryDbContext> optionsBuilder = new DbContextOptionsBuilder<InventoryDbContext>();
+            var serviceProvider = new ServiceCollection()
+               .AddEntityFrameworkInMemoryDatabase()
+               .BuildServiceProvider();
+
             optionsBuilder
                 .UseInMemoryDatabase(testName)
-                .ConfigureWarnings(w => w.Ignore(InMemoryEventId.TransactionIgnoredWarning));
+                .ConfigureWarnings(w => w.Ignore(InMemoryEventId.TransactionIgnoredWarning))
+                .UseInternalServiceProvider(serviceProvider);
 
             InventoryDbContext dbContext = new InventoryDbContext(optionsBuilder.Options);
 
@@ -83,11 +89,12 @@ namespace Com.Danliris.Service.Inventory.Test.Facades.Inventory
         public async Task Should_Success_CreateAsync()
         {
             var serviceProvider = GetServiceProvider();
-            InventorySummaryService inventorySummaryService = new InventorySummaryService(serviceProvider.Object, _dbContext(GetCurrentMethod()));
+            InventoryDbContext dbContext = _dbContext(GetCurrentMethod());
+            InventorySummaryService inventorySummaryService = new InventorySummaryService(serviceProvider.Object, dbContext);
             serviceProvider.Setup(s => s.GetService(typeof(IInventorySummaryService)))
                 .Returns(inventorySummaryService);
 
-            InventoryMovementService service = new InventoryMovementService(serviceProvider.Object, _dbContext(GetCurrentMethod()));
+            InventoryMovementService service = new InventoryMovementService(serviceProvider.Object, dbContext);
             var data = _dataUtil(service).GetNewData();
 
             var Response = await service.Create(data);
@@ -98,11 +105,12 @@ namespace Com.Danliris.Service.Inventory.Test.Facades.Inventory
         public async Task Should_Fail_CreateAsync()
         {
             var serviceProvider = GetServiceProvider();
-            InventorySummaryService inventorySummaryService = new InventorySummaryService(serviceProvider.Object, _dbContext(GetCurrentMethod()));
+            InventoryDbContext dbContext = _dbContext(GetCurrentMethod());
+            InventorySummaryService inventorySummaryService = new InventorySummaryService(serviceProvider.Object, dbContext);
             serviceProvider.Setup(s => s.GetService(typeof(IInventorySummaryService)))
                 .Returns(inventorySummaryService);
 
-            InventoryMovementService service = new InventoryMovementService(serviceProvider.Object, _dbContext(GetCurrentMethod()));
+            InventoryMovementService service = new InventoryMovementService(serviceProvider.Object, dbContext);
             var data = _dataUtil(service).GetNewData();
             await Assert.ThrowsAnyAsync<Exception>(() => service.Create(null));
         }
@@ -111,13 +119,29 @@ namespace Com.Danliris.Service.Inventory.Test.Facades.Inventory
         public void Should_Success_GenerateExcel()
         {
             var serviceProvider = GetServiceProvider();
-            InventorySummaryService inventorySummaryService = new InventorySummaryService(serviceProvider.Object, _dbContext(GetCurrentMethod()));
+            InventoryDbContext dbContext = _dbContext(GetCurrentMethod());
+            InventorySummaryService inventorySummaryService = new InventorySummaryService(serviceProvider.Object, dbContext);
             serviceProvider.Setup(s => s.GetService(typeof(IInventorySummaryService)))
                 .Returns(inventorySummaryService);
 
-            InventoryMovementService service = new InventoryMovementService(serviceProvider.Object, _dbContext(GetCurrentMethod()));
+            InventoryMovementService service = new InventoryMovementService(serviceProvider.Object, dbContext);
             var data = _dataUtil(service).GetTestData();
 
+            var Response = service.GenerateExcel(null, null, null, null, null, 7);
+            Assert.NotNull(Response);
+        }
+
+        [Fact]
+        public void Should_Success_GenerateExcel_with_EmptyData()
+        {
+            var serviceProvider = GetServiceProvider();
+            InventoryDbContext dbContext = _dbContext(GetCurrentMethod());
+            InventorySummaryService inventorySummaryService = new InventorySummaryService(serviceProvider.Object, dbContext);
+            serviceProvider.Setup(s => s.GetService(typeof(IInventorySummaryService)))
+                .Returns(inventorySummaryService);
+
+            InventoryMovementService service = new InventoryMovementService(serviceProvider.Object, dbContext);
+           
             var Response = service.GenerateExcel(null, null, null, null, null, 7);
             Assert.NotNull(Response);
         }
@@ -126,11 +150,12 @@ namespace Com.Danliris.Service.Inventory.Test.Facades.Inventory
         public void Should_Success_GetReport()
         {
             var serviceProvider = GetServiceProvider();
-            InventorySummaryService inventorySummaryService = new InventorySummaryService(serviceProvider.Object, _dbContext(GetCurrentMethod()));
+            InventoryDbContext dbContext = _dbContext(GetCurrentMethod());
+            InventorySummaryService inventorySummaryService = new InventorySummaryService(serviceProvider.Object, dbContext);
             serviceProvider.Setup(s => s.GetService(typeof(IInventorySummaryService)))
                 .Returns(inventorySummaryService);
 
-            InventoryMovementService service = new InventoryMovementService(serviceProvider.Object, _dbContext(GetCurrentMethod()));
+            InventoryMovementService service = new InventoryMovementService(serviceProvider.Object, dbContext);
             var data = _dataUtil(service).GetTestData();
 
             var Response = service.GetReport(null, null, null, null, null, 1, 25, "{}", 7);
@@ -141,11 +166,12 @@ namespace Com.Danliris.Service.Inventory.Test.Facades.Inventory
         public void Should_Success_MapToModel()
         {
             var serviceProvider = GetServiceProvider();
-            InventorySummaryService inventorySummaryService = new InventorySummaryService(serviceProvider.Object, _dbContext(GetCurrentMethod()));
+            InventoryDbContext dbContext = _dbContext(GetCurrentMethod());
+            InventorySummaryService inventorySummaryService = new InventorySummaryService(serviceProvider.Object, dbContext);
             serviceProvider.Setup(s => s.GetService(typeof(IInventorySummaryService)))
                 .Returns(inventorySummaryService);
 
-            InventoryMovementService service = new InventoryMovementService(serviceProvider.Object, _dbContext(GetCurrentMethod()));
+            InventoryMovementService service = new InventoryMovementService(serviceProvider.Object, dbContext);
             var data = _dataUtil(service).GetNewDataViewModel();
 
 
@@ -158,11 +184,12 @@ namespace Com.Danliris.Service.Inventory.Test.Facades.Inventory
         public async Task Should_Success_MapToViewModel()
         {
             var serviceProvider = GetServiceProvider();
-            InventorySummaryService inventorySummaryService = new InventorySummaryService(serviceProvider.Object, _dbContext(GetCurrentMethod()));
+            InventoryDbContext dbContext = _dbContext(GetCurrentMethod());
+            InventorySummaryService inventorySummaryService = new InventorySummaryService(serviceProvider.Object, dbContext);
             serviceProvider.Setup(s => s.GetService(typeof(IInventorySummaryService)))
                 .Returns(inventorySummaryService);
 
-            InventoryMovementService service = new InventoryMovementService(serviceProvider.Object, _dbContext(GetCurrentMethod()));
+            InventoryMovementService service = new InventoryMovementService(serviceProvider.Object, dbContext);
             var data = await _dataUtil(service).GetTestData();
             var model = service.MapToViewModel(data);
 
@@ -173,11 +200,13 @@ namespace Com.Danliris.Service.Inventory.Test.Facades.Inventory
         public async Task Should_Success_Read()
         {
             var serviceProvider = GetServiceProvider();
-            InventorySummaryService inventorySummaryService = new InventorySummaryService(serviceProvider.Object, _dbContext(GetCurrentMethod()));
+            InventoryDbContext dbContext = _dbContext(GetCurrentMethod());
+
+            InventorySummaryService inventorySummaryService = new InventorySummaryService(serviceProvider.Object, dbContext);
             serviceProvider.Setup(s => s.GetService(typeof(IInventorySummaryService)))
                 .Returns(inventorySummaryService);
 
-            InventoryMovementService service = new InventoryMovementService(serviceProvider.Object, _dbContext(GetCurrentMethod()));
+            InventoryMovementService service = new InventoryMovementService(serviceProvider.Object, dbContext);
             var data = await _dataUtil(service).GetTestData();
             var model = service.Read(1, 25, "{}", null, "{}");
 
@@ -188,11 +217,12 @@ namespace Com.Danliris.Service.Inventory.Test.Facades.Inventory
         public async Task Should_Success_ReadById()
         {
             var serviceProvider = GetServiceProvider();
-            InventorySummaryService inventorySummaryService = new InventorySummaryService(serviceProvider.Object, _dbContext(GetCurrentMethod()));
+            InventoryDbContext dbContext = _dbContext(GetCurrentMethod());
+            InventorySummaryService inventorySummaryService = new InventorySummaryService(serviceProvider.Object, dbContext);
             serviceProvider.Setup(s => s.GetService(typeof(IInventorySummaryService)))
                 .Returns(inventorySummaryService);
 
-            InventoryMovementService service = new InventoryMovementService(serviceProvider.Object, _dbContext(GetCurrentMethod()));
+            InventoryMovementService service = new InventoryMovementService(serviceProvider.Object, dbContext);
             var data = await _dataUtil(service).GetTestData();
             var model = service.ReadModelById(data.Id);
 
@@ -203,27 +233,47 @@ namespace Com.Danliris.Service.Inventory.Test.Facades.Inventory
         public async Task Should_Success_RefreshMovememnt()
         {
             var serviceProvider = GetServiceProvider();
-            InventorySummaryService inventorySummaryService = new InventorySummaryService(serviceProvider.Object, _dbContext(GetCurrentMethod()));
+            InventoryDbContext dbContext = _dbContext(GetCurrentMethod());
+
+            InventorySummaryService inventorySummaryService = new InventorySummaryService(serviceProvider.Object,dbContext);
             serviceProvider.Setup(s => s.GetService(typeof(IInventorySummaryService)))
                 .Returns(inventorySummaryService);
-            InventoryMovementService inventoryMovementService = new InventoryMovementService(serviceProvider.Object, _dbContext(GetCurrentMethod()));
+            InventoryMovementService inventoryMovementService = new InventoryMovementService(serviceProvider.Object, dbContext);
             var data = await _dataUtil(inventoryMovementService).GetTestData();
             var result = await inventoryMovementService.RefreshInventoryMovement();
             Assert.NotEqual(0, result);
         }
 
+
         [Fact]
         public void Should_Success_GenerateExcel_Dystuff()
         {
             var serviceProvider = GetServiceProvider();
-            InventorySummaryService inventorySummaryService = new InventorySummaryService(serviceProvider.Object, _dbContext(GetCurrentMethod()));
+            InventoryDbContext dbContext = _dbContext(GetCurrentMethod());
+            InventorySummaryService inventorySummaryService = new InventorySummaryService(serviceProvider.Object, dbContext);
             serviceProvider.Setup(s => s.GetService(typeof(IInventorySummaryService)))
                 .Returns(inventorySummaryService);
 
-            InventoryMovementService service = new InventoryMovementService(serviceProvider.Object, _dbContext(GetCurrentMethod()));
+            InventoryMovementService service = new InventoryMovementService(serviceProvider.Object, dbContext);
             var data = _dataUtil(service).GetTestData();
 
-            InventoryDystuffService facade = new InventoryDystuffService(serviceProvider.Object, _dbContext(GetCurrentMethod()));
+            InventoryDystuffService facade = new InventoryDystuffService(serviceProvider.Object, dbContext);
+            var Response = facade.GenerateExcel(null, null, null, 7);
+            Assert.NotNull(Response);
+        }
+
+        [Fact]
+        public void Should_Success_GenerateExcel_Dystuff_with_EmptyData()
+        {
+            var serviceProvider = GetServiceProvider();
+            InventoryDbContext dbContext = _dbContext(GetCurrentMethod());
+            InventorySummaryService inventorySummaryService = new InventorySummaryService(serviceProvider.Object, dbContext);
+            serviceProvider.Setup(s => s.GetService(typeof(IInventorySummaryService)))
+                .Returns(inventorySummaryService);
+
+            InventoryMovementService service = new InventoryMovementService(serviceProvider.Object, dbContext);
+
+            InventoryDystuffService facade = new InventoryDystuffService(serviceProvider.Object, dbContext);
             var Response = facade.GenerateExcel(null, null, null, 7);
             Assert.NotNull(Response);
         }
@@ -232,16 +282,19 @@ namespace Com.Danliris.Service.Inventory.Test.Facades.Inventory
         public void Should_Success_GetReport_Dystuff()
         {
             var serviceProvider = GetServiceProvider();
-            InventorySummaryService inventorySummaryService = new InventorySummaryService(serviceProvider.Object, _dbContext(GetCurrentMethod()));
+            InventoryDbContext dbContext = _dbContext(GetCurrentMethod());
+            InventorySummaryService inventorySummaryService = new InventorySummaryService(serviceProvider.Object, dbContext);
             serviceProvider.Setup(s => s.GetService(typeof(IInventorySummaryService)))
                 .Returns(inventorySummaryService);
 
-            InventoryMovementService service = new InventoryMovementService(serviceProvider.Object, _dbContext(GetCurrentMethod()));
+            InventoryMovementService service = new InventoryMovementService(serviceProvider.Object, dbContext);
             var data = _dataUtil(service).GetTestData();
 
-            InventoryDystuffService facade = new InventoryDystuffService(serviceProvider.Object, _dbContext(GetCurrentMethod()));
+            InventoryDystuffService facade = new InventoryDystuffService(serviceProvider.Object, dbContext);
             var Response = facade.GetReport(null, null, null, 1, 25, "{}", 7);
             Assert.NotNull(Response);
         }
+
+
     }
 }

@@ -404,6 +404,19 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
             };
             var result2 = viewModel2.Validate(null);
             Assert.True(result2.Count() > 0);
+
+            GarmentLeftoverWarehouseReceiptAvalViewModel viewModel3 = new GarmentLeftoverWarehouseReceiptAvalViewModel()
+            {
+                UnitFrom = null,
+                AvalType = "AVAL ACCESSORIES",
+                ReceiptDate = DateTimeOffset.Now.AddDays(4),
+                Items = new List<GarmentLeftoverWarehouseReceiptAvalItemViewModel>()
+                {
+                   
+                }
+            };
+            var result3 = viewModel3.Validate(null);
+            Assert.True(result3.Count() > 0);
         }
     }
 }
