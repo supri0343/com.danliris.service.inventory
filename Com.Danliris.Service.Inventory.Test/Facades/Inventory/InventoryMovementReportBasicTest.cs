@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
+using Newtonsoft.Json;
 using System;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
@@ -141,7 +142,7 @@ namespace Com.Danliris.Service.Inventory.Test.Facades.Inventory
                 .Returns(inventorySummaryService);
 
             InventoryMovementService service = new InventoryMovementService(serviceProvider.Object, dbContext);
-           
+
             var Response = service.GenerateExcel(null, null, null, null, null, 7);
             Assert.NotNull(Response);
         }
@@ -159,6 +160,29 @@ namespace Com.Danliris.Service.Inventory.Test.Facades.Inventory
             var data = _dataUtil(service).GetTestData();
 
             var Response = service.GetReport(null, null, null, null, null, 1, 25, "{}", 7);
+            Assert.NotNull(Response);
+        }
+
+        [Fact]
+        public void Should_Success_GetReport_With_Order()
+        {
+            var serviceProvider = GetServiceProvider();
+            InventoryDbContext dbContext = _dbContext(GetCurrentMethod());
+            InventorySummaryService inventorySummaryService = new InventorySummaryService(serviceProvider.Object, dbContext);
+            serviceProvider.Setup(s => s.GetService(typeof(IInventorySummaryService)))
+                .Returns(inventorySummaryService);
+
+            InventoryMovementService service = new InventoryMovementService(serviceProvider.Object, dbContext);
+            var data = _dataUtil(service).GetTestData();
+
+            var orderProperty = new
+            {
+                No = "asc"
+            };
+
+            var order = JsonConvert.SerializeObject(orderProperty);
+
+            var Response = service.GetReport(null, null, null, null, null, 1, 25, order, 7);
             Assert.NotNull(Response);
         }
 
@@ -235,7 +259,7 @@ namespace Com.Danliris.Service.Inventory.Test.Facades.Inventory
             var serviceProvider = GetServiceProvider();
             InventoryDbContext dbContext = _dbContext(GetCurrentMethod());
 
-            InventorySummaryService inventorySummaryService = new InventorySummaryService(serviceProvider.Object,dbContext);
+            InventorySummaryService inventorySummaryService = new InventorySummaryService(serviceProvider.Object, dbContext);
             serviceProvider.Setup(s => s.GetService(typeof(IInventorySummaryService)))
                 .Returns(inventorySummaryService);
             InventoryMovementService inventoryMovementService = new InventoryMovementService(serviceProvider.Object, dbContext);

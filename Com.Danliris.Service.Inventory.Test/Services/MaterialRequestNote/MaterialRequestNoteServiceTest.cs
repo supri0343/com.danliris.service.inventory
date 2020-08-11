@@ -16,6 +16,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Xunit;
+using Newtonsoft.Json;
 
 namespace Com.Danliris.Service.Inventory.Test.Services.MaterialRequestNote
 {
@@ -280,6 +281,20 @@ namespace Com.Danliris.Service.Inventory.Test.Services.MaterialRequestNote
             NewMaterialRequestNoteService service = new NewMaterialRequestNoteService(GetServiceProvider().Object, _dbContext(GetCurrentMethod()));
             var data = await _dataUtil(service).GetTestData();
             var response = service.GetReport(null, null, null, null, null, null, null, 1, 25, "{}", 6);
+            Assert.True(true);
+        }
+
+        [Fact]
+        public async Task Should_Success_GetReport_with_order()
+        {
+            NewMaterialRequestNoteService service = new NewMaterialRequestNoteService(GetServiceProvider().Object, _dbContext(GetCurrentMethod()));
+            var data = await _dataUtil(service).GetTestData();
+            var orderProperty = new
+            {
+                Code ="asc"
+            };
+            string order = JsonConvert.SerializeObject(orderProperty);
+            var response = service.GetReport(null, null, null, null, null, null, null, 1, 25, order, 6);
             Assert.True(true);
         }
 

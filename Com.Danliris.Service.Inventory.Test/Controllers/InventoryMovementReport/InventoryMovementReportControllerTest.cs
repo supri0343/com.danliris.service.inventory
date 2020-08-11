@@ -88,7 +88,7 @@ namespace Com.Danliris.Service.Inventory.Test.Controllers.InventoryMovementRepor
                 It.IsAny<string>(), It.IsAny<int>()))
                 .Returns(new Tuple<List<InventoryMovementViewModel>, int>(new List<InventoryMovementViewModel>(), 1));
             var controller = GetController(mocks);
-            var response = controller.GetReportAll(null, null, null, null, null, 1, 25);
+            var response = controller.GetReportAll(null, null, null, null, null, 0, 0);
             Assert.Equal((int)HttpStatusCode.OK, GetStatusCode(response));
         }
 

@@ -407,16 +407,18 @@ namespace Com.Danliris.Service.Inventory.Test.Services.MaterialDistributionNote
         public async Task Should_Success_UpdateIsApprove()
         {
             var serviceProvider = GetServiceProvider();
-            NewMaterialRequestNoteService serviceMrn = new NewMaterialRequestNoteService(serviceProvider.Object, _dbContext(GetCurrentMethod()));
-            InventorySummaryService inventorySummaryService = new InventorySummaryService(serviceProvider.Object, _dbContext(GetCurrentMethod()));
+            InventoryDbContext dbContext = _dbContext(GetCurrentMethod());
+
+            NewMaterialRequestNoteService serviceMrn = new NewMaterialRequestNoteService(serviceProvider.Object, dbContext);
+            InventorySummaryService inventorySummaryService = new InventorySummaryService(serviceProvider.Object, dbContext);
             serviceProvider.Setup(s => s.GetService(typeof(IInventorySummaryService)))
                 .Returns(inventorySummaryService);
 
-            InventoryMovementService inventoryMovementService = new InventoryMovementService(serviceProvider.Object, _dbContext(GetCurrentMethod()));
+            InventoryMovementService inventoryMovementService = new InventoryMovementService(serviceProvider.Object, dbContext);
             serviceProvider.Setup(s => s.GetService(typeof(IInventoryMovementService)))
                 .Returns(inventoryMovementService);
 
-            InventoryDocumentService inventoryDocumentFacade = new InventoryDocumentService(serviceProvider.Object, _dbContext(GetCurrentMethod()));
+            InventoryDocumentService inventoryDocumentFacade = new InventoryDocumentService(serviceProvider.Object, dbContext);
             serviceProvider.Setup(s => s.GetService(typeof(IInventoryDocumentService)))
                 .Returns(inventoryDocumentFacade);
             var mrn = await _dataUtilMrn(serviceMrn).GetTestData();
@@ -431,6 +433,7 @@ namespace Com.Danliris.Service.Inventory.Test.Services.MaterialDistributionNote
             Assert.True(response);
         }
 
+        
 
 
 

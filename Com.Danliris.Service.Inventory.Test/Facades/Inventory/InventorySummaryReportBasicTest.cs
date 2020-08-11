@@ -140,6 +140,24 @@ namespace Com.Danliris.Service.Inventory.Test.Facades.Inventory
         }
 
         [Fact]
+        public void Should_Success_GetReport_with_Order()
+        {
+            var serviceProvider = GetServiceProvider();
+
+            InventorySummaryService service = new InventorySummaryService(serviceProvider.Object, _dbContext(GetCurrentMethod()));
+            var data = _dataUtil(service).GetTestData();
+
+            var orderProperty = new
+            {
+                code = "asc"
+            };
+            string order = JsonConvert.SerializeObject(orderProperty);
+
+            var Response = service.GetReport(null, null, 1, 25, order, 7);
+            Assert.NotNull(Response);
+        }
+
+        [Fact]
         public void Should_Success_MapToModel()
         {
             var serviceProvider = GetServiceProvider();
