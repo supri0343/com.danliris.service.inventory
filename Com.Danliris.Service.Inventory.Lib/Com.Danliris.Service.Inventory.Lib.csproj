@@ -22,6 +22,8 @@
     <Compile Remove="Interfaces\IReadable.cs" />
     <Compile Remove="Interfaces\IReadByIdable.cs" />
     <Compile Remove="Interfaces\IToModelable.cs" />
+    <Compile Remove="Migrations\20210331092957_Adding GarmentLeftOverWarehouseReceiptAccessories.cs" />
+    <Compile Remove="Migrations\20210331092957_Adding GarmentLeftOverWarehouseReceiptAccessories.Designer.cs" />
     <Compile Remove="Services\FpRegradingResultDocs\FpRegradingResultDetailsDocsService.cs" />
     <Compile Remove="Services\FpRegradingResultDocs\FpRegradingResultDocsService.cs" />
     <Compile Remove="Services\FPReturnInvToPurchasingService\FPReturnInvToPurchasingDetailService.cs" />
