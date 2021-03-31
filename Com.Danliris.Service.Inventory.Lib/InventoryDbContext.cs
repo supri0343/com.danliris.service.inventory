@@ -27,6 +27,7 @@ using Com.Danliris.Service.Inventory.Lib.Models.GarmentLeftoverWarehouse.Expendi
 using Com.Danliris.Service.Inventory.Lib.Configs.GarmentLeftoverWarehouse.ExpenditureFabric;
 using Com.Danliris.Service.Inventory.Lib.Configs.GarmentLeftoverWarehouse.ExpenditureAval;
 using Com.Danliris.Service.Inventory.Lib.Models.GarmentLeftoverWarehouse.ExpenditureAval;
+using Com.Danliris.Service.Inventory.Lib.Models.GarmentLeftoverWarehouse.ReceiptAccessories;
 
 namespace Com.Danliris.Service.Inventory.Lib
 {
@@ -72,6 +73,9 @@ namespace Com.Danliris.Service.Inventory.Lib
 
         public DbSet<GarmentLeftoverWarehouseExpenditureAval> GarmentLeftoverWarehouseExpenditureAvals { get; set; }
         public DbSet<GarmentLeftoverWarehouseExpenditureAvalItem> GarmentLeftoverWarehouseExpenditureAvalItems { get; set; }
+
+        public DbSet<GarmentLeftoverWarehouseExpenditureAccessory> GarmentLeftoverWarehouseExpenditureAccessories { get; set; }
+        public DbSet<GarmentLeftoverWarehouseExpenditureAccessoryItem> GarmentLeftoverWarehouseExpenditureAccessoryItems { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
