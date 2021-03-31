@@ -40,6 +40,7 @@ namespace Com.Danliris.Service.Inventory.Test.DataUtils.GarmentLeftoverWarehouse
                         ProductCode = "Product",
                         ProductName = "Product",
                         ProductRemark = "Remark",
+                        FabricRemark = "FabricRemark",
                         Quantity = 1,
                         UomId = 1,
                         UomUnit = "Uom"
