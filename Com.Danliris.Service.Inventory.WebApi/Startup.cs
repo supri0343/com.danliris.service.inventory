@@ -202,11 +202,11 @@ namespace Com.Danliris.Service.Inventory.WebApi
             {
                 app.UseDeveloperExceptionPage();
             }
-            //using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
-            //{
-            //    var context = serviceScope.ServiceProvider.GetService<InventoryDbContext>();
-            //    context.Database.Migrate();
-            //}
+            using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
+            {
+                var context = serviceScope.ServiceProvider.GetService<InventoryDbContext>();
+                context.Database.Migrate();
+            }
             app.UseAuthentication();
             app.UseCors("InventoryPolicy");
             app.UseMvc();

@@ -19,7 +19,7 @@ namespace Com.Danliris.Service.Inventory.WebApi.Controllers.v1.GarmentLeftoverWa
     public class GarmentLeftoverWarehouseReceiptAccessoriesController : BaseController<GarmentLeftoverWarehouseExpenditureAccessory, GarmentLeftoverWarehouseReceiptAccessoriesViewModel, IGarmentLeftoverWarehouseReceiptAccessoriesService>
     {
 
-        public GarmentLeftoverWarehouseReceiptAccessoriesController(IIdentityService identityService, IValidateService validateService, IGarmentLeftoverWarehouseReceiptAccessoriesService service, string apiVersion) : base(identityService, validateService, service, apiVersion)
+        public GarmentLeftoverWarehouseReceiptAccessoriesController(IIdentityService identityService, IValidateService validateService, IGarmentLeftoverWarehouseReceiptAccessoriesService service) : base(identityService, validateService, service, "1.0.0")
         {
         }
     }
