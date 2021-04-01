@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Com.Danliris.Service.Inventory.Lib.Migrations
 {
     [DbContext(typeof(InventoryDbContext))]
-    [Migration("20210401011753_addingRoJobAndRemarkInGarmentLeftoverWarehouseReceiptAccessories")]
-    partial class addingRoJobAndRemarkInGarmentLeftoverWarehouseReceiptAccessories
+    [Migration("20210401080216_addingGarmentLeftoverWarehouseReceiptAccessories")]
+    partial class addingGarmentLeftoverWarehouseReceiptAccessories
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -1231,10 +1231,6 @@ namespace Com.Danliris.Service.Inventory.Lib.Migrations
 
                     b.Property<double>("Quantity");
 
-                    b.Property<string>("ROJob");
-
-                    b.Property<string>("Remark");
-
                     b.Property<long>("UENItemId");
 
                     b.Property<long>("UomId");
@@ -1444,7 +1440,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Migrations
                     b.ToTable("GarmentLeftoverWarehouseReceiptFinishedGoodItems");
                 });
 
-            modelBuilder.Entity("Com.Danliris.Service.Inventory.Lib.Models.GarmentLeftoverWarehouse.ReceiptAccessories.GarmentLeftoverWarehouseExpenditureAccessory", b =>
+            modelBuilder.Entity("Com.Danliris.Service.Inventory.Lib.Models.GarmentLeftoverWarehouse.ReceiptAccessories.GarmentLeftoverWarehouseReceiptAccessory", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -1510,10 +1506,10 @@ namespace Com.Danliris.Service.Inventory.Lib.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("GarmentLeftoverWarehouseExpenditureAccessories");
+                    b.ToTable("GarmentLeftoverWarehouseReceiptAccessories");
                 });
 
-            modelBuilder.Entity("Com.Danliris.Service.Inventory.Lib.Models.GarmentLeftoverWarehouse.ReceiptAccessories.GarmentLeftoverWarehouseExpenditureAccessoryItem", b =>
+            modelBuilder.Entity("Com.Danliris.Service.Inventory.Lib.Models.GarmentLeftoverWarehouse.ReceiptAccessories.GarmentLeftoverWarehouseReceiptAccessoryItem", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -1521,7 +1517,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Migrations
 
                     b.Property<bool>("Active");
 
-                    b.Property<int>("GarmentLeftOverWarehouseExpenditureAccessoriesId");
+                    b.Property<int>("GarmentLeftOverWarehouseReceiptAccessoriesId");
 
                     b.Property<string>("POSerialNumber");
 
@@ -1534,6 +1530,10 @@ namespace Com.Danliris.Service.Inventory.Lib.Migrations
                     b.Property<string>("ProductRemark");
 
                     b.Property<double>("Quantity");
+
+                    b.Property<string>("ROJob");
+
+                    b.Property<string>("Remark");
 
                     b.Property<string>("UomUnit");
 
@@ -1573,9 +1573,9 @@ namespace Com.Danliris.Service.Inventory.Lib.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("GarmentLeftOverWarehouseExpenditureAccessoriesId");
+                    b.HasIndex("GarmentLeftOverWarehouseReceiptAccessoriesId");
 
-                    b.ToTable("GarmentLeftoverWarehouseExpenditureAccessoryItems");
+                    b.ToTable("GarmentLeftoverWarehouseReceiptAccessoryItems");
                 });
 
             modelBuilder.Entity("Com.Danliris.Service.Inventory.Lib.Models.GarmentLeftoverWarehouse.Stock.GarmentLeftoverWarehouseStock", b =>
@@ -2639,11 +2639,11 @@ namespace Com.Danliris.Service.Inventory.Lib.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("Com.Danliris.Service.Inventory.Lib.Models.GarmentLeftoverWarehouse.ReceiptAccessories.GarmentLeftoverWarehouseExpenditureAccessoryItem", b =>
+            modelBuilder.Entity("Com.Danliris.Service.Inventory.Lib.Models.GarmentLeftoverWarehouse.ReceiptAccessories.GarmentLeftoverWarehouseReceiptAccessoryItem", b =>
                 {
-                    b.HasOne("Com.Danliris.Service.Inventory.Lib.Models.GarmentLeftoverWarehouse.ReceiptAccessories.GarmentLeftoverWarehouseExpenditureAccessory", "GarmentLeftoverWarehouseExpenditureAccessories")
+                    b.HasOne("Com.Danliris.Service.Inventory.Lib.Models.GarmentLeftoverWarehouse.ReceiptAccessories.GarmentLeftoverWarehouseReceiptAccessory", "GarmentLeftoverWarehouseExpenditureAccessories")
                         .WithMany("Items")
-                        .HasForeignKey("GarmentLeftOverWarehouseExpenditureAccessoriesId")
+                        .HasForeignKey("GarmentLeftOverWarehouseReceiptAccessoriesId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 

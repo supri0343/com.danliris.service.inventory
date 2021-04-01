@@ -16,7 +16,7 @@ namespace Com.Danliris.Service.Inventory.WebApi.Controllers.v1.GarmentLeftoverWa
     [ApiVersion("1.0")]
     [Route("v{version:apiVersion}/garment/leftover-warehouse-receipts/accessories")]
     [Authorize]
-    public class GarmentLeftoverWarehouseReceiptAccessoriesController : BaseController<GarmentLeftoverWarehouseExpenditureAccessory, GarmentLeftoverWarehouseReceiptAccessoriesViewModel, IGarmentLeftoverWarehouseReceiptAccessoriesService>
+    public class GarmentLeftoverWarehouseReceiptAccessoriesController : BaseController<GarmentLeftoverWarehouseReceiptAccessory, GarmentLeftoverWarehouseReceiptAccessoriesViewModel, IGarmentLeftoverWarehouseReceiptAccessoriesService>
     {
 
         public GarmentLeftoverWarehouseReceiptAccessoriesController(IIdentityService identityService, IValidateService validateService, IGarmentLeftoverWarehouseReceiptAccessoriesService service) : base(identityService, validateService, service, "1.0.0")

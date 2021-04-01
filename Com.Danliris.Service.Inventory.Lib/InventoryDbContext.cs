@@ -74,8 +74,8 @@ namespace Com.Danliris.Service.Inventory.Lib
         public DbSet<GarmentLeftoverWarehouseExpenditureAval> GarmentLeftoverWarehouseExpenditureAvals { get; set; }
         public DbSet<GarmentLeftoverWarehouseExpenditureAvalItem> GarmentLeftoverWarehouseExpenditureAvalItems { get; set; }
 
-        public DbSet<GarmentLeftoverWarehouseExpenditureAccessory> GarmentLeftoverWarehouseExpenditureAccessories { get; set; }
-        public DbSet<GarmentLeftoverWarehouseExpenditureAccessoryItem> GarmentLeftoverWarehouseExpenditureAccessoryItems { get; set; }
+        public DbSet<GarmentLeftoverWarehouseReceiptAccessory> GarmentLeftoverWarehouseReceiptAccessories { get; set; }
+        public DbSet<GarmentLeftoverWarehouseReceiptAccessoryItem> GarmentLeftoverWarehouseReceiptAccessoryItems { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
