@@ -213,6 +213,7 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
             var newData = dataUtil.CopyData(oldData);
             newData.ExpenditureDate = newData.ExpenditureDate.AddDays(-1);
             newData.Description = "New" + newData.Description;
+            newData.LocalSalesNoteNo = "New" + newData.LocalSalesNoteNo;
             newData.Items.Add(newItem);
             var lastItem = newData.Items.Last();
             lastItem.Id = 0;
@@ -258,6 +259,7 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
 
             var newData = dataUtil.CopyData(oldData);
             newData.Description = "New" + newData.Description;
+            newData.LocalSalesNoteNo = "New" + newData.LocalSalesNoteNo;
             var firsItem = newData.Items.First();
             firsItem.Quantity++;
             var lastItem = newData.Items.Last();
@@ -344,6 +346,7 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
                 ExpenditureDate = DateTimeOffset.Now,
                 ExpenditureTo = "JUAL LOKAL",
                 Description = "Remark",
+                LocalSalesNoteNo = "LocalSalesNoteNo",
                 OtherDescription = "sadd",
                 Items = new List<GarmentLeftoverWarehouseExpenditureAvalItemViewModel>
                     {

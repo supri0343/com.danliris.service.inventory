@@ -4,14 +4,16 @@ using Com.Danliris.Service.Inventory.Lib;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Com.Danliris.Service.Inventory.Lib.Migrations
 {
     [DbContext(typeof(InventoryDbContext))]
-    partial class InventoryDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210401082855_AddField_LocalSalesNoteNo_AllGarmentLeftoverWarehouseExpenditure")]
+    partial class AddField_LocalSalesNoteNo_AllGarmentLeftoverWarehouseExpenditure
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -558,8 +560,6 @@ namespace Com.Danliris.Service.Inventory.Lib.Migrations
                     b.Property<string>("ExpenditureTo")
                         .HasMaxLength(50);
 
-                    b.Property<int>("LocalSalesNoteId");
-
                     b.Property<string>("LocalSalesNoteNo")
                         .HasMaxLength(50);
 
@@ -717,8 +717,6 @@ namespace Com.Danliris.Service.Inventory.Lib.Migrations
                         .IsRequired()
                         .HasMaxLength(25);
 
-                    b.Property<int>("LocalSalesNoteId");
-
                     b.Property<string>("LocalSalesNoteNo")
                         .HasMaxLength(50);
 
@@ -874,8 +872,6 @@ namespace Com.Danliris.Service.Inventory.Lib.Migrations
                     b.Property<string>("FinishedGoodExpenditureNo")
                         .IsRequired()
                         .HasMaxLength(25);
-
-                    b.Property<int>("LocalSalesNoteId");
 
                     b.Property<string>("LocalSalesNoteNo")
                         .HasMaxLength(50);
@@ -1455,7 +1451,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Migrations
                     b.ToTable("GarmentLeftoverWarehouseReceiptFinishedGoodItems");
                 });
 
-            modelBuilder.Entity("Com.Danliris.Service.Inventory.Lib.Models.GarmentLeftoverWarehouse.ReceiptAccessories.GarmentLeftoverWarehouseReceiptAccessory", b =>
+            modelBuilder.Entity("Com.Danliris.Service.Inventory.Lib.Models.GarmentLeftoverWarehouse.ReceiptAccessories.GarmentLeftoverWarehouseExpenditureAccessory", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -1521,10 +1517,10 @@ namespace Com.Danliris.Service.Inventory.Lib.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("GarmentLeftoverWarehouseReceiptAccessories");
+                    b.ToTable("GarmentLeftoverWarehouseExpenditureAccessories");
                 });
 
-            modelBuilder.Entity("Com.Danliris.Service.Inventory.Lib.Models.GarmentLeftoverWarehouse.ReceiptAccessories.GarmentLeftoverWarehouseReceiptAccessoryItem", b =>
+            modelBuilder.Entity("Com.Danliris.Service.Inventory.Lib.Models.GarmentLeftoverWarehouse.ReceiptAccessories.GarmentLeftoverWarehouseExpenditureAccessoryItem", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -1532,7 +1528,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Migrations
 
                     b.Property<bool>("Active");
 
-                    b.Property<int>("GarmentLeftOverWarehouseReceiptAccessoriesId");
+                    b.Property<int>("GarmentLeftOverWarehouseExpenditureAccessoriesId");
 
                     b.Property<string>("POSerialNumber");
 
@@ -1545,10 +1541,6 @@ namespace Com.Danliris.Service.Inventory.Lib.Migrations
                     b.Property<string>("ProductRemark");
 
                     b.Property<double>("Quantity");
-
-                    b.Property<string>("ROJob");
-
-                    b.Property<string>("Remark");
 
                     b.Property<string>("UomUnit");
 
@@ -1588,9 +1580,9 @@ namespace Com.Danliris.Service.Inventory.Lib.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("GarmentLeftOverWarehouseReceiptAccessoriesId");
+                    b.HasIndex("GarmentLeftOverWarehouseExpenditureAccessoriesId");
 
-                    b.ToTable("GarmentLeftoverWarehouseReceiptAccessoryItems");
+                    b.ToTable("GarmentLeftoverWarehouseExpenditureAccessoryItems");
                 });
 
             modelBuilder.Entity("Com.Danliris.Service.Inventory.Lib.Models.GarmentLeftoverWarehouse.Stock.GarmentLeftoverWarehouseStock", b =>
@@ -2654,11 +2646,11 @@ namespace Com.Danliris.Service.Inventory.Lib.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("Com.Danliris.Service.Inventory.Lib.Models.GarmentLeftoverWarehouse.ReceiptAccessories.GarmentLeftoverWarehouseReceiptAccessoryItem", b =>
+            modelBuilder.Entity("Com.Danliris.Service.Inventory.Lib.Models.GarmentLeftoverWarehouse.ReceiptAccessories.GarmentLeftoverWarehouseExpenditureAccessoryItem", b =>
                 {
-                    b.HasOne("Com.Danliris.Service.Inventory.Lib.Models.GarmentLeftoverWarehouse.ReceiptAccessories.GarmentLeftoverWarehouseReceiptAccessory", "GarmentLeftoverWarehouseExpenditureAccessories")
+                    b.HasOne("Com.Danliris.Service.Inventory.Lib.Models.GarmentLeftoverWarehouse.ReceiptAccessories.GarmentLeftoverWarehouseExpenditureAccessory", "GarmentLeftoverWarehouseExpenditureAccessories")
                         .WithMany("Items")
-                        .HasForeignKey("GarmentLeftOverWarehouseReceiptAccessoriesId")
+                        .HasForeignKey("GarmentLeftOverWarehouseExpenditureAccessoriesId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 

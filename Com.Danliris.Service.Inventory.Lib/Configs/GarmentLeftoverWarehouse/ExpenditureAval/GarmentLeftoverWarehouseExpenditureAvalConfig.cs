@@ -27,6 +27,9 @@ namespace Com.Danliris.Service.Inventory.Lib.Configs.GarmentLeftoverWarehouse.Ex
 
             builder.Property(p => p.Description).HasMaxLength(3000);
 
+            builder.Property(p => p.LocalSalesNoteNo)
+                .HasMaxLength(50);
+
             builder
                 .HasMany(h => h.Items)
                 .WithOne(w => w.GarmentLeftoverWarehouseExpenditureAval)

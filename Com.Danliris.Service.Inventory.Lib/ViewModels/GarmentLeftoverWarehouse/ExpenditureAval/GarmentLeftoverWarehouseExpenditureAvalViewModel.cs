@@ -16,6 +16,8 @@ namespace Com.Danliris.Service.Inventory.Lib.ViewModels.GarmentLeftoverWarehouse
         public BuyerViewModel Buyer { get; set; }
         public string OtherDescription { get; set; }
         public string Description { get; set; }
+        public string LocalSalesNoteNo { get; set; }
+        public int LocalSalesNoteId { get; set; }
         public virtual List<GarmentLeftoverWarehouseExpenditureAvalItemViewModel> Items { get; set; }
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
@@ -39,6 +41,11 @@ namespace Com.Danliris.Service.Inventory.Lib.ViewModels.GarmentLeftoverWarehouse
                 yield return new ValidationResult("Buyer tidak boleh kosong", new List<string> { "Buyer" });
             }
 
+            if (string.IsNullOrEmpty(LocalSalesNoteNo))
+            {
+                yield return new ValidationResult("Nomor Nota Penjualan Lokal Tidak Boleh Kosong", new List<string> { "LocalSalesNoteNo" });
+            }
+
             if (Items == null || Items.Count < 1)
             {
                 yield return new ValidationResult("Items tidak boleh kosong", new List<string> { "ItemsCount" });
@@ -57,6 +64,7 @@ namespace Com.Danliris.Service.Inventory.Lib.ViewModels.GarmentLeftoverWarehouse
                         errorItem["Unit"] = "Unit tidak boleh kosong";
                         errorCount++;
                     }
+
 
                     if(AvalType=="AVAL FABRIC")
                     {
