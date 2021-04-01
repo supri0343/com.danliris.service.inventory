@@ -6,7 +6,7 @@ using Com.Danliris.Service.Inventory.Lib.ViewModels.GarmentLeftoverWarehouse.Rec
 
 namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.ReceiptAccessories
 {
-    public interface IGarmentLeftoverWarehouseReceiptAccessoriesService : IBaseService<GarmentLeftoverWarehouseExpenditureAccessory, GarmentLeftoverWarehouseReceiptAccessoriesViewModel>
+    public interface IGarmentLeftoverWarehouseReceiptAccessoriesService : IBaseService<GarmentLeftoverWarehouseReceiptAccessory, GarmentLeftoverWarehouseReceiptAccessoriesViewModel>
     {
     }
 }

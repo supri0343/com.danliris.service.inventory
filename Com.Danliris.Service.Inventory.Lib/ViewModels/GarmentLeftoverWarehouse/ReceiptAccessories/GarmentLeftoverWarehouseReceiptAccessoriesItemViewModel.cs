@@ -14,6 +14,8 @@ namespace Com.Danliris.Service.Inventory.Lib.ViewModels.GarmentLeftoverWarehouse
         public double Quantity { get; set; }
         public long UomUnitId { get; set; }
         public string UomUnit { get; set; }
+        public string ROJob { get; set; }
+        public string Remark { get; set; }
         public ProductViewModel Product { get; set; }
         public UomViewModel Uom { get; set; }
     }
