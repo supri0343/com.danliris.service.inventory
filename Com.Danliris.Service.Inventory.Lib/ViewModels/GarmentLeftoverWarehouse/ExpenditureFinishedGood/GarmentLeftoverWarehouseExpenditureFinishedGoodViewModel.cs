@@ -14,6 +14,7 @@ namespace Com.Danliris.Service.Inventory.Lib.ViewModels.GarmentLeftoverWarehouse
         public string ExpenditureTo { get; set; }
         public BuyerViewModel Buyer { get; set; }
         public string OtherDescription { get; set; }
+        public bool Consignment { get; set; }
         public string Description { get; set; }
         public virtual List<GarmentLeftoverWarehouseExpenditureFinishedGoodItemViewModel> Items { get; set; }
 
