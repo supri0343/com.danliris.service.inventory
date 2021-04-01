@@ -29,6 +29,7 @@ namespace Com.Danliris.Service.Inventory.Test.DataUtils.GarmentLeftoverWarehouse
                 ExpenditureTo = "JUAL LOKAL",
                 Description = "Remark",
                 OtherDescription="Lain-lain",
+                Consignment = false,
                 Items = new List<GarmentLeftoverWarehouseExpenditureFinishedGoodItem>
                 {
                     new GarmentLeftoverWarehouseExpenditureFinishedGoodItem
