@@ -23,7 +23,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
         private const string UserAgent = "GarmentLeftoverWarehouseReceiptAccessoriesService";
 
         private InventoryDbContext DbContext;
-        private DbSet<GarmentLeftoverWarehouseExpenditureAccessory> DbSet;
+        private DbSet<GarmentLeftoverWarehouseReceiptAccessory> DbSet;
 
         private readonly IServiceProvider ServiceProvider;
         private readonly IIdentityService IdentityService;
@@ -32,14 +32,14 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
         public GarmentLeftoverWarehouseReceiptAccessoriesService(InventoryDbContext dbContext, IServiceProvider serviceProvider)
         {
             DbContext = dbContext;
-            DbSet = DbContext.Set<GarmentLeftoverWarehouseExpenditureAccessory>();
+            DbSet = DbContext.Set<GarmentLeftoverWarehouseReceiptAccessory>();
 
             ServiceProvider = serviceProvider;
             IdentityService = (IIdentityService)serviceProvider.GetService(typeof(IIdentityService));
             StockService = (IGarmentLeftoverWarehouseStockService)serviceProvider.GetService(typeof(IGarmentLeftoverWarehouseStockService));
             GarmentUnitReceiptNoteUri = APIEndpoint.Purchasing + "garment-unit-expenditure-notes/";
         }
-        public async Task<int> CreateAsync(GarmentLeftoverWarehouseExpenditureAccessory model)
+        public async Task<int> CreateAsync(GarmentLeftoverWarehouseReceiptAccessory model)
         {
             using (var transaction = DbContext.Database.CurrentTransaction ?? DbContext.Database.BeginTransaction())
             {
@@ -98,7 +98,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                 {
                     int Deleted = 0;
 
-                    GarmentLeftoverWarehouseExpenditureAccessory model = await ReadByIdAsync(id);
+                    GarmentLeftoverWarehouseReceiptAccessory model = await ReadByIdAsync(id);
                     model.FlagForDelete(IdentityService.Username, UserAgent);
                     foreach (var item in model.Items)
                     {
@@ -138,10 +138,10 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
 
         }
 
-        public GarmentLeftoverWarehouseExpenditureAccessory MapToModel(GarmentLeftoverWarehouseReceiptAccessoriesViewModel viewModel)
+        public GarmentLeftoverWarehouseReceiptAccessory MapToModel(GarmentLeftoverWarehouseReceiptAccessoriesViewModel viewModel)
         {
-            GarmentLeftoverWarehouseExpenditureAccessory model = new GarmentLeftoverWarehouseExpenditureAccessory();
-            PropertyCopier<GarmentLeftoverWarehouseReceiptAccessoriesViewModel, GarmentLeftoverWarehouseExpenditureAccessory>.Copy(viewModel, model);
+            GarmentLeftoverWarehouseReceiptAccessory model = new GarmentLeftoverWarehouseReceiptAccessory();
+            PropertyCopier<GarmentLeftoverWarehouseReceiptAccessoriesViewModel, GarmentLeftoverWarehouseReceiptAccessory>.Copy(viewModel, model);
 
             if (viewModel.RequestUnit != null)
             {
@@ -157,11 +157,11 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                 model.StorageFromName = viewModel.Storage.name;
             }
 
-            model.Items = new List<GarmentLeftoverWarehouseExpenditureAccessoryItem>();
+            model.Items = new List<GarmentLeftoverWarehouseReceiptAccessoryItem>();
             foreach (var viewModelItem in viewModel.Items)
             {
-                GarmentLeftoverWarehouseExpenditureAccessoryItem modelItem = new GarmentLeftoverWarehouseExpenditureAccessoryItem();
-                PropertyCopier<GarmentLeftoverWarehouseReceiptAccessoriesItemViewModel, GarmentLeftoverWarehouseExpenditureAccessoryItem>.Copy(viewModelItem, modelItem);
+                GarmentLeftoverWarehouseReceiptAccessoryItem modelItem = new GarmentLeftoverWarehouseReceiptAccessoryItem();
+                PropertyCopier<GarmentLeftoverWarehouseReceiptAccessoriesItemViewModel, GarmentLeftoverWarehouseReceiptAccessoryItem>.Copy(viewModelItem, modelItem);
 
                 if (viewModelItem.Product != null)
                 {
@@ -182,10 +182,10 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
             return model;
         }
 
-        public GarmentLeftoverWarehouseReceiptAccessoriesViewModel MapToViewModel(GarmentLeftoverWarehouseExpenditureAccessory model)
+        public GarmentLeftoverWarehouseReceiptAccessoriesViewModel MapToViewModel(GarmentLeftoverWarehouseReceiptAccessory model)
         {
             GarmentLeftoverWarehouseReceiptAccessoriesViewModel viewModel = new GarmentLeftoverWarehouseReceiptAccessoriesViewModel();
-            PropertyCopier<GarmentLeftoverWarehouseExpenditureAccessory, GarmentLeftoverWarehouseReceiptAccessoriesViewModel>.Copy(model, viewModel);
+            PropertyCopier<GarmentLeftoverWarehouseReceiptAccessory, GarmentLeftoverWarehouseReceiptAccessoriesViewModel>.Copy(model, viewModel);
 
             viewModel.RequestUnit = new UnitViewModel
             {
@@ -207,7 +207,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                 foreach (var modelItem in model.Items)
                 {
                     GarmentLeftoverWarehouseReceiptAccessoriesItemViewModel viewModelItem = new GarmentLeftoverWarehouseReceiptAccessoriesItemViewModel();
-                    PropertyCopier<GarmentLeftoverWarehouseExpenditureAccessoryItem, GarmentLeftoverWarehouseReceiptAccessoriesItemViewModel>.Copy(modelItem, viewModelItem);
+                    PropertyCopier<GarmentLeftoverWarehouseReceiptAccessoryItem, GarmentLeftoverWarehouseReceiptAccessoriesItemViewModel>.Copy(modelItem, viewModelItem);
 
                     viewModelItem.Product = new ProductViewModel
                     {
@@ -228,31 +228,31 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
             return viewModel;
         }
 
-        public ReadResponse<GarmentLeftoverWarehouseExpenditureAccessory> Read(int page, int size, string order, List<string> select, string keyword, string filter)
+        public ReadResponse<GarmentLeftoverWarehouseReceiptAccessory> Read(int page, int size, string order, List<string> select, string keyword, string filter)
         {
-            IQueryable<GarmentLeftoverWarehouseExpenditureAccessory> Query = DbSet;
+            IQueryable<GarmentLeftoverWarehouseReceiptAccessory> Query = DbSet;
 
             List<string> SearchAttributes = new List<string>()
             {
                 "InvoiceNoReceive", "RequestUnitName", "UENNo", "StorageFromName"
             };
-            Query = QueryHelper<GarmentLeftoverWarehouseExpenditureAccessory>.Search(Query, SearchAttributes, keyword);
+            Query = QueryHelper<GarmentLeftoverWarehouseReceiptAccessory>.Search(Query, SearchAttributes, keyword);
 
             Dictionary<string, object> FilterDictionary = JsonConvert.DeserializeObject<Dictionary<string, object>>(filter);
-            Query = QueryHelper<GarmentLeftoverWarehouseExpenditureAccessory>.Filter(Query, FilterDictionary);
+            Query = QueryHelper<GarmentLeftoverWarehouseReceiptAccessory>.Filter(Query, FilterDictionary);
 
             Dictionary<string, string> OrderDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(order);
-            Query = QueryHelper<GarmentLeftoverWarehouseExpenditureAccessory>.Order(Query, OrderDictionary);
+            Query = QueryHelper<GarmentLeftoverWarehouseReceiptAccessory>.Order(Query, OrderDictionary);
 
             List<string> SelectedFields = (select != null && select.Count > 0) ? select : new List<string>()
             {
                 "Id", "InvoiceNoReceive", "RequestUnitName", "UENNo", "StorageFromName", "StorageReceiveDate"
             };
 
-            //Query = Query.Select(s => new GarmentLeftoverWarehouseExpenditureAccessory
+            //Query = Query.Select(s => new GarmentLeftoverWarehouseReceiptAccessory
             //{
             //    Id = s.Id,
-            //    ExpenditureDate = s.ExpenditureDate,
+            //    ReceiptDate = s.ReceiptDate,
             //    UnitFromId = s.UnitFromId,
             //    UnitFromCode = s.UnitFromCode,
             //    UnitFromName = s.UnitFromName,
@@ -263,14 +263,14 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
             //    ReceiptDate = s.ReceiptDate
             //});
 
-            Pageable<GarmentLeftoverWarehouseExpenditureAccessory> pageable = new Pageable<GarmentLeftoverWarehouseExpenditureAccessory>(Query, page - 1, size);
-            List<GarmentLeftoverWarehouseExpenditureAccessory> Data = pageable.Data.ToList();
+            Pageable<GarmentLeftoverWarehouseReceiptAccessory> pageable = new Pageable<GarmentLeftoverWarehouseReceiptAccessory>(Query, page - 1, size);
+            List<GarmentLeftoverWarehouseReceiptAccessory> Data = pageable.Data.ToList();
             int TotalData = pageable.TotalCount;
 
-            return new ReadResponse<GarmentLeftoverWarehouseExpenditureAccessory>(Data, TotalData, OrderDictionary, SelectedFields);
+            return new ReadResponse<GarmentLeftoverWarehouseReceiptAccessory>(Data, TotalData, OrderDictionary, SelectedFields);
         }
 
-        public async Task<GarmentLeftoverWarehouseExpenditureAccessory> ReadByIdAsync(int id)
+        public async Task<GarmentLeftoverWarehouseReceiptAccessory> ReadByIdAsync(int id)
         {
             return await DbSet
                 .Where(w => w.Id == id)
@@ -278,7 +278,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                 .FirstOrDefaultAsync();
         }
 
-        public async Task<int> UpdateAsync(int id, GarmentLeftoverWarehouseExpenditureAccessory model)
+        public async Task<int> UpdateAsync(int id, GarmentLeftoverWarehouseReceiptAccessory model)
         {
             int Updated = 0;
 
@@ -286,7 +286,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
             {
                 try
                 {
-                    GarmentLeftoverWarehouseExpenditureAccessory existingModel = await DbSet.Where(w => w.Id == id).FirstOrDefaultAsync();
+                    GarmentLeftoverWarehouseReceiptAccessory existingModel = await DbSet.Where(w => w.Id == id).FirstOrDefaultAsync();
                     //if (existingModel.InvoiceNoReceive != model.InvoiceNoReceive)
                     //{
                     //    existingModel.InvoiceNoReceive = model.InvoiceNoReceive;
@@ -376,7 +376,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
             return Updated;
         }
 
-        private string GenerateNo(GarmentLeftoverWarehouseExpenditureAccessory model)
+        private string GenerateNo(GarmentLeftoverWarehouseReceiptAccessory model)
         {
             string code = "BMACC";
             string prefix = code + model.RequestUnitCode.Trim() + model._CreatedUtc.ToString("yy") + model._CreatedUtc.ToString("MM");
