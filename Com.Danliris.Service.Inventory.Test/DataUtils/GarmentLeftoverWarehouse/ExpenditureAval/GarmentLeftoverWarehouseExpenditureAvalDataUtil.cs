@@ -28,6 +28,7 @@ namespace Com.Danliris.Service.Inventory.Test.DataUtils.GarmentLeftoverWarehouse
                 ExpenditureDate = DateTimeOffset.Now,
                 ExpenditureTo = "JUAL LOKAL",
                 Description = "Remark",
+                LocalSalesNoteNo = "LocalSalesNoteNo",
                 AvalType="AVAL FABRIC",
                 BuyerId = 1,
                 BuyerCode = "BuyerCode",
@@ -81,6 +82,7 @@ namespace Com.Danliris.Service.Inventory.Test.DataUtils.GarmentLeftoverWarehouse
             {
                 ExpenditureTo = "JUAL LOKAL",
                 Description = "Remark",
+                LocalSalesNoteNo = "LocalSalesNoteNo",
                 AvalType = "AVAL ACCESSORIES",
                 BuyerId = 1,
                 BuyerCode = "BuyerCode",

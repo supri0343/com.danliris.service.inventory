@@ -28,6 +28,7 @@ namespace Com.Danliris.Service.Inventory.Test.DataUtils.GarmentLeftoverWarehouse
                 ExpenditureDate = DateTimeOffset.Now,
                 ExpenditureTo = "JUAL LOKAL",
                 Description = "Remark",
+                LocalSalesNoteNo = "LocalSalesNoteNo",
                 OtherDescription="Lain-lain",
                 Consignment = false,
                 Items = new List<GarmentLeftoverWarehouseExpenditureFinishedGoodItem>

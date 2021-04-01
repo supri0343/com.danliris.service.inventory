@@ -4,14 +4,16 @@ using Com.Danliris.Service.Inventory.Lib;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Com.Danliris.Service.Inventory.Lib.Migrations
 {
     [DbContext(typeof(InventoryDbContext))]
-    partial class InventoryDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210401082855_AddField_LocalSalesNoteNo_AllGarmentLeftoverWarehouseExpenditure")]
+    partial class AddField_LocalSalesNoteNo_AllGarmentLeftoverWarehouseExpenditure
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -558,8 +560,6 @@ namespace Com.Danliris.Service.Inventory.Lib.Migrations
                     b.Property<string>("ExpenditureTo")
                         .HasMaxLength(50);
 
-                    b.Property<int>("LocalSalesNoteId");
-
                     b.Property<string>("LocalSalesNoteNo")
                         .HasMaxLength(50);
 
@@ -717,8 +717,6 @@ namespace Com.Danliris.Service.Inventory.Lib.Migrations
                         .IsRequired()
                         .HasMaxLength(25);
 
-                    b.Property<int>("LocalSalesNoteId");
-
                     b.Property<string>("LocalSalesNoteNo")
                         .HasMaxLength(50);
 
@@ -874,8 +872,6 @@ namespace Com.Danliris.Service.Inventory.Lib.Migrations
                     b.Property<string>("FinishedGoodExpenditureNo")
                         .IsRequired()
                         .HasMaxLength(25);
-
-                    b.Property<int>("LocalSalesNoteId");
 
                     b.Property<string>("LocalSalesNoteNo")
                         .HasMaxLength(50);
