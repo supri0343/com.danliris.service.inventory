@@ -12,6 +12,7 @@ namespace Com.Danliris.Service.Inventory.Lib.ViewModels.GarmentLeftoverWarehouse
 
         public ProductViewModel Product { get; set; }
         public string ProductRemark { get; set; }
+        public string FabricRemark { get; set; }
 
         public double Quantity { get; set; }
 

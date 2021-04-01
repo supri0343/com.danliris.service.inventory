@@ -10,6 +10,7 @@ using Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.Expen
 using Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.GarmentLeftoverWarehouseReceiptAvalServices;
 using Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.GarmentLeftoverWarehouseReceiptFabricServices;
 using Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.GarmentLeftoverWarehouseReceiptFinishedGoodServices;
+using Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.ReceiptAccessories;
 using Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.Stock;
 using Com.Danliris.Service.Inventory.Lib.Services.Inventory;
 using Com.Danliris.Service.Inventory.Lib.Services.MaterialDistributionNoteService;
@@ -95,6 +96,7 @@ namespace Com.Danliris.Service.Inventory.WebApi
                 .AddTransient<IGarmentLeftoverWarehouseExpenditureFinishedGoodService, GarmentLeftoverWarehouseExpenditureFinishedGoodService>()
                 .AddTransient<IGarmentLeftoverWarehouseExpenditureAvalService, GarmentLeftoverWarehouseExpenditureAvalService>()
                 .AddTransient<IGarmentLeftoverWarehouseExpenditureFabricService, GarmentLeftoverWarehouseExpenditureFabricService>()
+                .AddTransient<IGarmentLeftoverWarehouseReceiptAccessoriesService, GarmentLeftoverWarehouseReceiptAccessoriesService>()
                 .AddScoped<IIdentityService, IdentityService>()
                 .AddScoped<IValidateService, ValidateService>()
                 .AddScoped<IHttpService, HttpService>()
@@ -200,11 +202,11 @@ namespace Com.Danliris.Service.Inventory.WebApi
             {
                 app.UseDeveloperExceptionPage();
             }
-            using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
-            {
-                var context = serviceScope.ServiceProvider.GetService<InventoryDbContext>();
-                context.Database.Migrate();
-            }
+            //using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
+            //{
+            //    var context = serviceScope.ServiceProvider.GetService<InventoryDbContext>();
+            //    context.Database.Migrate();
+            //}
             app.UseAuthentication();
             app.UseCors("InventoryPolicy");
             app.UseMvc();

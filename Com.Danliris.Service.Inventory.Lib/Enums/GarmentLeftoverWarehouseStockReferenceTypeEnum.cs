@@ -5,6 +5,7 @@
         FABRIC,
         FINISHED_GOOD,
         AVAL_FABRIC,
-        AVAL_ACCECORIES
+        AVAL_ACCECORIES,
+        ACCESSORIES
     }
 }
