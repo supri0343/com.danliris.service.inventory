@@ -21,5 +21,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Models.GarmentLeftoverWarehouse.Gar
 
         public long UomId { get; set; }
         public string UomUnit { get; set; }
+        public string ROJob { get; set; }
+        public string Remark { get; set; }
+
     }
 }
