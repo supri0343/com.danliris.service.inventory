@@ -17,6 +17,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Models.GarmentLeftoverWarehouse.Exp
         public string OtherDescription { get; set; }
         public string Description { get; set; }
         public bool Consignment { get; set; }
+        public string LocalSalesNoteNo { get; set; }
+        public int LocalSalesNoteId { get; set; }
         public virtual ICollection<GarmentLeftoverWarehouseExpenditureFinishedGoodItem> Items { get; set; }
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {

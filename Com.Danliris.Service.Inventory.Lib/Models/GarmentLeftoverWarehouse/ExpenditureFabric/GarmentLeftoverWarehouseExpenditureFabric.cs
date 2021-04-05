@@ -25,6 +25,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Models.GarmentLeftoverWarehouse.Exp
         public string EtcRemark { get; set; }
 
         public string Remark { get; set; }
+        public string LocalSalesNoteNo { get; set; }
+        public int LocalSalesNoteId { get; set; }
 
         public virtual ICollection<GarmentLeftoverWarehouseExpenditureFabricItem> Items { get; set; }
 

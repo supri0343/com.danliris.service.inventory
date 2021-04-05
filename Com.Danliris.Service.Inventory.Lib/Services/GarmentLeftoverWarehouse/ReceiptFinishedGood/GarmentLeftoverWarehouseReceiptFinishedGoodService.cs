@@ -88,6 +88,13 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
                     modelItem.UomUnit = viewModelItem.Uom.Unit;
                 }
 
+                if (viewModelItem.LeftoverComodity != null)
+                {
+                    modelItem.LeftoverComodityCode = viewModelItem.LeftoverComodity.Code;
+                    modelItem.LeftoverComodityId = viewModelItem.LeftoverComodity.Id;
+                    modelItem.LeftoverComodityName = viewModelItem.LeftoverComodity.Name;
+                }
+
                 model.Items.Add(modelItem);
             }
 
@@ -138,6 +145,13 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
                     {
                         Id = modelItem.UomId.ToString(),
                         Unit = modelItem.UomUnit
+                    };
+
+                    viewModelItem.LeftoverComodity = new LeftoverComodityViewModel
+                    {
+                        Id = modelItem.LeftoverComodityId,
+                        Name = modelItem.LeftoverComodityName,
+                        Code = modelItem.LeftoverComodityCode
                     };
 
                     viewModel.Items.Add(viewModelItem);

@@ -18,6 +18,8 @@ namespace Com.Danliris.Service.Inventory.Lib.ViewModels.GarmentLeftoverWarehouse
         public BuyerViewModel Buyer { get; set; }
         public string EtcRemark { get; set; }
         public string Remark { get; set; }
+        public string LocalSalesNoteNo { get; set; }
+        public int LocalSalesNoteId { get; set; }
 
         public List<GarmentLeftoverWarehouseExpenditureFabricItemViewModel> Items { get; set; }
 
@@ -30,6 +32,11 @@ namespace Com.Danliris.Service.Inventory.Lib.ViewModels.GarmentLeftoverWarehouse
             else if (ExpenditureDate > DateTimeOffset.Now)
             {
                 yield return new ValidationResult("Tanggal Pengeluaran tidak boleh lebih dari hari ini", new List<string> { "ExpenditureDate" });
+            }
+
+            if (string.IsNullOrEmpty(LocalSalesNoteNo))
+            {
+                yield return new ValidationResult("Nomor Nota Penjualan Lokal Tidak Boleh Kosong", new List<string> { "LocalSalesNoteNo" });
             }
 
             if (string.IsNullOrWhiteSpace(ExpenditureDestination))
