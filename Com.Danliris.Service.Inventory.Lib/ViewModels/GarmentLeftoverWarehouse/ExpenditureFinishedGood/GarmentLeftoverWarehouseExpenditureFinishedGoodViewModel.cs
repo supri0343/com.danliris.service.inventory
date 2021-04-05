@@ -41,7 +41,7 @@ namespace Com.Danliris.Service.Inventory.Lib.ViewModels.GarmentLeftoverWarehouse
                 yield return new ValidationResult("Buyer tidak boleh kosong", new List<string> { "Buyer" });
             }
 
-            if (string.IsNullOrEmpty(LocalSalesNoteNo))
+            if (ExpenditureTo == "JUAL LOKAL" && string.IsNullOrEmpty(LocalSalesNoteNo))
             {
                 yield return new ValidationResult("Nomor Nota Penjualan Lokal Tidak Boleh Kosong", new List<string> { "LocalSalesNoteNo" });
             }
