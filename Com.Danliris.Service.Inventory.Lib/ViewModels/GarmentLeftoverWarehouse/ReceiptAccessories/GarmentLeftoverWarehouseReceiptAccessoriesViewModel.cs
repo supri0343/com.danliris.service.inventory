@@ -16,7 +16,8 @@ namespace Com.Danliris.Service.Inventory.Lib.ViewModels.GarmentLeftoverWarehouse
         public int RequestUnitId { get; set; }
         public UnitViewModel RequestUnit { get; set; }
         public string UENNo { get; set; }
-        public int UENid { get; set; }
+        public long UENid { get; set; }
+        //public int UENId { get; set; }
         public string StorageFromCode { get; set; }
         public string StorageFromId { get; set; }
         public string StorageFromName { get; set; }
