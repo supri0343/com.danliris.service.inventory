@@ -34,10 +34,6 @@ namespace Com.Danliris.Service.Inventory.Lib.ViewModels.GarmentLeftoverWarehouse
                 yield return new ValidationResult("Tanggal Pengeluaran tidak boleh lebih dari hari ini", new List<string> { "ExpenditureDate" });
             }
 
-            if (string.IsNullOrEmpty(LocalSalesNoteNo))
-            {
-                yield return new ValidationResult("Nomor Nota Penjualan Lokal Tidak Boleh Kosong", new List<string> { "LocalSalesNoteNo" });
-            }
 
             if (string.IsNullOrWhiteSpace(ExpenditureDestination))
             {
@@ -53,6 +49,11 @@ namespace Com.Danliris.Service.Inventory.Lib.ViewModels.GarmentLeftoverWarehouse
                 if (ExpenditureDestination == "JUAL LOKAL" && Buyer == null)
                 {
                     yield return new ValidationResult("Buyer tidak boleh kosong", new List<string> { "Buyer" });
+                }
+
+                if (ExpenditureDestination == "JUAL LOKAL" && string.IsNullOrEmpty(LocalSalesNoteNo))
+                {
+                    yield return new ValidationResult("Nomor Nota Penjualan Lokal Tidak Boleh Kosong", new List<string> { "LocalSalesNoteNo" });
                 }
 
                 if (ExpenditureDestination == "LAIN-LAIN" && string.IsNullOrWhiteSpace(EtcRemark))
