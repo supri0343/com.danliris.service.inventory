@@ -290,6 +290,12 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
                             {
                                 Id = "1",
                                 Unit = "Uom"
+                            },
+                            LeftoverComodity= new LeftoverComodityViewModel
+                            {
+                                Id=1,
+                                Name="como",
+                                Code="como"
                             }
                         }
                     }

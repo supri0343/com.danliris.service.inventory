@@ -52,7 +52,10 @@ namespace Com.Danliris.Service.Inventory.Test.DataUtils.GarmentLeftoverWarehouse
                         Quantity = 1,
                         UomId = 1,
                         UomUnit = "Uom",
-                        Remark="remark"
+                        Remark="remark",
+                        LeftoverComodityCode="como",
+                        LeftoverComodityId=1,
+                        LeftoverComodityName="como"
                     }
                 }
             };
