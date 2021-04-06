@@ -28,6 +28,8 @@ using Com.Danliris.Service.Inventory.Lib.Configs.GarmentLeftoverWarehouse.Expend
 using Com.Danliris.Service.Inventory.Lib.Configs.GarmentLeftoverWarehouse.ExpenditureAval;
 using Com.Danliris.Service.Inventory.Lib.Models.GarmentLeftoverWarehouse.ExpenditureAval;
 using Com.Danliris.Service.Inventory.Lib.Models.GarmentLeftoverWarehouse.ReceiptAccessories;
+using Com.Danliris.Service.Inventory.Lib.Models.GarmentLeftoverWarehouse.ExpenditureAccessories;
+using Com.Danliris.Service.Inventory.Lib.Configs.GarmentLeftoverWarehouse.ExpenditureAccessories;
 
 namespace Com.Danliris.Service.Inventory.Lib
 {
@@ -71,6 +73,9 @@ namespace Com.Danliris.Service.Inventory.Lib
         public DbSet<GarmentLeftoverWarehouseExpenditureFabric> GarmentLeftoverWarehouseExpenditureFabrics { get; set; }
         public DbSet<GarmentLeftoverWarehouseExpenditureFabricItem> GarmentLeftoverWarehouseExpenditureFabricItems { get; set; }
 
+        public DbSet<GarmentLeftoverWarehouseExpenditureAccessories> GarmentLeftoverWarehouseExpenditureAccessories { get; set; }
+        public DbSet<GarmentLeftoverWarehouseExpenditureAccessoriesItem> GarmentLeftoverWarehouseExpenditureAccessoriesItems { get; set; }
+
         public DbSet<GarmentLeftoverWarehouseExpenditureAval> GarmentLeftoverWarehouseExpenditureAvals { get; set; }
         public DbSet<GarmentLeftoverWarehouseExpenditureAvalItem> GarmentLeftoverWarehouseExpenditureAvalItems { get; set; }
 
@@ -112,6 +117,9 @@ namespace Com.Danliris.Service.Inventory.Lib
 
             modelBuilder.ApplyConfiguration(new GarmentLeftoverWarehouseExpenditureFabricConfig());
             modelBuilder.ApplyConfiguration(new GarmentLeftoverWarehouseExpenditureFabricItemConfig());
+
+            modelBuilder.ApplyConfiguration(new GarmentLeftoverWarehouseExpenditureAccessoriesConfig());
+            modelBuilder.ApplyConfiguration(new GarmentLeftoverWarehouseExpenditureAccessoriesItemConfig());
 
             modelBuilder.ApplyConfiguration(new GarmentLeftoverWarehouseExpenditureAvalConfig());
             modelBuilder.ApplyConfiguration(new GarmentLeftoverWarehouseExpenditureAvalItemConfig());
