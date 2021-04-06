@@ -31,7 +31,9 @@ namespace Com.Danliris.Service.Inventory.Test.Controllers.FpRegradingResultDocs
                 {
                     new FpRegradingResultDetailsDocsViewModel()
                     {
-                        Product = new FpRegradingResultDetailsDocsViewModel.product()
+                        Product = new FpRegradingResultDetailsDocsViewModel.product(),
+                        LengthBeforeReGrade=1,
+                        GradeBefore ="A"
                     }
                 }
             };

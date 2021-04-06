@@ -207,7 +207,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
 
                         await UpdateAvalProductIsReceived(avalItemIds, true);
                     }
-                    else
+                    else if (model.AvalType == "AVAL BAHAN PENOLONG")
                     {
                         foreach (var item in model.Items)
                         {
@@ -227,6 +227,26 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
                             await StockService.StockIn(stock, model.AvalReceiptNo, model.Id, item.Id);
                         }
                             
+                    }else if (model.AvalType == "AVAL KOMPONEN")
+                    {
+                        foreach (var item in model.Items)
+                        {
+                            GarmentLeftoverWarehouseStock stock = new GarmentLeftoverWarehouseStock
+                            {
+                                ReferenceType = GarmentLeftoverWarehouseStockReferenceTypeEnum.COMPONENT,
+                                UnitId = model.UnitFromId,
+                                UnitCode = model.UnitFromCode,
+                                UnitName = model.UnitFromName,
+                                Quantity = item.Quantity,
+                                ProductCode = item.ProductCode,
+                                ProductName = item.ProductName,
+                                ProductId = item.ProductId,
+                                UomId = item.UomId,
+                                UomUnit = item.UomUnit,
+                                RONo = item.RONo,
+                            };
+                            await StockService.StockIn(stock, model.AvalReceiptNo, model.Id, item.Id);
+                        }
                     }
                     
 
@@ -335,7 +355,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
                         await StockService.StockOut(stock, model.AvalReceiptNo, model.Id, 0);
                         await UpdateAvalProductIsReceived(avalItemIds, false);
                     }
-                    else
+                    else if (model.AvalType == "AVAL BAHAN PENOLONG")
                     {
                         foreach (var item in model.Items)
                         {
@@ -355,6 +375,26 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
                             await StockService.StockOut(stock, model.AvalReceiptNo, model.Id, item.Id);
                         }
 
+                    } else if (model.AvalType == "AVAL KOMPONEN")
+                    {
+                        foreach (var item in model.Items)
+                        {
+                            GarmentLeftoverWarehouseStock stock = new GarmentLeftoverWarehouseStock
+                            {
+                                ReferenceType = GarmentLeftoverWarehouseStockReferenceTypeEnum.COMPONENT,
+                                UnitId = model.UnitFromId,
+                                UnitCode = model.UnitFromCode,
+                                UnitName = model.UnitFromName,
+                                Quantity = item.Quantity,
+                                ProductCode = item.ProductCode,
+                                ProductName = item.ProductName,
+                                ProductId = item.ProductId,
+                                UomId = item.UomId,
+                                UomUnit = item.UomUnit,
+                                RONo = item.RONo,
+                            };
+                            await StockService.StockOut(stock, model.AvalReceiptNo, model.Id, item.Id);
+                        }
                     }
 
                     transaction.Commit();
@@ -371,7 +411,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
 
         private string GenerateNo(GarmentLeftoverWarehouseReceiptAval model)
         {
-            string code = model.AvalType == "AVAL FABRIC" ? "BMAF" : "BMAC";
+            //string code = model.AvalType == "AVAL FABRIC" ? "BMAF" : "BMAC";
+            string code = getCode(model.AvalType);
             string prefix = code + model.UnitFromCode.Trim() + model._CreatedUtc.ToString("yy") + model._CreatedUtc.ToString("MM");
 
             var lastNo = DbSet.Where(w => w.AvalReceiptNo.StartsWith(prefix))
@@ -384,6 +425,30 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
             return curNo;
         }
 
+        private string getCode(string avalType)
+        {
+            string code = "";
+            switch (avalType)
+            {
+
+                case "AVAL FABRIC":
+                    code = "BMAF";
+                    break;
+
+                case "AVAL BAHAN PENOLONG":
+                    code = "BMAC";
+                    break;
+
+                case "AVAL KOMPONEN":
+                    code = "BMAK";
+                    break;
+
+                default:
+                    break;
+            }
+
+            return code;
+        }
         private async Task UpdateAvalProductIsReceived(List<string> ids, bool IsReceived)
         {
 

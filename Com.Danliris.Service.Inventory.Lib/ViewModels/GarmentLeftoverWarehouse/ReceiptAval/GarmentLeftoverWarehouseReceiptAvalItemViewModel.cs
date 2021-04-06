@@ -7,15 +7,23 @@ namespace Com.Danliris.Service.Inventory.Lib.ViewModels.GarmentLeftoverWarehouse
 {
     public class GarmentLeftoverWarehouseReceiptAvalItemViewModel : BasicViewModel
     {
+        //Aval Component
+        public string Article { get; set; }
+        public Guid AvalComponentId { get; set; }
+        public string AvalComponentNo { get; set; }
+
+        //Fabric
         public int AvalReceiptId { get; set; }
         public Guid GarmentAvalProductId { get; set; }
-        public string RONo { get; set; }
         public Guid GarmentAvalProductItemId { get; set; }
+
+        //Accecoris
         public ProductViewModel Product { get; set; }
         public string ProductRemark { get; set; }
 
+        //General
+        public string RONo { get; set; }
         public double Quantity { get; set; }
-
         public UomViewModel Uom { get; set; }
     }
 }
