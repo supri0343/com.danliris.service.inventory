@@ -15,8 +15,10 @@ namespace Com.Danliris.Service.Inventory.Lib.Configs.GarmentLeftoverWarehouse.St
             builder.Property(p => p.ProductCode).HasMaxLength(25);
             builder.Property(p => p.ProductName).HasMaxLength(100);
             builder.Property(p => p.UomUnit).HasMaxLength(100);
+            builder.Property(p => p.LeftoverComodityName).HasMaxLength(255);
+            builder.Property(p => p.LeftoverComodityCode).HasMaxLength(20);
 
-            builder.HasIndex(p => new { p.ReferenceType, p.UnitId, p.PONo, p.RONo, p.ProductId, p.UomId })
+            builder.HasIndex(p => new { p.ReferenceType, p.UnitId, p.PONo, p.RONo, p.ProductId, p.UomId, p.LeftoverComodityId })
                 .IsUnique()
                 .HasFilter("[_IsDeleted]=(0)");
 

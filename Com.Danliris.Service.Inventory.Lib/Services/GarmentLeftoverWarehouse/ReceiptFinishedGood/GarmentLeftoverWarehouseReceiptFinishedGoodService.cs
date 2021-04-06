@@ -244,6 +244,9 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
                             UnitCode = model.UnitFromCode,
                             UnitName = model.UnitFromName,
                             RONo = model.RONo,
+                            LeftoverComodityCode=item.LeftoverComodityCode,
+                            LeftoverComodityId=item.LeftoverComodityId,
+                            LeftoverComodityName=item.LeftoverComodityName,
                             Quantity = item.Quantity
                         };
                         await StockService.StockIn(stock, model.FinishedGoodReceiptNo, model.Id, item.Id);
@@ -322,6 +325,9 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
                             UnitCode = model.UnitFromCode,
                             UnitName = model.UnitFromName,
                             RONo = model.RONo,
+                            LeftoverComodityCode = item.LeftoverComodityCode,
+                            LeftoverComodityId = item.LeftoverComodityId,
+                            LeftoverComodityName = item.LeftoverComodityName,
                             Quantity = item.Quantity
                         };
 

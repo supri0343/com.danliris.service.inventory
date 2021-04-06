@@ -61,6 +61,10 @@ namespace Com.Danliris.Service.Inventory.Lib.ViewModels.GarmentLeftoverWarehouse
             {
                 yield return new ValidationResult("Items tidak boleh kosong", new List<string> { "ItemsCount" });
             }
+            else if (Items.Find(a => a.LeftoverComodity == null) != null)
+            {
+                yield return new ValidationResult("Ada komoditi yang belum diisi", new List<string> { "LeftoverComodity" });
+            }
             else
             {
                 int errorCount = 0;
@@ -82,6 +86,11 @@ namespace Com.Danliris.Service.Inventory.Lib.ViewModels.GarmentLeftoverWarehouse
                         errorCount++;
                     }
 
+                    if (item.LeftoverComodity == null)
+                    {
+                        errorItem["LeftoverComodity"] = "Komoditi tidak boleh kosong";
+                        errorCount++;
+                    }
                     errorItems.Add(errorItem);
                 }
 
