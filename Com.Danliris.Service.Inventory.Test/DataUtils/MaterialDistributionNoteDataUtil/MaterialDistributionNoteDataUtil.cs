@@ -107,5 +107,7 @@ namespace Com.Danliris.Service.Inventory.Test.DataUtils.MaterialDistributionNote
             await this.Service.CreateAsync(Data);
             return Data;
         }
+
+
     }
 }

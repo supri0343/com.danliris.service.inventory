@@ -7,6 +7,9 @@ namespace Com.Danliris.Service.Inventory.Lib.Models.GarmentLeftoverWarehouse.Gar
 {
     public class GarmentLeftoverWarehouseReceiptAvalItem : StandardEntity
     {
+        public Guid AvalComponentId { get; set; }
+        public string AvalComponentNo { get; set; }
+        public string Article { get; set; }
         public int AvalReceiptId { get; set; }
         public Guid GarmentAvalProductId { get; set; }
         public Guid GarmentAvalProductItemId { get; set; }

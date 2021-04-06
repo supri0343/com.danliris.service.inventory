@@ -61,7 +61,7 @@ namespace Com.Danliris.Service.Inventory.Test.Facades.Inventory
 
             serviceProvider
                 .Setup(x => x.GetService(typeof(IIdentityService)))
-                .Returns(new IdentityService() { Token = "Token", Username = "Test" });
+                .Returns(new IdentityService() { Token = "Token", Username = "Test",TimezoneOffset =1 });
 
             return serviceProvider;
         }
@@ -275,19 +275,74 @@ namespace Com.Danliris.Service.Inventory.Test.Facades.Inventory
         }
 
         [Fact]
-        public void Should_Success_ValidateNullDetailVM()
+        public void Should_Success_Validate_When_Type_ADJ()
         {
             var serviceProvider = GetServiceProvider();
-            InventorySummaryService inventorySummaryService = new InventorySummaryService(serviceProvider.Object, _dbContext(GetCurrentMethod()));
-            serviceProvider.Setup(s => s.GetService(typeof(IInventorySummaryService)))
+            InventoryDbContext dbContext = _dbContext(GetCurrentMethod());
+
+            InventorySummaryService inventorySummaryService = new InventorySummaryService(serviceProvider.Object, dbContext);
+            
+            serviceProvider
+                .Setup(s => s.GetService(typeof(IInventorySummaryService)))
                 .Returns(inventorySummaryService);
-            InventoryMovementService inventoryMovementService = new InventoryMovementService(serviceProvider.Object, _dbContext(GetCurrentMethod()));
-            serviceProvider.Setup(s => s.GetService(typeof(IInventoryMovementService)))
+
+            InventoryMovementService inventoryMovementService = new InventoryMovementService(serviceProvider.Object, dbContext);
+            serviceProvider
+                .Setup(s => s.GetService(typeof(IInventoryMovementService)))
                 .Returns(inventoryMovementService);
 
 
-            InventoryDocumentService service = new InventoryDocumentService(serviceProvider.Object, _dbContext(GetCurrentMethod()));
-            var vm = new InventoryDocumentViewModel() { items = new List<InventoryDocumentItemViewModel>() { new InventoryDocumentItemViewModel() } };
+            InventoryDocumentService service = new InventoryDocumentService(serviceProvider.Object, dbContext);
+            var vm = new InventoryDocumentViewModel() { 
+                no ="1",
+                code ="code",
+                items = new List<InventoryDocumentItemViewModel>() { 
+                    new InventoryDocumentItemViewModel()
+                    {
+                        quantity =0
+                    }
+                } 
+                ,
+                type = "ADJ"
+            };
+            ValidationContext validationContext = new ValidationContext(vm, serviceProvider.Object, null);
+            var response = vm.Validate(validationContext);
+
+            Assert.True(response.Count() > 0);
+
+
+        }
+
+        [Fact]
+        public void Should_Success_ValidateNullDetailVM()
+        {
+            var serviceProvider = GetServiceProvider();
+            InventoryDbContext dbContext = _dbContext(GetCurrentMethod());
+
+            InventorySummaryService inventorySummaryService = new InventorySummaryService(serviceProvider.Object, dbContext);
+
+            serviceProvider
+                .Setup(s => s.GetService(typeof(IInventorySummaryService)))
+                .Returns(inventorySummaryService);
+
+            InventoryMovementService inventoryMovementService = new InventoryMovementService(serviceProvider.Object, dbContext);
+            serviceProvider
+                .Setup(s => s.GetService(typeof(IInventoryMovementService)))
+                .Returns(inventoryMovementService);
+
+
+            InventoryDocumentService service = new InventoryDocumentService(serviceProvider.Object, dbContext);
+            var vm = new InventoryDocumentViewModel()
+            {
+                items = new List<InventoryDocumentItemViewModel>() {
+                    new InventoryDocumentItemViewModel()
+                    {
+                        quantity =0
+                    }
+                }
+                ,
+                type = "Non ADJ"
+            };
             ValidationContext validationContext = new ValidationContext(vm, serviceProvider.Object, null);
             var response = vm.Validate(validationContext);
 

@@ -61,6 +61,13 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.S
                 Unit = model.UomUnit
             };
 
+            viewModel.LeftoverComodity = new LeftoverComodityViewModel
+            {
+                Id = model.LeftoverComodityId.GetValueOrDefault(),
+                Code = model.ProductCode,
+                Name = model.ProductName
+            };
+
             if (model.Histories != null)
             {
                 viewModel.Histories = new List<GarmentLeftoverWarehouseStockHistoryViewModel>();
@@ -159,12 +166,15 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.S
                         Query = Query.Where(w => w.PONo == stock.PONo && w.UomId == stock.UomId);
                         break;
                     case GarmentLeftoverWarehouseStockReferenceTypeEnum.FINISHED_GOOD:
-                        Query = Query.Where(w => w.RONo == stock.RONo);
+                        Query = Query.Where(w => w.RONo == stock.RONo && w.LeftoverComodityId==stock.LeftoverComodityId && w.UnitId==stock.UnitId);
                         break;
                     case GarmentLeftoverWarehouseStockReferenceTypeEnum.AVAL_FABRIC:
                         break;
                     case GarmentLeftoverWarehouseStockReferenceTypeEnum.AVAL_ACCECORIES:
                         Query = Query.Where(w => w.ProductId == stock.ProductId && w.UomId == stock.UomId);
+                        break;
+                    case GarmentLeftoverWarehouseStockReferenceTypeEnum.COMPONENT:
+                        Query = Query.Where(w => w.RONo == stock.RONo);
                         break;
                 }
 
@@ -239,12 +249,15 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.S
                         Query = Query.Where(w => w.PONo == stock.PONo && w.UomId == stock.UomId);
                         break;
                     case GarmentLeftoverWarehouseStockReferenceTypeEnum.FINISHED_GOOD:
-                        Query = Query.Where(w => w.RONo == stock.RONo);
+                        Query = Query.Where(w => w.RONo == stock.RONo && w.LeftoverComodityId == stock.LeftoverComodityId);
                         break;
                     case GarmentLeftoverWarehouseStockReferenceTypeEnum.AVAL_FABRIC:
                         break;
                     case GarmentLeftoverWarehouseStockReferenceTypeEnum.AVAL_ACCECORIES:
                         Query = Query.Where(w => w.ProductId == stock.ProductId && w.UomId == stock.UomId);
+                        break;
+                    case GarmentLeftoverWarehouseStockReferenceTypeEnum.COMPONENT:
+                        Query = Query.Where(w => w.RONo == stock.RONo);
                         break;
                 }
 

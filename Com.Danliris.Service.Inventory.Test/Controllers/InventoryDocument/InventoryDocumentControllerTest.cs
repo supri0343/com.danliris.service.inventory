@@ -95,8 +95,16 @@ namespace Com.Danliris.Service.Inventory.Test.Controllers.InventoryDocument
         public void Get_WithoutException_ReturnOK()
         {
             var mocks = GetMocks();
-            mocks.Service.Setup(f => f.Read(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Returns(new ReadResponse<Lib.Models.InventoryModel.InventoryDocument>(new List<Lib.Models.InventoryModel.InventoryDocument>(), 0, new Dictionary<string, string>(), new List<string>()));
-            mocks.Service.Setup(f => f.MapToViewModel(It.IsAny<Lib.Models.InventoryModel.InventoryDocument>())).Returns(ViewModel);
+            mocks
+                .Service
+                .Setup(f => f.Read(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+                .Returns(new ReadResponse<Lib.Models.InventoryModel.InventoryDocument>(new List<Lib.Models.InventoryModel.InventoryDocument>() { new Lib.Models.InventoryModel.InventoryDocument()}, 0, new Dictionary<string, string>(), new List<string>()));
+            
+            mocks
+                .Service
+                .Setup(f => f.MapToViewModel(It.IsAny<Lib.Models.InventoryModel.InventoryDocument>()))
+                .Returns(ViewModel);
+
             int statusCode = GetStatusCodeGet(mocks);
             Assert.Equal((int)HttpStatusCode.OK, statusCode);
         }

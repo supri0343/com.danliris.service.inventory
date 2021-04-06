@@ -61,7 +61,7 @@ namespace Com.Danliris.Service.Inventory.Lib.ViewModels.GarmentLeftoverWarehouse
                             errorCount++;
                         }
                     }
-                    else
+                    else if(AvalType == "AVAL BAHAN PENOLONG")
                     {
                         if (item.Product == null)
                         {
@@ -76,6 +76,13 @@ namespace Com.Danliris.Service.Inventory.Lib.ViewModels.GarmentLeftoverWarehouse
                         if (item.Quantity <=0)
                         {
                             errorItem["Quantity"] = "Jumlah harus lebih dari 0";
+                            errorCount++;
+                        }
+                    }else if(AvalType == "AVAL KOMPONEN")
+                    {
+                        if (item.AvalComponentNo == null)
+                        {
+                            errorItem["AvalComponentNo"] = "No Aval komponen tidak boleh kosong";
                             errorCount++;
                         }
                     }

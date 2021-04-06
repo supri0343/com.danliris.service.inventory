@@ -7,6 +7,7 @@
         AVAL_FABRIC,
         AVAL_ACCECORIES,
         ACCESSORIES,
-        AVAL_BAHAN_PENOLONG
+        AVAL_BAHAN_PENOLONG,
+        COMPONENT
     }
 }

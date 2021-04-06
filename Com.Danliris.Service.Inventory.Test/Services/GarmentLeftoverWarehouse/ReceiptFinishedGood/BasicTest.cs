@@ -282,7 +282,8 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
                             ExpenditureGoodItemId = Guid.NewGuid(),
                             Size = new SizeViewModel{
                                 Id = 1,
-                                Name = "Size"
+                                Name = "Size",
+                                Code="Code"
                             },
                             Remark = "Remark",
                             Quantity = 1,
@@ -290,6 +291,12 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
                             {
                                 Id = "1",
                                 Unit = "Uom"
+                            },
+                            LeftoverComodity= new LeftoverComodityViewModel
+                            {
+                                Id=1,
+                                Name="como",
+                                Code="como"
                             }
                         }
                     }

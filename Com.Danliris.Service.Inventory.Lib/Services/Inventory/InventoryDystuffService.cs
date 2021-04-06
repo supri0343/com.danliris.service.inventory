@@ -47,7 +47,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.Inventory
                              && a.StorageCode == (string.IsNullOrWhiteSpace(storageCode) ? a.StorageCode : storageCode)
                              && a.Date.AddHours(offset).Date >= DateFrom.Date
                              && a.Date.AddHours(offset).Date <= DateTo.Date
-                            
+
                          select new InventoryDystuffViewModel
                          {
 
@@ -67,14 +67,14 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.Inventory
 
         public Tuple<List<InventoryDystuffViewModel>, int> GetReport(string storageCode, DateTime? dateFrom, DateTime? dateTo, int page, int size, string Order, int offset)
         {
-            var Query = GetReportQuery( storageCode, dateFrom, dateTo, offset);
+            var Query = GetReportQuery(storageCode, dateFrom, dateTo, offset);
 
             Dictionary<string, string> OrderDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(Order);
             if (OrderDictionary.Count.Equals(0))
             {
                 Query = Query.OrderByDescending(b => b.Date);
             }
-         
+
 
             Pageable<InventoryDystuffViewModel> pageable = new Pageable<InventoryDystuffViewModel>(Query, page - 1, size);
             List<InventoryDystuffViewModel> Data = pageable.Data.ToList<InventoryDystuffViewModel>();
@@ -82,6 +82,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.Inventory
 
             return Tuple.Create(Data, TotalData);
         }
+
 
         public MemoryStream GenerateExcel(string storageCode, DateTime? dateFrom, DateTime? dateTo, int offset)
         {
@@ -100,7 +101,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.Inventory
             result.Columns.Add(new DataColumn() { ColumnName = "Saldo AKhir", DataType = typeof(double) });
             result.Columns.Add(new DataColumn() { ColumnName = "Status", DataType = typeof(String) });
             if (Query.ToArray().Count() == 0)
-                result.Rows.Add("", "", "", "", "", "", "", 0, 0, 0, ""); // to allow column name to be generated properly for empty data as template
+                //   result.Rows.Add("", "", "", "", "", "", "", 0, 0, 0, ""); // to allow column name to be generated properly for empty data as template
+                result.Rows.Add("", "", "", "", "", 0, 0, 0, 0, "");
             else
             {
                 int index = 0;
@@ -119,6 +121,5 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.Inventory
         }
 
 
- 
     }
 }

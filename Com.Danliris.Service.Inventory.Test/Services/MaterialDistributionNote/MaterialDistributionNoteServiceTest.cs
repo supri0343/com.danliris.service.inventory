@@ -1,8 +1,10 @@
 ﻿using Com.Danliris.Service.Inventory.Lib;
+using Com.Danliris.Service.Inventory.Lib.Models.MaterialsRequestNoteModel;
 using Com.Danliris.Service.Inventory.Lib.Services;
 using Com.Danliris.Service.Inventory.Lib.Services.Inventory;
 using Com.Danliris.Service.Inventory.Lib.Services.MaterialDistributionNoteService;
 using Com.Danliris.Service.Inventory.Lib.Services.MaterialRequestNoteServices;
+using Com.Danliris.Service.Inventory.Lib.ViewModels;
 using Com.Danliris.Service.Inventory.Lib.ViewModels.MaterialDistributionNoteViewModel;
 using Com.Danliris.Service.Inventory.Test.DataUtils.MaterialDistributionNoteDataUtil;
 using Com.Danliris.Service.Inventory.Test.DataUtils.MaterialRequestNoteDataUtil;
@@ -10,6 +12,7 @@ using Com.Danliris.Service.Inventory.Test.Helpers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Moq;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -172,8 +175,18 @@ namespace Com.Danliris.Service.Inventory.Test.Services.MaterialDistributionNote
         //[Fact]
         //public async Task Should_Success_GetPdfReport()
         //{
-        //    NewMaterialRequestNoteService serviceMrn = new NewMaterialRequestNoteService(GetServiceProvider().Object, _dbContext(GetCurrentMethod()));
-        //    NewMaterialDistributionNoteService service = new NewMaterialDistributionNoteService(GetServiceProvider().Object, _dbContext(GetCurrentMethod()));
+        //    var serviceProvider = GetServiceProvider();
+        //    Mock<IMaterialRequestNoteService> IMaterialRequestNoteServiceMock = new Mock<IMaterialRequestNoteService>();
+        //    IMaterialRequestNoteServiceMock.Setup(s => s.ReadByIdAsync(It.IsAny<int>())).ReturnsAsync(new MaterialsRequestNote());
+
+        //    serviceProvider
+        //        .Setup(x => x.GetService(typeof(IMaterialRequestNoteService)))
+        //        .Returns(IMaterialRequestNoteServiceMock.Object);
+
+        //    var dbContext = _dbContext(GetCurrentMethod());
+
+        //    NewMaterialRequestNoteService serviceMrn = new NewMaterialRequestNoteService(serviceProvider.Object, dbContext);
+        //    NewMaterialDistributionNoteService service = new NewMaterialDistributionNoteService(serviceProvider.Object, dbContext);
         //    var data = await _dataUtil(service, serviceMrn).GetTestData();
         //    var response = service.GetPdfReport(null, null, null, DateTime.UtcNow, 7);
         //    Assert.NotEmpty(response);
@@ -182,13 +195,49 @@ namespace Com.Danliris.Service.Inventory.Test.Services.MaterialDistributionNote
         [Fact]
         public void Should_Success_GetReport()
         {
-            NewMaterialRequestNoteService serviceMrn = new NewMaterialRequestNoteService(GetServiceProvider().Object, _dbContext(GetCurrentMethod()));
-            NewMaterialDistributionNoteService service = new NewMaterialDistributionNoteService(GetServiceProvider().Object, _dbContext(GetCurrentMethod()));
+            var serviceProvider = GetServiceProvider();
+            Mock<IMaterialRequestNoteService> IMaterialRequestNoteServiceMock = new Mock<IMaterialRequestNoteService>();
+            IMaterialRequestNoteServiceMock.Setup(s => s.ReadByIdAsync(It.IsAny<int>())).ReturnsAsync(new MaterialsRequestNote());
+
+            serviceProvider
+                .Setup(x => x.GetService(typeof(IMaterialRequestNoteService)))
+                .Returns(IMaterialRequestNoteServiceMock.Object);
+
+            var dbContext = _dbContext(GetCurrentMethod());
+
+            NewMaterialRequestNoteService serviceMrn = new NewMaterialRequestNoteService(serviceProvider.Object, dbContext);
+            NewMaterialDistributionNoteService service = new NewMaterialDistributionNoteService(serviceProvider.Object, dbContext);
             var data = _dataUtil(service, serviceMrn).GetTestData();
             var response = service.GetReport(null, null, DateTime.UtcNow, 1, 25, "{}", 7);
             Assert.NotNull(response);
         }
 
+        [Fact]
+        public void Should_Success_GetReport_With_Order()
+        {
+            var serviceProvider = GetServiceProvider();
+            Mock<IMaterialRequestNoteService> IMaterialRequestNoteServiceMock = new Mock<IMaterialRequestNoteService>();
+            IMaterialRequestNoteServiceMock.Setup(s => s.ReadByIdAsync(It.IsAny<int>())).ReturnsAsync(new MaterialsRequestNote());
+
+            serviceProvider
+                .Setup(x => x.GetService(typeof(IMaterialRequestNoteService)))
+                .Returns(IMaterialRequestNoteServiceMock.Object);
+
+            var dbContext = _dbContext(GetCurrentMethod());
+
+            NewMaterialRequestNoteService serviceMrn = new NewMaterialRequestNoteService(serviceProvider.Object, dbContext);
+            NewMaterialDistributionNoteService service = new NewMaterialDistributionNoteService(serviceProvider.Object, dbContext);
+            var data = _dataUtil(service, serviceMrn).GetTestData();
+            var orderProperty = new
+            {
+                No = "desc"
+            };
+            string order = JsonConvert.SerializeObject(orderProperty);
+            var response = service.GetReport(null, null, DateTime.UtcNow, 1, 25, order, 7);
+            Assert.NotNull(response);
+        }
+
+        
         [Fact]
         public void Should_Success_MapToModel()
         {
@@ -358,16 +407,18 @@ namespace Com.Danliris.Service.Inventory.Test.Services.MaterialDistributionNote
         public async Task Should_Success_UpdateIsApprove()
         {
             var serviceProvider = GetServiceProvider();
-            NewMaterialRequestNoteService serviceMrn = new NewMaterialRequestNoteService(serviceProvider.Object, _dbContext(GetCurrentMethod()));
-            InventorySummaryService inventorySummaryService = new InventorySummaryService(serviceProvider.Object, _dbContext(GetCurrentMethod()));
+            InventoryDbContext dbContext = _dbContext(GetCurrentMethod());
+
+            NewMaterialRequestNoteService serviceMrn = new NewMaterialRequestNoteService(serviceProvider.Object, dbContext);
+            InventorySummaryService inventorySummaryService = new InventorySummaryService(serviceProvider.Object, dbContext);
             serviceProvider.Setup(s => s.GetService(typeof(IInventorySummaryService)))
                 .Returns(inventorySummaryService);
 
-            InventoryMovementService inventoryMovementService = new InventoryMovementService(serviceProvider.Object, _dbContext(GetCurrentMethod()));
+            InventoryMovementService inventoryMovementService = new InventoryMovementService(serviceProvider.Object, dbContext);
             serviceProvider.Setup(s => s.GetService(typeof(IInventoryMovementService)))
                 .Returns(inventoryMovementService);
 
-            InventoryDocumentService inventoryDocumentFacade = new InventoryDocumentService(serviceProvider.Object, _dbContext(GetCurrentMethod()));
+            InventoryDocumentService inventoryDocumentFacade = new InventoryDocumentService(serviceProvider.Object, dbContext);
             serviceProvider.Setup(s => s.GetService(typeof(IInventoryDocumentService)))
                 .Returns(inventoryDocumentFacade);
             var mrn = await _dataUtilMrn(serviceMrn).GetTestData();
@@ -381,6 +432,10 @@ namespace Com.Danliris.Service.Inventory.Test.Services.MaterialDistributionNote
 
             Assert.True(response);
         }
+
+        
+
+
 
         [Fact]
         public async Task Should_Success_ValidateVM()
@@ -398,7 +453,7 @@ namespace Com.Danliris.Service.Inventory.Test.Services.MaterialDistributionNote
                 Quantity = 1
             });
             InventoryMovementService inventoryMovementService = new InventoryMovementService(serviceProvider.Object, _dbContext(GetCurrentMethod()));
-            
+
             serviceProvider.Setup(s => s.GetService(typeof(IInventoryMovementService)))
                 .Returns(inventoryMovementService);
 
@@ -442,7 +497,7 @@ namespace Com.Danliris.Service.Inventory.Test.Services.MaterialDistributionNote
             //serviceProvider.Setup(s => s.GetService(typeof(InventoryDocumentFacade)))
             //    .Returns(inventoryDocumentFacade);
             NewMaterialDistributionNoteService service = new NewMaterialDistributionNoteService(serviceProvider.Object, _dbContext(GetCurrentMethod()));
-            var vm = new MaterialDistributionNoteViewModel() { MaterialDistributionNoteItems = new List<MaterialDistributionNoteItemViewModel>()};
+            var vm = new MaterialDistributionNoteViewModel() { MaterialDistributionNoteItems = new List<MaterialDistributionNoteItemViewModel>() };
             ValidationContext validationContext = new ValidationContext(vm, serviceProvider.Object, null);
             var response = vm.Validate(validationContext);
 
@@ -473,6 +528,155 @@ namespace Com.Danliris.Service.Inventory.Test.Services.MaterialDistributionNote
             //    .Returns(inventoryDocumentFacade);
             NewMaterialDistributionNoteService service = new NewMaterialDistributionNoteService(serviceProvider.Object, _dbContext(GetCurrentMethod()));
             var vm = new MaterialDistributionNoteViewModel() { MaterialDistributionNoteItems = new List<MaterialDistributionNoteItemViewModel>() { new MaterialDistributionNoteItemViewModel() } };
+            ValidationContext validationContext = new ValidationContext(vm, serviceProvider.Object, null);
+            var response = vm.Validate(validationContext);
+
+            Assert.True(response.Count() > 0);
+
+
+        }
+
+        [Fact]
+        public void Validate_MaterialRequestNote_when_ReceivedLength_isNull()
+        {
+            var serviceProvider = GetServiceProvider();
+            NewMaterialRequestNoteService serviceMrn = new NewMaterialRequestNoteService(serviceProvider.Object, _dbContext(GetCurrentMethod()));
+            InventorySummaryService inventorySummaryService = new InventorySummaryService(serviceProvider.Object, _dbContext(GetCurrentMethod()));
+            serviceProvider.Setup(s => s.GetService(typeof(IInventorySummaryService)))
+                .Returns(inventorySummaryService);
+
+            InventoryMovementService inventoryMovementService = new InventoryMovementService(serviceProvider.Object, _dbContext(GetCurrentMethod()));
+            serviceProvider.Setup(s => s.GetService(typeof(IInventoryMovementService)))
+                .Returns(inventoryMovementService);
+
+            InventoryDocumentService inventoryDocumentFacade = new InventoryDocumentService(serviceProvider.Object, _dbContext(GetCurrentMethod()));
+            serviceProvider.Setup(s => s.GetService(typeof(IInventoryDocumentService)))
+                .Returns(inventoryDocumentFacade);
+            serviceProvider.Setup(x => x.GetService(typeof(IMaterialRequestNoteService)))
+                .Returns(serviceMrn);
+            //serviceProvider.Setup(s => s.GetService(typeof(InventoryDocumentFacade)))
+            //    .Returns(inventoryDocumentFacade);
+            NewMaterialDistributionNoteService service = new NewMaterialDistributionNoteService(serviceProvider.Object, _dbContext(GetCurrentMethod()));
+
+            var vm = new MaterialDistributionNoteViewModel()
+            {
+                Unit =new UnitViewModel()
+                {
+                    Code = "code",
+                    Name = "PRINTING"
+                },
+                MaterialDistributionNoteItems = new List<MaterialDistributionNoteItemViewModel>() {
+                    new MaterialDistributionNoteItemViewModel()
+                    {
+                        
+                        MaterialRequestNoteCode="MaterialRequestNoteCode",
+                        MaterialDistributionNoteDetails= new List<MaterialDistributionNoteDetailViewModel>()
+                        {
+                           
+                           new MaterialDistributionNoteDetailViewModel()
+                           {
+                               Product   =new ProductViewModel(),
+                               ReceivedLength =0
+                           }
+                        }
+                    }
+                }
+            };
+            ValidationContext validationContext = new ValidationContext(vm, serviceProvider.Object, null);
+            var response = vm.Validate(validationContext);
+
+            Assert.True(response.Count() > 0);
+
+
+        }
+
+        [Fact]
+        public void Validate_MaterialRequestNote_when_Quantity_isNull()
+        {
+            var serviceProvider = GetServiceProvider();
+            NewMaterialRequestNoteService serviceMrn = new NewMaterialRequestNoteService(serviceProvider.Object, _dbContext(GetCurrentMethod()));
+            InventorySummaryService inventorySummaryService = new InventorySummaryService(serviceProvider.Object, _dbContext(GetCurrentMethod()));
+            serviceProvider.Setup(s => s.GetService(typeof(IInventorySummaryService)))
+                .Returns(inventorySummaryService);
+
+            InventoryMovementService inventoryMovementService = new InventoryMovementService(serviceProvider.Object, _dbContext(GetCurrentMethod()));
+            serviceProvider.Setup(s => s.GetService(typeof(IInventoryMovementService)))
+                .Returns(inventoryMovementService);
+
+            InventoryDocumentService inventoryDocumentFacade = new InventoryDocumentService(serviceProvider.Object, _dbContext(GetCurrentMethod()));
+            serviceProvider.Setup(s => s.GetService(typeof(IInventoryDocumentService)))
+                .Returns(inventoryDocumentFacade);
+            serviceProvider.Setup(x => x.GetService(typeof(IMaterialRequestNoteService)))
+                .Returns(serviceMrn);
+            //serviceProvider.Setup(s => s.GetService(typeof(InventoryDocumentFacade)))
+            //    .Returns(inventoryDocumentFacade);
+            NewMaterialDistributionNoteService service = new NewMaterialDistributionNoteService(serviceProvider.Object, _dbContext(GetCurrentMethod()));
+
+            var vm = new MaterialDistributionNoteViewModel()
+            {
+                Unit = new UnitViewModel()
+                {
+                    Code = "code",
+                    Name = "PRINTING"
+                },
+                MaterialDistributionNoteItems = new List<MaterialDistributionNoteItemViewModel>() {
+                    new MaterialDistributionNoteItemViewModel()
+                    {
+                      
+                        MaterialRequestNoteCode="MaterialRequestNoteCode",
+                        MaterialDistributionNoteDetails= new List<MaterialDistributionNoteDetailViewModel>()
+                        {
+
+                           new MaterialDistributionNoteDetailViewModel()
+                           {
+                               Product   =new ProductViewModel(),
+                               ReceivedLength =1,
+                             
+                           }
+                        }
+                    }
+                }
+            };
+            ValidationContext validationContext = new ValidationContext(vm, serviceProvider.Object, null);
+            var response = vm.Validate(validationContext);
+
+            Assert.True(response.Count() > 0);
+
+
+        }
+
+        [Fact]
+        public async Task ValidateVM_ReceivedLength_lessThan_stock()
+        {
+            var serviceProvider = GetServiceProvider();
+            NewMaterialRequestNoteService serviceMrn = new NewMaterialRequestNoteService(serviceProvider.Object, _dbContext(GetCurrentMethod()));
+            InventorySummaryService inventorySummaryService = new InventorySummaryService(serviceProvider.Object, _dbContext(GetCurrentMethod()));
+            serviceProvider.Setup(s => s.GetService(typeof(IInventorySummaryService)))
+                .Returns(inventorySummaryService);
+            await inventorySummaryService.Create(new Lib.Models.InventoryModel.InventorySummary()
+            {
+                StorageName = "Gudang Greige Finishing",
+                UomUnit = "MTR",
+                ProductCode = "code",
+                Quantity = 0
+            });
+            InventoryMovementService inventoryMovementService = new InventoryMovementService(serviceProvider.Object, _dbContext(GetCurrentMethod()));
+
+            serviceProvider.Setup(s => s.GetService(typeof(IInventoryMovementService)))
+                .Returns(inventoryMovementService);
+
+            InventoryDocumentService inventoryDocumentFacade = new InventoryDocumentService(serviceProvider.Object, _dbContext(GetCurrentMethod()));
+            serviceProvider.Setup(s => s.GetService(typeof(IInventoryDocumentService)))
+                .Returns(inventoryDocumentFacade);
+            serviceProvider.Setup(x => x.GetService(typeof(IMaterialRequestNoteService)))
+                .Returns(serviceMrn);
+            //serviceProvider.Setup(s => s.GetService(typeof(InventoryDocumentFacade)))
+            //    .Returns(inventoryDocumentFacade);
+            NewMaterialDistributionNoteService service = new NewMaterialDistributionNoteService(serviceProvider.Object, _dbContext(GetCurrentMethod()));
+            var data = await _dataUtil(service, serviceMrn).GetTestData();
+        
+            var vm = service.MapToViewModel(data);
+          
             ValidationContext validationContext = new ValidationContext(vm, serviceProvider.Object, null);
             var response = vm.Validate(validationContext);
 
