@@ -6,6 +6,7 @@
         FINISHED_GOOD,
         AVAL_FABRIC,
         AVAL_ACCECORIES,
-        ACCESSORIES
+        ACCESSORIES,
+        AVAL_BAHAN_PENOLONG
     }
 }

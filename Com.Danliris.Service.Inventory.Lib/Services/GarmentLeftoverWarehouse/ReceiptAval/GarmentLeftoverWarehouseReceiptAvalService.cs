@@ -213,7 +213,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
                         {
                             GarmentLeftoverWarehouseStock stock = new GarmentLeftoverWarehouseStock
                             {
-                                ReferenceType = GarmentLeftoverWarehouseStockReferenceTypeEnum.AVAL_ACCECORIES,
+                                ReferenceType = GarmentLeftoverWarehouseStockReferenceTypeEnum.AVAL_BAHAN_PENOLONG,
                                 UnitId = model.UnitFromId,
                                 UnitCode = model.UnitFromCode,
                                 UnitName = model.UnitFromName,
@@ -341,7 +341,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
                         {
                             GarmentLeftoverWarehouseStock stock = new GarmentLeftoverWarehouseStock
                             {
-                                ReferenceType = GarmentLeftoverWarehouseStockReferenceTypeEnum.AVAL_ACCECORIES,
+                                ReferenceType = GarmentLeftoverWarehouseStockReferenceTypeEnum.AVAL_BAHAN_PENOLONG,
                                 UnitId = model.UnitFromId,
                                 UnitCode = model.UnitFromCode,
                                 UnitName = model.UnitFromName,
