@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Com.Danliris.Service.Inventory.Lib.Migrations
 {
     [DbContext(typeof(InventoryDbContext))]
-    [Migration("20210331093343_addingGarmentLeftoverWarehouseReceiptAccessories")]
-    partial class addingGarmentLeftoverWarehouseReceiptAccessories
+    [Migration("20210401085748_Add_LeftoverComodity_GarmentLeftoverWarehouseReceiptFinishedGoodItems")]
+    partial class Add_LeftoverComodity_GarmentLeftoverWarehouseReceiptFinishedGoodItems
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -1385,6 +1385,14 @@ namespace Com.Danliris.Service.Inventory.Lib.Migrations
                     b.Property<Guid>("ExpenditureGoodItemId");
 
                     b.Property<int>("FinishedGoodReceiptId");
+
+                    b.Property<string>("LeftoverComodityCode")
+                        .HasMaxLength(20);
+
+                    b.Property<long>("LeftoverComodityId");
+
+                    b.Property<string>("LeftoverComodityName")
+                        .HasMaxLength(255);
 
                     b.Property<double>("Quantity");
 

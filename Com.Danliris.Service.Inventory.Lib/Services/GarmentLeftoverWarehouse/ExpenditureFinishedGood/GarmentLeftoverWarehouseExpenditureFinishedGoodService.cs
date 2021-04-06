@@ -263,6 +263,10 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.E
                     {
                         existingModel.ExpenditureDate = model.ExpenditureDate;
                     }
+                    if (existingModel.Consignment != model.Consignment)
+                    {
+                        existingModel.Consignment = model.Consignment;
+                    }
                     if (existingModel.Description != model.Description)
                     {
                         existingModel.Description = model.Description;

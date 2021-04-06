@@ -9,7 +9,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "GarmentLeftoverWarehouseExpenditureAccessories",
+                name: "GarmentLeftoverWarehouseReceiptAccessories",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -40,11 +40,11 @@ namespace Com.Danliris.Service.Inventory.Lib.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_GarmentLeftoverWarehouseExpenditureAccessories", x => x.Id);
+                    table.PrimaryKey("PK_GarmentLeftoverWarehouseReceiptAccessories", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "GarmentLeftoverWarehouseExpenditureAccessoryItems",
+                name: "GarmentLeftoverWarehouseReceiptAccessoryItems",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -68,32 +68,34 @@ namespace Com.Danliris.Service.Inventory.Lib.Migrations
                     Quantity = table.Column<double>(nullable: false),
                     UomUnitId = table.Column<long>(nullable: false),
                     UomUnit = table.Column<string>(nullable: true),
-                    GarmentLeftOverWarehouseExpenditureAccessoriesId = table.Column<int>(nullable: false)
+                    ROJob = table.Column<string>(nullable: true),
+                    Remark = table.Column<string>(nullable: true),
+                    GarmentLeftOverWarehouseReceiptAccessoriesId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_GarmentLeftoverWarehouseExpenditureAccessoryItems", x => x.Id);
+                    table.PrimaryKey("PK_GarmentLeftoverWarehouseReceiptAccessoryItems", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_GarmentLeftoverWarehouseExpenditureAccessoryItems_GarmentLeftoverWarehouseExpenditureAccessories_GarmentLeftOverWarehouseExp~",
-                        column: x => x.GarmentLeftOverWarehouseExpenditureAccessoriesId,
-                        principalTable: "GarmentLeftoverWarehouseExpenditureAccessories",
+                        name: "FK_GarmentLeftoverWarehouseReceiptAccessoryItems_GarmentLeftoverWarehouseReceiptAccessories_GarmentLeftOverWarehouseReceiptAcce~",
+                        column: x => x.GarmentLeftOverWarehouseReceiptAccessoriesId,
+                        principalTable: "GarmentLeftoverWarehouseReceiptAccessories",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_GarmentLeftoverWarehouseExpenditureAccessoryItems_GarmentLeftOverWarehouseExpenditureAccessoriesId",
-                table: "GarmentLeftoverWarehouseExpenditureAccessoryItems",
-                column: "GarmentLeftOverWarehouseExpenditureAccessoriesId");
+                name: "IX_GarmentLeftoverWarehouseReceiptAccessoryItems_GarmentLeftOverWarehouseReceiptAccessoriesId",
+                table: "GarmentLeftoverWarehouseReceiptAccessoryItems",
+                column: "GarmentLeftOverWarehouseReceiptAccessoriesId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "GarmentLeftoverWarehouseExpenditureAccessoryItems");
+                name: "GarmentLeftoverWarehouseReceiptAccessoryItems");
 
             migrationBuilder.DropTable(
-                name: "GarmentLeftoverWarehouseExpenditureAccessories");
+                name: "GarmentLeftoverWarehouseReceiptAccessories");
         }
     }
 }

@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Com.Danliris.Service.Inventory.Lib.Models.GarmentLeftoverWarehouse.ReceiptAccessories
 {
-    public class GarmentLeftoverWarehouseExpenditureAccessory:StandardEntity, IValidatableObject
+    public class GarmentLeftoverWarehouseReceiptAccessory: StandardEntity, IValidatableObject
     {
         public string InvoiceNoReceive { get; set; }
         public string RequestUnitCode { get; set; }
@@ -20,7 +20,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Models.GarmentLeftoverWarehouse.Rec
         public DateTimeOffset ExpenditureDate { get; set; }
         public DateTimeOffset StorageReceiveDate { get; set; }
         public string Remark { get; set; }
-        public List<GarmentLeftoverWarehouseExpenditureAccessoryItem> Items { get; set; }
+        public List<GarmentLeftoverWarehouseReceiptAccessoryItem> Items { get; set; }
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {

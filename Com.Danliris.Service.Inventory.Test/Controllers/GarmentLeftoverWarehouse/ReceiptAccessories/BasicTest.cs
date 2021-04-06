@@ -9,7 +9,7 @@ using System.Text;
 
 namespace Com.Danliris.Service.Inventory.Test.Controllers.GarmentLeftoverWarehouse.ReceiptAccessories
 {
-    public class BasicTest: BaseControllerTest<GarmentLeftoverWarehouseReceiptAccessoriesController, GarmentLeftoverWarehouseExpenditureAccessory, GarmentLeftoverWarehouseReceiptAccessoriesViewModel, IGarmentLeftoverWarehouseReceiptAccessoriesService>
+    public class BasicTest: BaseControllerTest<GarmentLeftoverWarehouseReceiptAccessoriesController, GarmentLeftoverWarehouseReceiptAccessory, GarmentLeftoverWarehouseReceiptAccessoriesViewModel, IGarmentLeftoverWarehouseReceiptAccessoriesService>
     {
     }
 }

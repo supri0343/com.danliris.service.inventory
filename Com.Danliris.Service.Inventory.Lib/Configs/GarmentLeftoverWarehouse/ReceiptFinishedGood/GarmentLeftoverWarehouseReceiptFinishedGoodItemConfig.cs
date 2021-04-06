@@ -14,6 +14,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Configs.GarmentLeftoverWarehouse.Ga
             builder.Property(p => p.SizeName).HasMaxLength(50);
             builder.Property(p => p.UomUnit).HasMaxLength(255);
             builder.Property(p => p.Remark).HasMaxLength(4000);
+            builder.Property(p => p.LeftoverComodityName).HasMaxLength(255);
+            builder.Property(p => p.LeftoverComodityCode).HasMaxLength(20);
         }
     }
 }

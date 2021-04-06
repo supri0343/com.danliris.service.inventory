@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Com.Danliris.Service.Inventory.Lib.Models.GarmentLeftoverWarehouse.ReceiptAccessories
 {
-    public class GarmentLeftoverWarehouseExpenditureAccessoryItem: StandardEntity
+    public class GarmentLeftoverWarehouseReceiptAccessoryItem: StandardEntity
     {
         public string POSerialNumber { get; set; }
         public long ProductId { get; set; }
@@ -16,8 +16,10 @@ namespace Com.Danliris.Service.Inventory.Lib.Models.GarmentLeftoverWarehouse.Rec
         public double Quantity { get; set; }
         public long UomUnitId { get; set; }
         public string UomUnit { get; set; }
-        public int GarmentLeftOverWarehouseExpenditureAccessoriesId { get; set; }
-        [ForeignKey("GarmentLeftOverWarehouseExpenditureAccessoriesId")]
-        public virtual GarmentLeftoverWarehouseExpenditureAccessory GarmentLeftoverWarehouseExpenditureAccessories { get; set; }
+        public string ROJob { get; set; }
+        public string Remark { get; set; }
+        public int GarmentLeftOverWarehouseReceiptAccessoriesId { get; set; }
+        [ForeignKey("GarmentLeftOverWarehouseReceiptAccessoriesId")]
+        public virtual GarmentLeftoverWarehouseReceiptAccessory GarmentLeftoverWarehouseExpenditureAccessories { get; set; }
     }
 }

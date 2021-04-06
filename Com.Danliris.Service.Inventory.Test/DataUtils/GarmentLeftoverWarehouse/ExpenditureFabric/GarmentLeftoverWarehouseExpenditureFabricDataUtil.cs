@@ -24,6 +24,7 @@ namespace Com.Danliris.Service.Inventory.Test.DataUtils.GarmentLeftoverWarehouse
                 ExpenditureDate = DateTimeOffset.Now,
                 ExpenditureDestination = "SAMPLE",
                 Remark = "Remark",
+                LocalSalesNoteNo = "LocalSalesNoteNo",
                 Items = new List<GarmentLeftoverWarehouseExpenditureFabricItem>
                 {
                     new GarmentLeftoverWarehouseExpenditureFabricItem

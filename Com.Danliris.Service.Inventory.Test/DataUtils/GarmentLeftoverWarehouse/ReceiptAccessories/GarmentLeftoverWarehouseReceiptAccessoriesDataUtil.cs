@@ -18,9 +18,9 @@ namespace Com.Danliris.Service.Inventory.Test.DataUtils.GarmentLeftoverWarehouse
             Service = service;
         }
 
-        public GarmentLeftoverWarehouseExpenditureAccessory GetNewData()
+        public GarmentLeftoverWarehouseReceiptAccessory GetNewData()
         {
-            return new GarmentLeftoverWarehouseExpenditureAccessory
+            return new GarmentLeftoverWarehouseReceiptAccessory
             {
                 RequestUnitId = 1,
                 RequestUnitCode = "Unit",
@@ -34,9 +34,9 @@ namespace Com.Danliris.Service.Inventory.Test.DataUtils.GarmentLeftoverWarehouse
                 StorageFromCode = "StorageFromno",
                 StorageFromId = 1,
                 StorageFromName = "StorageFromName",
-                Items = new List<GarmentLeftoverWarehouseExpenditureAccessoryItem>
+                Items = new List<GarmentLeftoverWarehouseReceiptAccessoryItem>
                 {
-                    new GarmentLeftoverWarehouseExpenditureAccessoryItem
+                    new GarmentLeftoverWarehouseReceiptAccessoryItem
                     {
                         POSerialNumber = "po",
                         UomUnitId = 1,
@@ -50,34 +50,34 @@ namespace Com.Danliris.Service.Inventory.Test.DataUtils.GarmentLeftoverWarehouse
                 }
             };
         }
-        public async Task<GarmentLeftoverWarehouseExpenditureAccessory> GetTestData()
+        public async Task<GarmentLeftoverWarehouseReceiptAccessory> GetTestData()
         {
-            GarmentLeftoverWarehouseExpenditureAccessory data = GetNewData();
+            GarmentLeftoverWarehouseReceiptAccessory data = GetNewData();
 
             await Service.CreateAsync(data);
 
             return data;
         }
-        public async Task<GarmentLeftoverWarehouseExpenditureAccessory> GetTestDataACC()
+        public async Task<GarmentLeftoverWarehouseReceiptAccessory> GetTestDataACC()
         {
-            GarmentLeftoverWarehouseExpenditureAccessory data = GetNewData();
+            GarmentLeftoverWarehouseReceiptAccessory data = GetNewData();
             await Service.CreateAsync(data);
 
             return data;
         }
 
-        public GarmentLeftoverWarehouseExpenditureAccessory CopyData(GarmentLeftoverWarehouseExpenditureAccessory oldData)
+        public GarmentLeftoverWarehouseReceiptAccessory CopyData(GarmentLeftoverWarehouseReceiptAccessory oldData)
         {
-            GarmentLeftoverWarehouseExpenditureAccessory newData = new GarmentLeftoverWarehouseExpenditureAccessory();
+            GarmentLeftoverWarehouseReceiptAccessory newData = new GarmentLeftoverWarehouseReceiptAccessory();
 
-            PropertyCopier<GarmentLeftoverWarehouseExpenditureAccessory, GarmentLeftoverWarehouseExpenditureAccessory>.Copy(oldData, newData);
+            PropertyCopier<GarmentLeftoverWarehouseReceiptAccessory, GarmentLeftoverWarehouseReceiptAccessory>.Copy(oldData, newData);
 
-            newData.Items = new List<GarmentLeftoverWarehouseExpenditureAccessoryItem>();
+            newData.Items = new List<GarmentLeftoverWarehouseReceiptAccessoryItem>();
             foreach (var oldItem in oldData.Items)
             {
-                GarmentLeftoverWarehouseExpenditureAccessoryItem newItem = new GarmentLeftoverWarehouseExpenditureAccessoryItem();
+                GarmentLeftoverWarehouseReceiptAccessoryItem newItem = new GarmentLeftoverWarehouseReceiptAccessoryItem();
 
-                PropertyCopier<GarmentLeftoverWarehouseExpenditureAccessoryItem, GarmentLeftoverWarehouseExpenditureAccessoryItem>.Copy(oldItem, newItem);
+                PropertyCopier<GarmentLeftoverWarehouseReceiptAccessoryItem, GarmentLeftoverWarehouseReceiptAccessoryItem>.Copy(oldItem, newItem);
 
                 newData.Items.Add(newItem);
             }
