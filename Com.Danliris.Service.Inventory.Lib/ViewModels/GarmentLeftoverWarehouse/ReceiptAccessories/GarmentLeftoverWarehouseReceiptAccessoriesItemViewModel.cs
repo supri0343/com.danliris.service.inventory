@@ -6,6 +6,7 @@ namespace Com.Danliris.Service.Inventory.Lib.ViewModels.GarmentLeftoverWarehouse
 {
     public class GarmentLeftoverWarehouseReceiptAccessoriesItemViewModel
     {
+        public long UENItemId { get; set; }
         public string POSerialNumber { get; set; }
         public long ProductId { get; set; }
         public string ProductCode { get; set; }
