@@ -159,6 +159,12 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.E
                     modelItem.UnitName = viewModelItem.Unit.Name;
                 }
 
+                if (viewModelItem.LeftoverComodity != null)
+                {
+                    modelItem.LeftoverComodityCode = viewModelItem.LeftoverComodity.Code;
+                    modelItem.LeftoverComodityId = viewModelItem.LeftoverComodity.Id;
+                    modelItem.LeftoverComodityName = viewModelItem.LeftoverComodity.Name;
+                }
 
                 model.Items.Add(modelItem);
             }
@@ -192,6 +198,13 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.E
                         Id = modelItem.UnitId.ToString(),
                         Code = modelItem.UnitCode,
                         Name = modelItem.UnitName
+                    };
+
+                    viewModelItem.LeftoverComodity = new LeftoverComodityViewModel
+                    {
+                        Id = modelItem.LeftoverComodityId,
+                        Name = modelItem.LeftoverComodityName,
+                        Code = modelItem.LeftoverComodityCode
                     };
 
                     viewModel.Items.Add(viewModelItem);
