@@ -15,6 +15,9 @@ namespace Com.Danliris.Service.Inventory.Lib.Models.GarmentLeftoverWarehouse.Exp
         public string RONo { get; set; }
         public double ExpenditureQuantity { get; set; }
         public int FinishedGoodExpenditureId { get; set; }
+        public long LeftoverComodityId { get; set; }
+        public string LeftoverComodityCode { get; set; }
+        public string LeftoverComodityName { get; set; }
         public virtual GarmentLeftoverWarehouseExpenditureFinishedGood GarmentLeftoverWarehouseExpenditureFinishedGood { get; set; }
     }
 }

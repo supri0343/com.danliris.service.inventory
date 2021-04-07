@@ -13,5 +13,6 @@ namespace Com.Danliris.Service.Inventory.Lib.ViewModels.GarmentLeftoverWarehouse
         public double ExpenditureQuantity { get; set; }
         public double StockQuantity { get; set; }
         public int FinishedGoodExpenditureId { get; set; }
+        public LeftoverComodityViewModel LeftoverComodity { get; set; }
     }
 }

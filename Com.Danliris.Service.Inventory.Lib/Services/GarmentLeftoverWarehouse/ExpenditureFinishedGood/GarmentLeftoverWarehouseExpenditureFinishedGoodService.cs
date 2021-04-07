@@ -71,7 +71,10 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.E
                             UnitCode = item.UnitCode,
                             UnitName = item.UnitName,
                             RONo = item.RONo,
-                            Quantity = item.ExpenditureQuantity
+                            Quantity = item.ExpenditureQuantity,
+                            LeftoverComodityCode = item.LeftoverComodityCode,
+                            LeftoverComodityId = item.LeftoverComodityId,
+                            LeftoverComodityName = item.LeftoverComodityName
                         };
                         await StockService.StockOut(stock, model.FinishedGoodExpenditureNo, model.Id, item.Id);
                     }
@@ -114,7 +117,10 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.E
                             UnitCode = item.UnitCode,
                             UnitName = item.UnitName,
                             RONo = item.RONo,
-                            Quantity = item.ExpenditureQuantity
+                            Quantity = item.ExpenditureQuantity,
+                            LeftoverComodityCode = item.LeftoverComodityCode,
+                            LeftoverComodityId = item.LeftoverComodityId,
+                            LeftoverComodityName = item.LeftoverComodityName
                         };
 
                         await StockService.StockIn(stock, model.FinishedGoodExpenditureNo, model.Id, item.Id);
@@ -159,6 +165,12 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.E
                     modelItem.UnitName = viewModelItem.Unit.Name;
                 }
 
+                if (viewModelItem.LeftoverComodity != null)
+                {
+                    modelItem.LeftoverComodityCode = viewModelItem.LeftoverComodity.Code;
+                    modelItem.LeftoverComodityId = viewModelItem.LeftoverComodity.Id;
+                    modelItem.LeftoverComodityName = viewModelItem.LeftoverComodity.Name;
+                }
 
                 model.Items.Add(modelItem);
             }
@@ -192,6 +204,13 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.E
                         Id = modelItem.UnitId.ToString(),
                         Code = modelItem.UnitCode,
                         Name = modelItem.UnitName
+                    };
+
+                    viewModelItem.LeftoverComodity = new LeftoverComodityViewModel
+                    {
+                        Id = modelItem.LeftoverComodityId,
+                        Name = modelItem.LeftoverComodityName,
+                        Code = modelItem.LeftoverComodityCode
                     };
 
                     viewModel.Items.Add(viewModelItem);
@@ -282,7 +301,10 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.E
                             UnitCode = existingItem.UnitCode,
                             UnitName = existingItem.UnitName,
                             RONo = existingItem.RONo,
-                            Quantity = existingItem.ExpenditureQuantity
+                            Quantity = existingItem.ExpenditureQuantity,
+                            LeftoverComodityCode= existingItem.LeftoverComodityCode,
+                            LeftoverComodityId= existingItem.LeftoverComodityId,
+                            LeftoverComodityName= existingItem.LeftoverComodityName
                         };
 
                         await StockService.StockIn(stockIn, model.FinishedGoodExpenditureNo, model.Id, existingItem.Id);
@@ -323,7 +345,10 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.E
                             UnitCode = item.UnitCode,
                             UnitName = item.UnitName,
                             RONo = item.RONo,
-                            Quantity = item.ExpenditureQuantity
+                            Quantity = item.ExpenditureQuantity,
+                            LeftoverComodityCode = item.LeftoverComodityCode,
+                            LeftoverComodityId = item.LeftoverComodityId,
+                            LeftoverComodityName = item.LeftoverComodityName
                         };
 
                         await StockService.StockOut(stock, model.FinishedGoodExpenditureNo, model.Id, item.Id);

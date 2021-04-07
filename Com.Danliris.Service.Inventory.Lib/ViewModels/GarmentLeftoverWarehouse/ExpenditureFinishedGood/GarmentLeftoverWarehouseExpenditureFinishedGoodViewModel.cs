@@ -59,6 +59,12 @@ namespace Com.Danliris.Service.Inventory.Lib.ViewModels.GarmentLeftoverWarehouse
                 {
                     Dictionary<string, string> errorItem = new Dictionary<string, string>();
 
+                    if (item.LeftoverComodity == null)
+                    {
+                        errorItem["LeftoverComodity"] = "Komoditi tidak boleh kosong";
+                        errorCount++;
+                    }
+
                     if (item.Unit == null)
                     {
                         errorItem["Unit"] = "Unit tidak boleh kosong";
