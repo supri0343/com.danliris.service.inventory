@@ -87,7 +87,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.E
                         {
                             GarmentLeftoverWarehouseStock stock = new GarmentLeftoverWarehouseStock
                             {
-                                ReferenceType = GarmentLeftoverWarehouseStockReferenceTypeEnum.AVAL_ACCECORIES,
+                                ReferenceType = GarmentLeftoverWarehouseStockReferenceTypeEnum.AVAL_BAHAN_PENOLONG,
                                 UnitId = item.UnitId,
                                 UnitCode = item.UnitCode,
                                 UnitName = item.UnitName,
@@ -159,7 +159,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.E
                         {
                             GarmentLeftoverWarehouseStock stock = new GarmentLeftoverWarehouseStock
                             {
-                                ReferenceType = GarmentLeftoverWarehouseStockReferenceTypeEnum.AVAL_ACCECORIES,
+                                ReferenceType = GarmentLeftoverWarehouseStockReferenceTypeEnum.AVAL_BAHAN_PENOLONG,
                                 UnitId = item.UnitId,
                                 UnitCode = item.UnitCode,
                                 UnitName = item.UnitName,
@@ -366,7 +366,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.E
                         {
                             GarmentLeftoverWarehouseStock stock = new GarmentLeftoverWarehouseStock
                             {
-                                ReferenceType = GarmentLeftoverWarehouseStockReferenceTypeEnum.AVAL_ACCECORIES,
+                                ReferenceType = GarmentLeftoverWarehouseStockReferenceTypeEnum.AVAL_BAHAN_PENOLONG,
                                 UnitId = existingItem.UnitId,
                                 UnitCode = existingItem.UnitCode,
                                 UnitName = existingItem.UnitName,
@@ -443,7 +443,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.E
                         {
                             GarmentLeftoverWarehouseStock stock = new GarmentLeftoverWarehouseStock
                             {
-                                ReferenceType = GarmentLeftoverWarehouseStockReferenceTypeEnum.AVAL_ACCECORIES,
+                                ReferenceType = GarmentLeftoverWarehouseStockReferenceTypeEnum.AVAL_BAHAN_PENOLONG,
                                 UnitId = item.UnitId,
                                 UnitCode = item.UnitCode,
                                 UnitName = item.UnitName,

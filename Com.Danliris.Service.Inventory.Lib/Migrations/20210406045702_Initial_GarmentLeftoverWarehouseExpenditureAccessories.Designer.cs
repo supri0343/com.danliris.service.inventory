@@ -4,14 +4,16 @@ using Com.Danliris.Service.Inventory.Lib;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Com.Danliris.Service.Inventory.Lib.Migrations
 {
     [DbContext(typeof(InventoryDbContext))]
-    partial class InventoryDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210406045702_Initial_GarmentLeftoverWarehouseExpenditureAccessories")]
+    partial class Initial_GarmentLeftoverWarehouseExpenditureAccessories
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1086,14 +1088,6 @@ namespace Com.Danliris.Service.Inventory.Lib.Migrations
 
                     b.Property<int>("FinishedGoodExpenditureId");
 
-                    b.Property<string>("LeftoverComodityCode")
-                        .HasMaxLength(20);
-
-                    b.Property<long>("LeftoverComodityId");
-
-                    b.Property<string>("LeftoverComodityName")
-                        .HasMaxLength(255);
-
                     b.Property<string>("RONo")
                         .HasMaxLength(50);
 
@@ -1226,12 +1220,6 @@ namespace Com.Danliris.Service.Inventory.Lib.Migrations
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<bool>("Active");
-
-                    b.Property<string>("Article");
-
-                    b.Property<Guid>("AvalComponentId");
-
-                    b.Property<string>("AvalComponentNo");
 
                     b.Property<int>("AvalReceiptId");
 
@@ -1773,14 +1761,6 @@ namespace Com.Danliris.Service.Inventory.Lib.Migrations
 
                     b.Property<bool>("Active");
 
-                    b.Property<string>("LeftoverComodityCode")
-                        .HasMaxLength(20);
-
-                    b.Property<long?>("LeftoverComodityId");
-
-                    b.Property<string>("LeftoverComodityName")
-                        .HasMaxLength(255);
-
                     b.Property<string>("PONo")
                         .HasMaxLength(25);
 
@@ -1848,7 +1828,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ReferenceType", "UnitId", "PONo", "RONo", "ProductId", "UomId", "LeftoverComodityId")
+                    b.HasIndex("ReferenceType", "UnitId", "PONo", "RONo", "ProductId", "UomId")
                         .IsUnique()
                         .HasFilter("[_IsDeleted]=(0)");
 
