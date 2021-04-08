@@ -170,7 +170,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.S
                         break;
                     case GarmentLeftoverWarehouseStockReferenceTypeEnum.AVAL_FABRIC:
                         break;
-                    case GarmentLeftoverWarehouseStockReferenceTypeEnum.AVAL_ACCECORIES:
+                    case GarmentLeftoverWarehouseStockReferenceTypeEnum.AVAL_BAHAN_PENOLONG:
                         Query = Query.Where(w => w.ProductId == stock.ProductId && w.UomId == stock.UomId);
                         break;
                     case GarmentLeftoverWarehouseStockReferenceTypeEnum.COMPONENT:
@@ -253,7 +253,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.S
                         break;
                     case GarmentLeftoverWarehouseStockReferenceTypeEnum.AVAL_FABRIC:
                         break;
-                    case GarmentLeftoverWarehouseStockReferenceTypeEnum.AVAL_ACCECORIES:
+                    case GarmentLeftoverWarehouseStockReferenceTypeEnum.AVAL_BAHAN_PENOLONG:
                         Query = Query.Where(w => w.ProductId == stock.ProductId && w.UomId == stock.UomId);
                         break;
                     case GarmentLeftoverWarehouseStockReferenceTypeEnum.COMPONENT:

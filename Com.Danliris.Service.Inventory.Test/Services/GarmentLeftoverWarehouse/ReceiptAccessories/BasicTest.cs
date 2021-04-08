@@ -154,6 +154,10 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
                 .Setup(x => x.GetService(typeof(IGarmentLeftoverWarehouseStockService)))
                 .Returns(stockServiceMock.Object);
 
+            serviceProvider
+                .Setup(x => x.GetService(typeof(IHttpService)))
+                .Returns(new HttpTestService());
+
             GarmentLeftoverWarehouseReceiptAccessoriesService service = new GarmentLeftoverWarehouseReceiptAccessoriesService(_dbContext(GetCurrentMethod()), serviceProvider.Object);
 
             var data = _dataUtil(service).GetNewData();
