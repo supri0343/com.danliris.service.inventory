@@ -25,6 +25,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Configs.GarmentLeftoverWarehouse.Ex
             builder.Property(p => p.BuyerCode).HasMaxLength(25);
             builder.Property(p => p.BuyerName).HasMaxLength(100);
 
+            builder.Property(p => p.LocalSalesNoteNo).HasMaxLength(50);
+
             builder.Property(p => p.EtcRemark).HasMaxLength(500);
 
             builder.Property(p => p.Remark).HasMaxLength(3000);

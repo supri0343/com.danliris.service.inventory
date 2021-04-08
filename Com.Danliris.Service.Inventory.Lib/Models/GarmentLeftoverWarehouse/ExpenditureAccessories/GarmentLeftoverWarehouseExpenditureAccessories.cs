@@ -20,6 +20,9 @@ namespace Com.Danliris.Service.Inventory.Lib.Models.GarmentLeftoverWarehouse.Exp
         public string BuyerCode { get; set; }
         public string BuyerName { get; set; }
 
+        public string LocalSalesNoteNo { get; set; }
+        public int LocalSalesNoteId { get; set; }
+
         public string EtcRemark { get; set; }
         public string Remark { get; set; }
 
