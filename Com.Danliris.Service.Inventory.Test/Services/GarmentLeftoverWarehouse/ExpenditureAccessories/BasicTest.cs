@@ -205,6 +205,7 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
             var newData = dataUtil.CopyData(oldData);
             newData.ExpenditureDate = newData.ExpenditureDate.AddDays(-1);
             newData.Remark = "New" + newData.Remark;
+            newData.LocalSalesNoteNo = "New" + newData.LocalSalesNoteNo;
             var firsItem = newData.Items.First();
             firsItem.Quantity++;
             var lastItem = newData.Items.Last();
@@ -306,6 +307,7 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
                 },
                 EtcRemark = "Remark",
                 Remark = "Remark",
+                LocalSalesNoteNo = "LocalSalesNoteNo",
                 Items = new List<GarmentLeftoverWarehouseExpenditureAccessoriesItemViewModel>
                 {
                     new GarmentLeftoverWarehouseExpenditureAccessoriesItemViewModel
