@@ -29,6 +29,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
         private readonly IIdentityService IdentityService;
         private readonly IGarmentLeftoverWarehouseStockService StockService;
         private readonly string GarmentAvalProductUri;
+        private readonly string GarmentAvalComponentUri;
 
         public GarmentLeftoverWarehouseReceiptAvalService(InventoryDbContext dbContext, IServiceProvider serviceProvider)
         {
@@ -40,6 +41,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
             StockService = (IGarmentLeftoverWarehouseStockService)serviceProvider.GetService(typeof(IGarmentLeftoverWarehouseStockService));
 
             GarmentAvalProductUri = APIEndpoint.GarmentProduction + "aval-products/";
+            GarmentAvalComponentUri = APIEndpoint.GarmentProduction + "aval-components/";
         }
 
         public GarmentLeftoverWarehouseReceiptAval MapToModel(GarmentLeftoverWarehouseReceiptAvalViewModel viewModel)
@@ -246,6 +248,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
                                 RONo = item.RONo,
                             };
                             await StockService.StockIn(stock, model.AvalReceiptNo, model.Id, item.Id);
+                            await UpdateAvalComponentIsReceived(item.AvalComponentId.ToString(), true);
                         }
                     }
                     
@@ -280,7 +283,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
                         existingModel.Remark = model.Remark;
                     }
 
-                    if(model.AvalType=="AVAL FABRIC")
+                    if(model.AvalType=="AVAL FABRIC" || model.AvalType == "AVAL KOMPONEN")
                     {
                         if (existingModel.TotalAval != model.TotalAval)
                         {
@@ -393,6 +396,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
                                 UomUnit = item.UomUnit,
                                 RONo = item.RONo,
                             };
+                            await UpdateAvalComponentIsReceived(item.AvalComponentId.ToString(), false);
                             await StockService.StockOut(stock, model.AvalReceiptNo, model.Id, item.Id);
                         }
                     }
@@ -466,6 +470,26 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
                 Dictionary<string, object> result = JsonConvert.DeserializeObject<Dictionary<string, object>>(contentResponse) ?? new Dictionary<string, object>();
 
                 throw new Exception(string.Concat("Error from '", GarmentAvalProductUri, "' : ", (string)result.GetValueOrDefault("error") ?? "- ", ". Message : ", (string)result.GetValueOrDefault("message") ?? "- ", ". Status : ", response.StatusCode, "."));
+            }
+        }
+
+        private async Task UpdateAvalComponentIsReceived(string id, bool IsReceived)
+        {
+
+            var stringContentRequest = JsonConvert.SerializeObject(
+                new { id = id, IsReceived = IsReceived }
+            );
+            var httpContentRequest = new StringContent(stringContentRequest, Encoding.UTF8, General.JsonMediaType);
+
+            var httpService = (IHttpService)ServiceProvider.GetService(typeof(IHttpService));
+
+            var response = await httpService.PutAsync(GarmentAvalComponentUri + "update-received", httpContentRequest);
+            if (!response.IsSuccessStatusCode)
+            {
+                var contentResponse = await response.Content.ReadAsStringAsync();
+                Dictionary<string, object> result = JsonConvert.DeserializeObject<Dictionary<string, object>>(contentResponse) ?? new Dictionary<string, object>();
+
+                throw new Exception(string.Concat("Error from '", GarmentAvalComponentUri, "' : ", (string)result.GetValueOrDefault("error") ?? "- ", ". Message : ", (string)result.GetValueOrDefault("message") ?? "- ", ". Status : ", response.StatusCode, "."));
             }
         }
     }
