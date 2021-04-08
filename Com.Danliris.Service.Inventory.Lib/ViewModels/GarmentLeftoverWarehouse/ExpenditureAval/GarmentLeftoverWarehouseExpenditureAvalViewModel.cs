@@ -66,7 +66,7 @@ namespace Com.Danliris.Service.Inventory.Lib.ViewModels.GarmentLeftoverWarehouse
                     }
 
 
-                    if(AvalType=="AVAL FABRIC")
+                    if(AvalType=="AVAL FABRIC" || AvalType == "AVAL KOMPONEN")
                     {
                         if (string.IsNullOrEmpty(item.AvalReceiptNo))
                         {
@@ -74,9 +74,9 @@ namespace Com.Danliris.Service.Inventory.Lib.ViewModels.GarmentLeftoverWarehouse
                             errorCount++;
                         }
 
-                        if (item.Quantity <= 0)
+                        if (item.ActualQuantity <= 0)
                         {
-                            errorItem["Quantity"] = "Jumlah Pengeluaran harus lebih dari 0";
+                            errorItem["ActualQuantity"] = "Jumlah Pengeluaran harus lebih dari 0";
                             errorCount++;
                         }
                     }

@@ -13,6 +13,7 @@ namespace Com.Danliris.Service.Inventory.Lib.ViewModels.GarmentLeftoverWarehouse
         public string AvalReceiptNo { get; set; }
         public int AvalReceiptId { get; set; }
         public double Quantity { get; set; }
+        public double ActualQuantity { get; set; }
         public int AvalExpenditureId { get; set; }
 
         public double StockQuantity { get; set; }
