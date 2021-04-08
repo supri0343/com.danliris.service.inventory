@@ -55,7 +55,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.E
 
                     foreach (var item in model.Items)
                     {
-                        if (model.AvalType == "AVAL FABRIC")
+                        if (model.AvalType == "AVAL FABRIC" || model.AvalType == "AVAL KOMPONEN")
                         {
                             var receiptAval = DbContext.GarmentLeftoverWarehouseReceiptAvals.Where(a => a.Id == item.AvalReceiptId).Single();
                             receiptAval.IsUsed = true;
@@ -71,11 +71,23 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.E
 
                     foreach (var item in model.Items)
                     {
-                        if(model.AvalType=="AVAL FABRIC")
+                        if(model.AvalType=="AVAL FABRIC" )
                         {
                             GarmentLeftoverWarehouseStock stock = new GarmentLeftoverWarehouseStock
                             {
                                 ReferenceType = GarmentLeftoverWarehouseStockReferenceTypeEnum.AVAL_FABRIC,
+                                UnitId = item.UnitId,
+                                UnitCode = item.UnitCode,
+                                UnitName = item.UnitName,
+                                Quantity = item.Quantity
+                            };
+                            await StockService.StockOut(stock, model.AvalExpenditureNo, model.Id, item.Id);
+                        }
+                        else if(model.AvalType == "AVAL KOMPONEN")
+                        {
+                            GarmentLeftoverWarehouseStock stock = new GarmentLeftoverWarehouseStock
+                            {
+                                ReferenceType = GarmentLeftoverWarehouseStockReferenceTypeEnum.COMPONENT,
                                 UnitId = item.UnitId,
                                 UnitCode = item.UnitCode,
                                 UnitName = item.UnitName,
@@ -127,7 +139,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.E
                     model.FlagForDelete(IdentityService.Username, UserAgent);
                     foreach (var item in model.Items)
                     {
-                        if (model.AvalType == "AVAL FABRIC")
+                        if (model.AvalType == "AVAL FABRIC" || model.AvalType == "AVAL KOMPONEN")
                         {
                             var receiptAval = DbContext.GarmentLeftoverWarehouseReceiptAvals.Where(a => a.Id == item.AvalReceiptId).Single();
                             receiptAval.IsUsed = false;
@@ -141,11 +153,25 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.E
 
                     foreach (var item in model.Items)
                     {
-                        if (model.AvalType == "AVAL FABRIC")
+                        if (model.AvalType == "AVAL FABRIC" )
                         {
                             GarmentLeftoverWarehouseStock stock = new GarmentLeftoverWarehouseStock
                             {
                                 ReferenceType = GarmentLeftoverWarehouseStockReferenceTypeEnum.AVAL_FABRIC,
+                                UnitId = item.UnitId,
+                                UnitCode = item.UnitCode,
+                                UnitName = item.UnitName,
+                                Quantity = item.Quantity
+                            };
+
+                            await StockService.StockIn(stock, model.AvalExpenditureNo, model.Id, item.Id);
+
+                        }
+                        else if(model.AvalType == "AVAL KOMPONEN")
+                        {
+                            GarmentLeftoverWarehouseStock stock = new GarmentLeftoverWarehouseStock
+                            {
+                                ReferenceType = GarmentLeftoverWarehouseStockReferenceTypeEnum.COMPONENT,
                                 UnitId = item.UnitId,
                                 UnitCode = item.UnitCode,
                                 UnitName = item.UnitName,
@@ -473,7 +499,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.E
 
         private string GenerateNo(GarmentLeftoverWarehouseExpenditureAval model)
         {
-            string code = model.AvalType == "AVAL FABRIC" ? "BKAF" : "BKAC";
+            string code = model.AvalType == "AVAL FABRIC" ? "BKAF" : model.AvalType == "AVAL KOMPONEN" ?  "BKAK":"BKAC";
             string prefix = code + model._CreatedUtc.ToString("yy") + model._CreatedUtc.ToString("MM");
 
             var lastNo = DbSet.Where(w => w.AvalExpenditureNo.StartsWith(prefix))

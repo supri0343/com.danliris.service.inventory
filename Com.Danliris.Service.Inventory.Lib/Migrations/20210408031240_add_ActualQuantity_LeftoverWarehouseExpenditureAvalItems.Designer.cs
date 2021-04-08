@@ -4,14 +4,16 @@ using Com.Danliris.Service.Inventory.Lib;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Com.Danliris.Service.Inventory.Lib.Migrations
 {
     [DbContext(typeof(InventoryDbContext))]
-    partial class InventoryDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210408031240_add_ActualQuantity_LeftoverWarehouseExpenditureAvalItems")]
+    partial class add_ActualQuantity_LeftoverWarehouseExpenditureAvalItems
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -835,7 +837,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Migrations
 
                     b.HasIndex("AvalExpenditureId");
 
-                    b.HasIndex("StockId")
+                    b.HasIndex("AvalReceiptId", "StockId")
                         .IsUnique()
                         .HasFilter("[_IsDeleted]=(0)");
 
