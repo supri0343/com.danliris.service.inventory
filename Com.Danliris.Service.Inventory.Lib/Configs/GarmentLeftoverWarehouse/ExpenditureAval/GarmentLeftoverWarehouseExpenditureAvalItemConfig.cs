@@ -15,9 +15,6 @@ namespace Com.Danliris.Service.Inventory.Lib.Configs.GarmentLeftoverWarehouse.Ex
             builder.Property(p => p.ProductCode).HasMaxLength(25);
             builder.Property(p => p.ProductName).HasMaxLength(100);
 
-            builder.HasIndex(p => new { p.StockId })
-                .IsUnique()
-                .HasFilter("[_IsDeleted]=(0)");
         }
     }
 }
