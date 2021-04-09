@@ -239,15 +239,9 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
                                 UnitId = model.UnitFromId,
                                 UnitCode = model.UnitFromCode,
                                 UnitName = model.UnitFromName,
-                                Quantity = item.Quantity,
-                                ProductCode = item.ProductCode,
-                                ProductName = item.ProductName,
-                                ProductId = item.ProductId,
-                                UomId = item.UomId,
-                                UomUnit = item.UomUnit,
-                                RONo = item.RONo,
+                                Quantity = model.TotalAval
                             };
-                            await StockService.StockIn(stock, model.AvalReceiptNo, model.Id, item.Id);
+                            await StockService.StockIn(stock, model.AvalReceiptNo, model.Id, 0);
                             await UpdateAvalComponentIsReceived(item.AvalComponentId.ToString(), true);
                         }
                     }
