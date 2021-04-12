@@ -231,17 +231,18 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
                             
                     }else if (model.AvalType == "AVAL KOMPONEN")
                     {
+                        GarmentLeftoverWarehouseStock stock = new GarmentLeftoverWarehouseStock
+                        {
+                            ReferenceType = GarmentLeftoverWarehouseStockReferenceTypeEnum.COMPONENT,
+                            UnitId = model.UnitFromId,
+                            UnitCode = model.UnitFromCode,
+                            UnitName = model.UnitFromName,
+                            Quantity = model.TotalAval
+                        };
+                        await StockService.StockIn(stock, model.AvalReceiptNo, model.Id, 0);
+
                         foreach (var item in model.Items)
                         {
-                            GarmentLeftoverWarehouseStock stock = new GarmentLeftoverWarehouseStock
-                            {
-                                ReferenceType = GarmentLeftoverWarehouseStockReferenceTypeEnum.COMPONENT,
-                                UnitId = model.UnitFromId,
-                                UnitCode = model.UnitFromCode,
-                                UnitName = model.UnitFromName,
-                                Quantity = model.TotalAval
-                            };
-                            await StockService.StockIn(stock, model.AvalReceiptNo, model.Id, 0);
                             await UpdateAvalComponentIsReceived(item.AvalComponentId.ToString(), true);
                         }
                     }
@@ -374,24 +375,19 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
 
                     } else if (model.AvalType == "AVAL KOMPONEN")
                     {
+                        GarmentLeftoverWarehouseStock stock = new GarmentLeftoverWarehouseStock
+                        {
+                            ReferenceType = GarmentLeftoverWarehouseStockReferenceTypeEnum.COMPONENT,
+                            UnitId = model.UnitFromId,
+                            UnitCode = model.UnitFromCode,
+                            UnitName = model.UnitFromName,
+                            Quantity = model.TotalAval
+                        };
+
+                        await StockService.StockOut(stock, model.AvalReceiptNo, model.Id, 0);
                         foreach (var item in model.Items)
                         {
-                            GarmentLeftoverWarehouseStock stock = new GarmentLeftoverWarehouseStock
-                            {
-                                ReferenceType = GarmentLeftoverWarehouseStockReferenceTypeEnum.COMPONENT,
-                                UnitId = model.UnitFromId,
-                                UnitCode = model.UnitFromCode,
-                                UnitName = model.UnitFromName,
-                                Quantity = item.Quantity,
-                                ProductCode = item.ProductCode,
-                                ProductName = item.ProductName,
-                                ProductId = item.ProductId,
-                                UomId = item.UomId,
-                                UomUnit = item.UomUnit,
-                                RONo = item.RONo,
-                            };
                             await UpdateAvalComponentIsReceived(item.AvalComponentId.ToString(), false);
-                            await StockService.StockOut(stock, model.AvalReceiptNo, model.Id, item.Id);
                         }
                     }
 
