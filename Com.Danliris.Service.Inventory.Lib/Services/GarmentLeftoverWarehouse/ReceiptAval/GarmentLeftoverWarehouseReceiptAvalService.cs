@@ -277,6 +277,10 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
                     {
                         existingModel.Remark = model.Remark;
                     }
+                    if(existingModel.TotalAval != model.TotalAval)
+                    {
+                        existingModel.TotalAval = model.TotalAval;
+                    }
 
                     if(model.AvalType=="AVAL FABRIC" || model.AvalType == "AVAL KOMPONEN")
                     {
