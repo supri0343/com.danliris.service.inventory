@@ -175,6 +175,9 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.S
                         break;
                     case GarmentLeftoverWarehouseStockReferenceTypeEnum.COMPONENT:
                         break;
+                    case GarmentLeftoverWarehouseStockReferenceTypeEnum.ACCESSORIES:
+                        Query = Query.Where(w => w.PONo == stock.PONo && w.UomId == stock.UomId);
+                        break;
                 }
 
                 var existingStock = Query.SingleOrDefault();
@@ -256,6 +259,9 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.S
                         Query = Query.Where(w => w.ProductId == stock.ProductId && w.UomId == stock.UomId);
                         break;
                     case GarmentLeftoverWarehouseStockReferenceTypeEnum.COMPONENT:
+                        break;
+                    case GarmentLeftoverWarehouseStockReferenceTypeEnum.ACCESSORIES:
+                        Query = Query.Where(w => w.PONo == stock.PONo && w.UomId == stock.UomId);
                         break;
                 }
 
