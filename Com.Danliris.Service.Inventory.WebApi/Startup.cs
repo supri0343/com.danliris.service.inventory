@@ -34,6 +34,7 @@ using System.Linq;
 using System.Text;
 using Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.ExpenditureAval;
 using Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.ExpenditureAccessories;
+using Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.Report.Expenditure;
 
 namespace Com.Danliris.Service.Inventory.WebApi
 {
@@ -53,7 +54,8 @@ namespace Com.Danliris.Service.Inventory.WebApi
             APIEndpoint.Production = Configuration.GetValue<string>("ProductionEndpoint") ?? Configuration["ProductionEndpoint"];
             APIEndpoint.Purchasing = Configuration.GetValue<string>("PurchasingEndpoint") ?? Configuration["PurchasingEndpoint"];
             APIEndpoint.Sales = Configuration.GetValue<string>("SalesEndpoint") ?? Configuration["SalesEndpoint"];
-            APIEndpoint.GarmentProduction= Configuration.GetValue<string>("GarmentProductionEndpoint") ?? Configuration["GarmentProductionEndpoint"];
+            APIEndpoint.GarmentProduction = Configuration.GetValue<string>("GarmentProductionEndpoint") ?? Configuration["GarmentProductionEndpoint"];
+            APIEndpoint.PackingInventory = Configuration.GetValue<string>("PackingInventoryEndpoint") ?? Configuration["PackingInventoryEndpoint"];
         }
 
         public void RegisterFacades(IServiceCollection services)
@@ -99,6 +101,7 @@ namespace Com.Danliris.Service.Inventory.WebApi
                 .AddTransient<IGarmentLeftoverWarehouseExpenditureFabricService, GarmentLeftoverWarehouseExpenditureFabricService>()
                 .AddTransient<IGarmentLeftoverWarehouseExpenditureAccessoriesService, GarmentLeftoverWarehouseExpenditureAccessoriesService>()
                 .AddTransient<IGarmentLeftoverWarehouseReceiptAccessoriesService, GarmentLeftoverWarehouseReceiptAccessoriesService>()
+                .AddTransient<IGarmentLeftoverWarehouseReportExpenditureService, GarmentLeftoverWarehouseReportExpenditureService>()
                 .AddScoped<IIdentityService, IdentityService>()
                 .AddScoped<IValidateService, ValidateService>()
                 .AddScoped<IHttpService, HttpService>()
