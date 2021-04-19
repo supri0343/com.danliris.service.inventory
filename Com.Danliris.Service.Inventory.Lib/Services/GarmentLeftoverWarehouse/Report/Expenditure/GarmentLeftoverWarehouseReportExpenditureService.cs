@@ -47,20 +47,21 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
             Pageable<GarmentLeftoverWarehouseReportExpenditureViewModel> pageable = new Pageable<GarmentLeftoverWarehouseReportExpenditureViewModel>(Query, page - 1, size);
             List<GarmentLeftoverWarehouseReportExpenditureViewModel> Data = pageable.Data.ToList<GarmentLeftoverWarehouseReportExpenditureViewModel>();
 
-            var localSalesNoteNo = Data.Where(t => t.LocalSalesNoteNo != null).Select(o => o.LocalSalesNoteNo).Distinct();
+            //var localSalesNoteNo = Data.Where(t => t.LocalSalesNoteNo != null).Select(o => o.LocalSalesNoteNo).Distinct();
 
 
             Data.ForEach(c => {
                 if(!String.IsNullOrEmpty(c.LocalSalesNoteNo))
                 {
                     var salesNotes = GetBcFromShipping(c.LocalSalesNoteNo);
-                    if (salesNotes["noteNo"].ToString() == c.LocalSalesNoteNo)
+                    if(salesNotes != null)
                     {
-                        c.BCNo = salesNotes["bcNo"].ToString();
-                        c.BCDate = DateTimeOffset.Parse(salesNotes["bcDate"].ToString());
-                        
+                        if (salesNotes["noteNo"].ToString() == c.LocalSalesNoteNo)
+                        {
+                            c.BCNo = salesNotes["bcNo"].ToString();
+                            c.BCDate = DateTimeOffset.Parse(salesNotes["bcDate"].ToString());
+                        }
                     }
-
                 }
                 
             });
@@ -78,41 +79,153 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
         {
             DateTime DateFrom = dateFrom == null ? new DateTime(1970, 1, 1) : (DateTime)dateFrom;
             DateTime DateTo = dateTo == null ? DateTime.Now : (DateTime)dateTo;
+            IQueryable<GarmentLeftoverWarehouseReportExpenditureViewModel> Query = null;
+            IQueryable<GarmentLeftoverWarehouseReportExpenditureViewModel> QueryFabric = null;
+            IQueryable<GarmentLeftoverWarehouseReportExpenditureViewModel> QueryAcc = null;
 
 
-
-            var Query = (from a in DbContext.GarmentLeftoverWarehouseExpenditureAccessories
-                         // ExpenditureAcessoriesItem
-                         join b in DbContext.GarmentLeftoverWarehouseExpenditureAccessoriesItems on a.Id equals b.ExpenditureId
-                         join c in DbContext.GarmentLeftoverWarehouseReceiptAccessoryItems on b.PONo equals c.POSerialNumber
-                         //Conditions
-                         where a._IsDeleted == false
-                             && a.ExpenditureDate.AddHours(offset).Date >= DateFrom.Date
-                             && a.ExpenditureDate.AddHours(offset).Date <= DateTo.Date
-                         select new GarmentLeftoverWarehouseReportExpenditureViewModel
-                         {
-                             ExpenditureNo = a.ExpenditureNo,
-                             ExpenditureDate = a.ExpenditureDate,
-                             ExpenditureDestination = a.ExpenditureDestination,
-                             DescriptionOfPurpose = a.ExpenditureDestination == "JUAL LOKAL" ? a.BuyerName : a.ExpenditureDestination == "UNIT" ? a.UnitExpenditureCode : a.ExpenditureDestination == "LAIN-LAIN" ? a.EtcRemark: "SAMPLE",
-                             PONo = b.PONo,
-                             Product = new ProductViewModel
+            if (receiptType == "FABRIC")
+            {
+                QueryFabric = (from a in DbContext.GarmentLeftoverWarehouseExpenditureFabrics
+                                 // ExpenditureAcessoriesItem
+                             join b in DbContext.GarmentLeftoverWarehouseExpenditureFabricItems on a.Id equals b.ExpenditureId
+                             join c in DbContext.GarmentLeftoverWarehouseReceiptFabricItems on b.PONo equals c.POSerialNumber
+                             //Conditions
+                             where a._IsDeleted == false
+                                 && a.ExpenditureDate.AddHours(offset).Date >= DateFrom.Date
+                                 && a.ExpenditureDate.AddHours(offset).Date <= DateTo.Date
+                             select new GarmentLeftoverWarehouseReportExpenditureViewModel
                              {
-                                  Id = Convert.ToString(c.ProductId),
-                                  Code = c.ProductCode,
-                                  Name = c.ProductName,
-                             },
-                             ProductRemark = c.ProductRemark,
-                             Quantity = b.Quantity,
-                             Uom = new UomViewModel
+                                 ExpenditureNo = a.ExpenditureNo,
+                                 ExpenditureDate = a.ExpenditureDate,
+                                 ExpenditureDestination = a.ExpenditureDestination,
+                                 DescriptionOfPurpose = a.ExpenditureDestination == "JUAL LOKAL" ? a.BuyerName : a.ExpenditureDestination == "UNIT" ? a.UnitExpenditureCode : a.ExpenditureDestination == "LAIN-LAIN" ? a.EtcRemark : "SAMPLE",
+                                 PONo = b.PONo,
+                                 Product = new ProductViewModel
+                                 {
+                                     Id = Convert.ToString(c.ProductId),
+                                     Code = c.ProductCode,
+                                     Name = c.ProductName,
+                                 },
+                                 ProductRemark = c.ProductRemark,
+                                 Quantity = b.Quantity,
+                                 Uom = new UomViewModel
+                                 {
+                                     Id = Convert.ToString(b.UomId),
+                                     Unit = b.UomUnit
+                                 },
+                                 LocalSalesNoteNo = a.LocalSalesNoteNo,
+                                 BCType = "BC 25",
+                                 _LastModifiedUtc = a._LastModifiedUtc
+                             });
+                Query = QueryFabric;
+            } 
+            if(receiptType == "ACCESSORIES")
+            {
+                QueryAcc = (from a in DbContext.GarmentLeftoverWarehouseExpenditureAccessories
+                                 // ExpenditureAcessoriesItem
+                             join b in DbContext.GarmentLeftoverWarehouseExpenditureAccessoriesItems on a.Id equals b.ExpenditureId
+                             join c in DbContext.GarmentLeftoverWarehouseReceiptAccessoryItems on b.PONo equals c.POSerialNumber
+                             //Conditions
+                             where a._IsDeleted == false
+                                 && a.ExpenditureDate.AddHours(offset).Date >= DateFrom.Date
+                                 && a.ExpenditureDate.AddHours(offset).Date <= DateTo.Date
+                             select new GarmentLeftoverWarehouseReportExpenditureViewModel
                              {
-                                 Id = Convert.ToString(b.UomId),
-                                 Unit = b.UomUnit
-                             },
-                             LocalSalesNoteNo = a.LocalSalesNoteNo,
-                             BCType = "BC 25",
-                             _LastModifiedUtc = a._LastModifiedUtc
-                         });
+                                 ExpenditureNo = a.ExpenditureNo,
+                                 ExpenditureDate = a.ExpenditureDate,
+                                 ExpenditureDestination = a.ExpenditureDestination,
+                                 DescriptionOfPurpose = a.ExpenditureDestination == "JUAL LOKAL" ? a.BuyerName : a.ExpenditureDestination == "UNIT" ? a.UnitExpenditureCode : a.ExpenditureDestination == "LAIN-LAIN" ? a.EtcRemark : "SAMPLE",
+                                 PONo = b.PONo,
+                                 Product = new ProductViewModel
+                                 {
+                                     Id = Convert.ToString(c.ProductId),
+                                     Code = c.ProductCode,
+                                     Name = c.ProductName,
+                                 },
+                                 ProductRemark = c.ProductRemark,
+                                 Quantity = b.Quantity,
+                                 Uom = new UomViewModel
+                                 {
+                                     Id = Convert.ToString(b.UomId),
+                                     Unit = b.UomUnit
+                                 },
+                                 LocalSalesNoteNo = a.LocalSalesNoteNo,
+                                 BCType = "BC 25",
+                                 _LastModifiedUtc = a._LastModifiedUtc
+                             });
+                Query = QueryAcc;
+            } 
+            if (string.IsNullOrEmpty(receiptType))
+            {
+                QueryFabric = (from a in DbContext.GarmentLeftoverWarehouseExpenditureFabrics
+                                   // ExpenditureAcessoriesItem
+                               join b in DbContext.GarmentLeftoverWarehouseExpenditureFabricItems on a.Id equals b.ExpenditureId
+                               join c in DbContext.GarmentLeftoverWarehouseReceiptFabricItems on b.PONo equals c.POSerialNumber
+                               //Conditions
+                               where a._IsDeleted == false
+                                   && a.ExpenditureDate.AddHours(offset).Date >= DateFrom.Date
+                                   && a.ExpenditureDate.AddHours(offset).Date <= DateTo.Date
+                               select new GarmentLeftoverWarehouseReportExpenditureViewModel
+                               {
+                                   ExpenditureNo = a.ExpenditureNo,
+                                   ExpenditureDate = a.ExpenditureDate,
+                                   ExpenditureDestination = a.ExpenditureDestination,
+                                   DescriptionOfPurpose = a.ExpenditureDestination == "JUAL LOKAL" ? a.BuyerName : a.ExpenditureDestination == "UNIT" ? a.UnitExpenditureCode : a.ExpenditureDestination == "LAIN-LAIN" ? a.EtcRemark : "SAMPLE",
+                                   PONo = b.PONo,
+                                   Product = new ProductViewModel
+                                   {
+                                       Id = Convert.ToString(c.ProductId),
+                                       Code = c.ProductCode,
+                                       Name = c.ProductName,
+                                   },
+                                   ProductRemark = c.ProductRemark,
+                                   Quantity = b.Quantity,
+                                   Uom = new UomViewModel
+                                   {
+                                       Id = Convert.ToString(b.UomId),
+                                       Unit = b.UomUnit
+                                   },
+                                   LocalSalesNoteNo = a.LocalSalesNoteNo,
+                                   BCType = "BC 25",
+                                   _LastModifiedUtc = a._LastModifiedUtc
+                               });
+                QueryAcc = (from a in DbContext.GarmentLeftoverWarehouseExpenditureAccessories
+                                // ExpenditureAcessoriesItem
+                            join b in DbContext.GarmentLeftoverWarehouseExpenditureAccessoriesItems on a.Id equals b.ExpenditureId
+                            join c in DbContext.GarmentLeftoverWarehouseReceiptAccessoryItems on b.PONo equals c.POSerialNumber
+                            //Conditions
+                            where a._IsDeleted == false
+                                && a.ExpenditureDate.AddHours(offset).Date >= DateFrom.Date
+                                && a.ExpenditureDate.AddHours(offset).Date <= DateTo.Date
+                            select new GarmentLeftoverWarehouseReportExpenditureViewModel
+                            {
+                                ExpenditureNo = a.ExpenditureNo,
+                                ExpenditureDate = a.ExpenditureDate,
+                                ExpenditureDestination = a.ExpenditureDestination,
+                                DescriptionOfPurpose = a.ExpenditureDestination == "JUAL LOKAL" ? a.BuyerName : a.ExpenditureDestination == "UNIT" ? a.UnitExpenditureCode : a.ExpenditureDestination == "LAIN-LAIN" ? a.EtcRemark : "SAMPLE",
+                                PONo = b.PONo,
+                                Product = new ProductViewModel
+                                {
+                                    Id = Convert.ToString(c.ProductId),
+                                    Code = c.ProductCode,
+                                    Name = c.ProductName,
+                                },
+                                ProductRemark = c.ProductRemark,
+                                Quantity = b.Quantity,
+                                Uom = new UomViewModel
+                                {
+                                    Id = Convert.ToString(b.UomId),
+                                    Unit = b.UomUnit
+                                },
+                                LocalSalesNoteNo = a.LocalSalesNoteNo,
+                                BCType = "BC 25",
+                                _LastModifiedUtc = a._LastModifiedUtc
+                            });
+
+                Query = QueryFabric.Concat(QueryAcc);
+            }
+            
 
 
             return Query;
@@ -128,8 +241,13 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
 
             Dictionary<string, object> resultLocalCoverLetter = JsonConvert.DeserializeObject<Dictionary<string, object>>(responseLocalCoverLetter.Result);
             var jsonLocalCoverLetter = resultLocalCoverLetter.Single(p => p.Key.Equals("data")).Value;
-            Dictionary<string, object> dataLocalCoverLetter = JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(jsonLocalCoverLetter.ToString())[0];
-            return dataLocalCoverLetter;
+            var a = JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(jsonLocalCoverLetter.ToString());
+            if (a.Count > 0)
+            {
+                Dictionary<string, object> dataLocalCoverLetter = JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(jsonLocalCoverLetter.ToString())[0];
+                return dataLocalCoverLetter;
+            }
+            return null;
         }
     }
 }
