@@ -442,6 +442,10 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.E
                             {
                                 existingItem.Quantity = item.Quantity;
                             }
+                            if (existingItem.ActualQuantity != item.ActualQuantity)
+                            {
+                                existingItem.ActualQuantity = item.ActualQuantity;
+                            }
                             existingItem.FlagForUpdate(IdentityService.Username, UserAgent);
                         }
                     }
@@ -469,6 +473,19 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.E
                             GarmentLeftoverWarehouseStock stock = new GarmentLeftoverWarehouseStock
                             {
                                 ReferenceType = GarmentLeftoverWarehouseStockReferenceTypeEnum.AVAL_FABRIC,
+                                UnitId = item.UnitId,
+                                UnitCode = item.UnitCode,
+                                UnitName = item.UnitName,
+                                Quantity = item.Quantity
+                            };
+
+                            await StockService.StockOut(stock, model.AvalExpenditureNo, model.Id, item.Id);
+                        }
+                        else if (model.AvalType == "AVAL KOMPONEN")
+                        {
+                            GarmentLeftoverWarehouseStock stock = new GarmentLeftoverWarehouseStock
+                            {
+                                ReferenceType = GarmentLeftoverWarehouseStockReferenceTypeEnum.COMPONENT,
                                 UnitId = item.UnitId,
                                 UnitCode = item.UnitCode,
                                 UnitName = item.UnitName,
