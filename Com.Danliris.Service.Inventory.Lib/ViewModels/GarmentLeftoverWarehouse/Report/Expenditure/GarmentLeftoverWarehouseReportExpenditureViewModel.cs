@@ -8,7 +8,7 @@ namespace Com.Danliris.Service.Inventory.Lib.ViewModels.GarmentLeftoverWarehouse
     public class GarmentLeftoverWarehouseReportExpenditureViewModel : BasicViewModel
     {
         public string ExpenditureNo { get; set; }
-        public DateTimeOffset? ExpenditureDate { get; set; }
+        public DateTimeOffset ExpenditureDate { get; set; }
         public string ExpenditureDestination { get; set; }
         public string DescriptionOfPurpose { get; set; }
         public BuyerViewModel Buyer { get; set; }
@@ -22,7 +22,7 @@ namespace Com.Danliris.Service.Inventory.Lib.ViewModels.GarmentLeftoverWarehouse
         public string LocalSalesNoteNo { get; set; }
         public string BCNo { get; set; }
         public string BCType { get; set; }
-        public DateTimeOffset? BCDate { get; set; }
+        public DateTimeOffset BCDate { get; set; }
 
     }
 }
