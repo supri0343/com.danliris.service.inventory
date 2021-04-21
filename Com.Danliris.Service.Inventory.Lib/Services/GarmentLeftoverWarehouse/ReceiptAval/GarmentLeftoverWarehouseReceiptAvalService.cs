@@ -281,7 +281,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
                         existingModel.TotalAval = model.TotalAval;
                     }
 
-                    if(model.AvalType=="AVAL FABRIC" || model.AvalType == "AVAL KOMPONEN")
+                    if(model.AvalType=="AVAL FABRIC")
                     {
                         if (existingModel.TotalAval != model.TotalAval)
                         {
@@ -298,6 +298,32 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
                             GarmentLeftoverWarehouseStock stock1 = new GarmentLeftoverWarehouseStock
                             {
                                 ReferenceType = GarmentLeftoverWarehouseStockReferenceTypeEnum.AVAL_FABRIC,
+                                UnitId = model.UnitFromId,
+                                UnitCode = model.UnitFromCode,
+                                UnitName = model.UnitFromName,
+                                Quantity = model.TotalAval
+                            };
+                            await StockService.StockIn(stock1, model.AvalReceiptNo, model.Id, 0);
+                            existingModel.TotalAval = model.TotalAval;
+                        }
+                    }
+                    else if(model.AvalType == "AVAL KOMPONEN")
+                    {
+                        if (existingModel.TotalAval != model.TotalAval)
+                        {
+                            GarmentLeftoverWarehouseStock stock = new GarmentLeftoverWarehouseStock
+                            {
+                                ReferenceType = GarmentLeftoverWarehouseStockReferenceTypeEnum.COMPONENT,
+                                UnitId = model.UnitFromId,
+                                UnitCode = model.UnitFromCode,
+                                UnitName = model.UnitFromName,
+                                Quantity = existingModel.TotalAval
+                            };
+                            await StockService.StockOut(stock, existingModel.AvalReceiptNo, model.Id, 0);
+
+                            GarmentLeftoverWarehouseStock stock1 = new GarmentLeftoverWarehouseStock
+                            {
+                                ReferenceType = GarmentLeftoverWarehouseStockReferenceTypeEnum.COMPONENT,
                                 UnitId = model.UnitFromId,
                                 UnitCode = model.UnitFromCode,
                                 UnitName = model.UnitFromName,
@@ -386,16 +412,10 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
                                 UnitId = model.UnitFromId,
                                 UnitCode = model.UnitFromCode,
                                 UnitName = model.UnitFromName,
-                                Quantity = item.Quantity,
-                                ProductCode = item.ProductCode,
-                                ProductName = item.ProductName,
-                                ProductId = item.ProductId,
-                                UomId = item.UomId,
-                                UomUnit = item.UomUnit,
-                                RONo = item.RONo,
+                                Quantity = model.TotalAval
                             };
-                            await UpdateAvalComponentIsReceived(item.AvalComponentId.ToString(), false);
-                            await StockService.StockOut(stock, model.AvalReceiptNo, model.Id, item.Id);
+                            await StockService.StockOut(stock, model.AvalReceiptNo, model.Id, 0);
+                            await UpdateAvalProductIsReceived(avalItemIds, false);
                         }
                     }
 
