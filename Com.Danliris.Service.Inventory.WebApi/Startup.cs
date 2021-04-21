@@ -34,6 +34,7 @@ using System.Linq;
 using System.Text;
 using Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.ExpenditureAval;
 using Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.ExpenditureAccessories;
+using Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.Report;
 using Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.Report.Expenditure;
 
 namespace Com.Danliris.Service.Inventory.WebApi
@@ -101,6 +102,7 @@ namespace Com.Danliris.Service.Inventory.WebApi
                 .AddTransient<IGarmentLeftoverWarehouseExpenditureFabricService, GarmentLeftoverWarehouseExpenditureFabricService>()
                 .AddTransient<IGarmentLeftoverWarehouseExpenditureAccessoriesService, GarmentLeftoverWarehouseExpenditureAccessoriesService>()
                 .AddTransient<IGarmentLeftoverWarehouseReceiptAccessoriesService, GarmentLeftoverWarehouseReceiptAccessoriesService>()
+                .AddTransient<IReceiptMonitoringService, ReceiptMonitoringService>()
                 .AddTransient<IGarmentLeftoverWarehouseReportExpenditureService, GarmentLeftoverWarehouseReportExpenditureService>()
                 .AddScoped<IIdentityService, IdentityService>()
                 .AddScoped<IValidateService, ValidateService>()
