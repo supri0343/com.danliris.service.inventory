@@ -372,6 +372,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.E
                     {
                         existingModel.Description = model.Description;
                     }
+                    
                     existingModel.FlagForUpdate(IdentityService.Username, UserAgent);
 
                     foreach (var existingItem in existingModel.Items)
@@ -381,6 +382,18 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.E
                             GarmentLeftoverWarehouseStock stockIn = new GarmentLeftoverWarehouseStock
                             {
                                 ReferenceType = GarmentLeftoverWarehouseStockReferenceTypeEnum.AVAL_FABRIC,
+                                UnitId = existingItem.UnitId,
+                                UnitCode = existingItem.UnitCode,
+                                UnitName = existingItem.UnitName,
+                                Quantity = existingItem.Quantity
+                            };
+                            await StockService.StockIn(stockIn, model.AvalExpenditureNo, model.Id, existingItem.Id);
+                        }
+                        else if(existingModel.AvalType == "AVAL KOMPONEN")
+                        {
+                            GarmentLeftoverWarehouseStock stockIn = new GarmentLeftoverWarehouseStock
+                            {
+                                ReferenceType = GarmentLeftoverWarehouseStockReferenceTypeEnum.COMPONENT,
                                 UnitId = existingItem.UnitId,
                                 UnitCode = existingItem.UnitCode,
                                 UnitName = existingItem.UnitName,
@@ -415,13 +428,12 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.E
                         var item = model.Items.FirstOrDefault(i => i.Id == existingItem.Id);
                         if (item == null)
                         {
-                            if (model.AvalType == "AVAL FABRIC")
+                            if (model.AvalType == "AVAL FABRIC" || model.AvalType == "AVAL KOMPONEN")
                             {
                                 var receiptAval = DbContext.GarmentLeftoverWarehouseReceiptAvals.Where(a => a.Id == existingItem.AvalReceiptId).Single();
                                 receiptAval.IsUsed = false;
                             }
-                                
-                            
+
                             existingItem.FlagForDelete(IdentityService.Username, UserAgent);
                         }
                         else
@@ -436,7 +448,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.E
 
                     foreach (var item in model.Items.Where(i => i.Id == 0))
                     {
-                        if (model.AvalType == "AVAL FABRIC")
+                        if (model.AvalType == "AVAL FABRIC" || model.AvalType == "AVAL KOMPONEN")
                         {
                             var receiptAval = DbContext.GarmentLeftoverWarehouseReceiptAvals.Where(a => a.Id == item.AvalReceiptId).Single();
                             receiptAval.IsUsed = true;
