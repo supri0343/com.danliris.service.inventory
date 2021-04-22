@@ -1,6 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Globalization;
+using System.IO;
 using System.Linq;
+using System.Linq.Dynamic.Core;
 using System.Text;
 using System.Threading.Tasks;
 using Com.Danliris.Service.Inventory.Lib.Enums;
@@ -10,6 +14,7 @@ using Com.Danliris.Service.Inventory.Lib.Models.GarmentLeftoverWarehouse.Stock;
 using Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.Stock;
 using Com.Danliris.Service.Inventory.Lib.ViewModels;
 using Com.Danliris.Service.Inventory.Lib.ViewModels.GarmentLeftoverWarehouse.ExpenditureFinishedGood;
+using Com.Danliris.Service.Inventory.Lib.ViewModels.GarmentLeftoverWarehouse.Report;
 using Com.Moonlay.Models;
 using Com.Moonlay.NetCore.Lib;
 using Microsoft.EntityFrameworkCore;
@@ -379,5 +384,102 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.E
 
             return curNo;
         }
+
+        
+        public IQueryable<ExpenditureFInishedGoodReportViewModel> GetReportQuery(DateTime? dateFrom, DateTime? dateTo,int offset)
+        {
+            DateTime DateFrom = dateFrom == null ? new DateTime(1970, 1, 1) : (DateTime)dateFrom;
+            DateTime DateTo = dateTo == null ? new DateTime(1970, 1, 1) : (DateTime)dateTo;
+            int index = 0;
+            var Query = from a in (from data in DbContext.GarmentLeftoverWarehouseExpenditureFinishedGoods
+                                   where data._IsDeleted == false
+                                   && data.ExpenditureDate.AddHours(offset).Date >= DateFrom.Date
+                                   && data.ExpenditureDate.AddHours(offset).Date <= DateTo.Date
+                                   select new { data.BuyerName,data.OtherDescription,data.Consignment,data.Id, data.FinishedGoodExpenditureNo, data.ExpenditureDate, data.ExpenditureTo, data.LocalSalesNoteNo })
+                        join b in DbContext.GarmentLeftoverWarehouseExpenditureFinishedGoodItems on a.Id equals b.FinishedGoodExpenditureId
+                        select new ExpenditureFInishedGoodReportViewModel {
+                           FinishedGoodExpenditureNo= a.FinishedGoodExpenditureNo,
+                           ExpenditureDate= a.ExpenditureDate,
+                           LocalSalesNoteNo=a.LocalSalesNoteNo,
+                           Consignment = a.Consignment == true? "YA": "TIDAK",
+                           ExpenditureTo=a.ExpenditureTo,
+                           ExpenditureDestinationDesc= a.ExpenditureTo =="JUAL LOKAL"? a.BuyerName : a.OtherDescription,
+                            UnitFrom =new UnitViewModel {
+
+                                        Code= b.UnitCode,
+                                        Name=b.UnitName },
+                            RONo = b.RONo,
+                            LeftoverComodityName = b.LeftoverComodityName,
+                            ExpenditureQuantity = b.ExpenditureQuantity,
+                            Uom ="PCS"
+                        };
+            return Query;
+        }
+
+        public Tuple<List<ExpenditureFInishedGoodReportViewModel>, int> GetReport(DateTime? dateFrom, DateTime? dateTo, int page, int size, string order, int offset)
+        {
+            var Query = GetReportQuery(dateFrom, dateTo, offset);
+
+            Dictionary<string, string> OrderDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(order);
+            if (OrderDictionary.Count.Equals(0))
+            {
+                Query = Query.OrderByDescending(b => b.ExpenditureDate);
+            }
+            else
+            {
+                string Key = OrderDictionary.Keys.First();
+                string OrderType = OrderDictionary[Key];
+                Query = Query.OrderBy(string.Concat(Key, " ", OrderType));
+            }
+
+            Pageable<ExpenditureFInishedGoodReportViewModel> pageable = new Pageable<ExpenditureFInishedGoodReportViewModel>(Query, page - 1, size);
+            List<ExpenditureFInishedGoodReportViewModel> Data = pageable.Data.ToList<ExpenditureFInishedGoodReportViewModel>();
+            
+            int TotalData = pageable.TotalCount;
+            int index = 0;
+            Data.ForEach(c => {
+                index += 1;
+                c.index = index;
+
+            });
+            return Tuple.Create(Data, TotalData);
+        }
+        public MemoryStream GenerateExcel(DateTime? dateFrom, DateTime? dateTo, int offset)
+        {
+            var Query = GetReportQuery(dateFrom, dateTo, offset);
+            Query = Query.OrderByDescending(b => b.ExpenditureDate);
+            DataTable result = new DataTable();
+
+            result.Columns.Add(new DataColumn() { ColumnName = "No", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "No Bon Keluar", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Tanggal Bon", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Tujuan", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Keterangan Tujuan", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Unit Asal", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "RO", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Komoditi", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Qty", DataType = typeof(double) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Satuan", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Titip Jual", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "No Nota Penjualan", DataType = typeof(String) });
+
+            if (Query.ToArray().Count() == 0)
+                result.Rows.Add("", "", "", "", "", "", "", "", 0, "", "",""); // to allow column name to be generated properly for empty data as template
+            else
+            {
+                int index = 0;
+                foreach (var item in Query)
+                {
+                    index++;
+                    //DateTimeOffset date = item.date ?? new DateTime(1970, 1, 1);
+                    //string dateString = date == new DateTime(1970, 1, 1) ? "-" : date.ToOffset(new TimeSpan(offset, 0, 0)).ToString("dd MMM yyyy", new CultureInfo("id-ID"));
+                    result.Rows.Add(index, item.FinishedGoodExpenditureNo,item.ExpenditureDate.AddHours(offset).ToString("dd MMM yyyy", new CultureInfo("id-ID")), item.ExpenditureTo,item.ExpenditureDestinationDesc,item.UnitFrom.Code,item.RONo,item.LeftoverComodityName, item.ExpenditureQuantity,item.Uom,item.Consignment,item.LocalSalesNoteNo);
+                }
+            }
+
+            return Excel.CreateExcel(new List<KeyValuePair<DataTable, string>>() { new KeyValuePair<DataTable, string>(result, "Report Pengeluaran Gudang Sisa Barang Jadi") }, true);
+
+        }
+
     }
 }
