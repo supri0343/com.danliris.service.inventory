@@ -1,16 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-using Com.Danliris.Service.Inventory.Lib.Helpers;
+﻿using Com.Danliris.Service.Inventory.Lib.Helpers;
 using Com.Danliris.Service.Inventory.Lib.Migrations;
-using Com.Danliris.Service.Inventory.Lib.ViewModels.GarmentLeftoverWarehouse.Report;
+using Com.Danliris.Service.Inventory.Lib.ViewModels;
+using Com.Danliris.Service.Inventory.Lib.ViewModels.GarmentLeftoverWarehouse.Report.Receipt;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
 using System.Linq;
-using Com.Danliris.Service.Inventory.Lib.ViewModels;
+using System.Text;
 
-namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.Report
+namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.Report.Receipt
 {
     public class ReceiptMonitoringService : IReceiptMonitoringService
     {
@@ -48,14 +47,14 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
 
             var join = from a in DbContext.GarmentLeftoverWarehouseReceiptFabrics
                        join b in DbContext.GarmentLeftoverWarehouseReceiptFabricItems on a.Id equals b.GarmentLeftoverWarehouseReceiptFabricId
-                       where a._IsDeleted==false    
+                       where a._IsDeleted == false
                        && a.ReceiptDate.AddHours(offset).Date >= DateFrom.Date
                        && a.ReceiptDate.AddHours(offset).Date <= DateTo.Date
                        select new
                        {
                            fabricId = a.Id,
                            itemId = b.Id,
-                           date= a.ReceiptDate
+                           date = a.ReceiptDate
                        };
 
             TotalCountReport = join.Distinct().OrderByDescending(o => o.date).Count();
