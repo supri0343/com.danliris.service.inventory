@@ -389,7 +389,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.E
         public IQueryable<ExpenditureFInishedGoodReportViewModel> GetReportQuery(DateTime? dateFrom, DateTime? dateTo,int offset)
         {
             DateTime DateFrom = dateFrom == null ? new DateTime(1970, 1, 1) : (DateTime)dateFrom;
-            DateTime DateTo = dateTo == null ? DateTime.Now : (DateTime)dateTo;
+            DateTime DateTo = dateTo == null ? new DateTime(1970, 1, 1) : (DateTime)dateTo;
             int index = 0;
             var Query = from a in (from data in DbContext.GarmentLeftoverWarehouseExpenditureFinishedGoods
                                    where data._IsDeleted == false
@@ -473,7 +473,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.E
                     index++;
                     //DateTimeOffset date = item.date ?? new DateTime(1970, 1, 1);
                     //string dateString = date == new DateTime(1970, 1, 1) ? "-" : date.ToOffset(new TimeSpan(offset, 0, 0)).ToString("dd MMM yyyy", new CultureInfo("id-ID"));
-                    result.Rows.Add(index, item.FinishedGoodExpenditureNo,item.ExpenditureDate.ToString("dd MMM yyyy", new CultureInfo("id-ID")), item.ExpenditureTo,item.ExpenditureDestinationDesc,item.UnitFrom,item.RONo,item.LeftoverComodityName, item.ExpenditureQuantity,item.Uom,item.Consignment,item.LocalSalesNoteNo);
+                    result.Rows.Add(index, item.FinishedGoodExpenditureNo,item.ExpenditureDate.AddHours(offset).ToString("dd MMM yyyy", new CultureInfo("id-ID")), item.ExpenditureTo,item.ExpenditureDestinationDesc,item.UnitFrom.Code,item.RONo,item.LeftoverComodityName, item.ExpenditureQuantity,item.Uom,item.Consignment,item.LocalSalesNoteNo);
                 }
             }
 
