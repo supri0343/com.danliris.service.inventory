@@ -34,8 +34,8 @@ using System.Linq;
 using System.Text;
 using Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.ExpenditureAval;
 using Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.ExpenditureAccessories;
-using Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.Report;
 using Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.Report.Expenditure;
+using Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.Report.Receipt;
 
 namespace Com.Danliris.Service.Inventory.WebApi
 {
