@@ -20,7 +20,14 @@ namespace Com.Danliris.Service.Inventory.Test.ViewModels.GarmentLeftoverWarehous
             //Setup
             GarmentLeftoverWarehouseReceiptFinishedGoodViewModel viewModel = new GarmentLeftoverWarehouseReceiptFinishedGoodViewModel()
             {
-                ExpenditureGoodNo = "1"
+                Items= new List<GarmentLeftoverWarehouseReceiptFinishedGoodItemViewModel>()
+                {
+                    new GarmentLeftoverWarehouseReceiptFinishedGoodItemViewModel
+                    {
+
+                        ExpenditureGoodNo = "1"
+                    }
+                }
             };
 
             Mock<IServiceProvider> serviceProviderMock = new Mock<IServiceProvider>();

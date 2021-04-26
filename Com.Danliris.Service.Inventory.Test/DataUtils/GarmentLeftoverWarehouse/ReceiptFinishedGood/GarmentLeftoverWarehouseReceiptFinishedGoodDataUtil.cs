@@ -25,14 +25,6 @@ namespace Com.Danliris.Service.Inventory.Test.DataUtils.GarmentLeftoverWarehouse
                 UnitFromId = 1,
                 UnitFromCode = "Unit",
                 UnitFromName = "Unit",
-                ExpenditureGoodId = Guid.NewGuid(),
-                ExpenditureGoodNo = "ExGoodNo",
-                BuyerId = 1,
-                BuyerCode = "BuyerCode",
-                BuyerName = "BuyerName",
-                ComodityCode= "ComodityCode",
-                ComodityId=1,
-                ComodityName= "ComodityName",
                 ExpenditureDate = DateTimeOffset.Now,
                 ReceiptDate = DateTimeOffset.Now,
                 Description = "Remark",
@@ -40,8 +32,6 @@ namespace Com.Danliris.Service.Inventory.Test.DataUtils.GarmentLeftoverWarehouse
                 Invoice="Invoice",
                 Carton=11,
                 ContractNo="ContractNo",
-                Article="art",
-                RONo="roNo",
                 Items = new List<GarmentLeftoverWarehouseReceiptFinishedGoodItem>
                 {
                     new GarmentLeftoverWarehouseReceiptFinishedGoodItem
@@ -55,7 +45,17 @@ namespace Com.Danliris.Service.Inventory.Test.DataUtils.GarmentLeftoverWarehouse
                         Remark="remark",
                         LeftoverComodityCode="como",
                         LeftoverComodityId=1,
-                        LeftoverComodityName="como"
+                        LeftoverComodityName="como",
+                        ExpenditureGoodId = Guid.NewGuid(),
+                        ExpenditureGoodNo = "ExGoodNo",
+                        BuyerId = 1,
+                        BuyerCode = "BuyerCode",
+                        BuyerName = "BuyerName",
+                        ComodityCode= "ComodityCode",
+                        ComodityId=1,
+                        ComodityName= "ComodityName",
+                        Article="art",
+                        RONo="roNo",
                     }
                 }
             };

@@ -19,9 +19,11 @@ namespace Com.Danliris.Service.Inventory.Lib.Configs.GarmentLeftoverWarehouse.Ga
                 .IsUnique()
                 .HasFilter("[_IsDeleted]=(0)");
 
-            builder.Property(p => p.ExpenditureGoodNo).HasMaxLength(25);
             builder.Property(p => p.UnitFromCode).HasMaxLength(25);
-            builder.Property(p => p.UnitFromName).HasMaxLength(100);
+            builder.Property(p => p.UnitFromName).HasMaxLength(50);
+            builder.Property(p => p.ContractNo).HasMaxLength(20);
+
+            builder.Property(p => p.ExpenditureDesc).HasMaxLength(3000);
 
             builder.Property(p => p.Description).HasMaxLength(3000);
 

@@ -9,19 +9,9 @@ namespace Com.Danliris.Service.Inventory.Lib.Models.GarmentLeftoverWarehouse.Gar
     public class GarmentLeftoverWarehouseReceiptFinishedGood : StandardEntity, IValidatableObject
     {
         public string FinishedGoodReceiptNo { get; set; }
-        public string ExpenditureGoodNo { get; set; }
-        public Guid ExpenditureGoodId { get; set; }
         public long UnitFromId { get; set; }
         public string UnitFromCode { get; set; }
         public string UnitFromName { get; set; }
-        public string RONo { get; set; }
-        public string Article { get; set; }
-        public long BuyerId { get; set; }
-        public string BuyerCode { get; set; }
-        public string BuyerName { get; set; }
-        public long ComodityId { get; set; }
-        public string ComodityCode { get; set; }
-        public string ComodityName { get; set; }
         public string Invoice { get; set; }
         public string ContractNo { get; set; }
         public double Carton { get; set; }

@@ -101,6 +101,26 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
             return Tuple.Create(Data, TotalCountReport);
         }
 
+        private Dictionary<string, Object> GetBcFromShipping(string POSerialNumber)
+        {
+            var httpService = (IHttpService)ServiceProvider.GetService(typeof(IHttpService));
+
+            Dictionary<string, object> filterLocalCoverLetter = new Dictionary<string, object> { { "NoteNo", POSerialNumber } };
+            var filter = JsonConvert.SerializeObject(filterLocalCoverLetter);
+            var responseLocalCoverLetter = httpService.GetAsync($"{GarmentCustomsUri}?filter=" + filter).Result.Content.ReadAsStringAsync();
+
+            Dictionary<string, object> resultLocalCoverLetter = JsonConvert.DeserializeObject<Dictionary<string, object>>(responseLocalCoverLetter.Result);
+            var jsonLocalCoverLetter = resultLocalCoverLetter.Single(p => p.Key.Equals("data")).Value;
+            var a = JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(jsonLocalCoverLetter.ToString());
+            if (a.Count > 0)
+            {
+                Dictionary<string, object> dataLocalCoverLetter = JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(jsonLocalCoverLetter.ToString())[0];
+                return dataLocalCoverLetter;
+            }
+            return null;
+        }
+
+
         private List<ReceiptMonitoringViewModel> GetAccessoriesReceiptMonitoringQuery(DateTime? dateFrom, DateTime? dateTo, int offset, int page, int size)
         {
             DateTime DateFrom = dateFrom == null ? new DateTime(1970, 1, 1) : (DateTime)dateFrom;

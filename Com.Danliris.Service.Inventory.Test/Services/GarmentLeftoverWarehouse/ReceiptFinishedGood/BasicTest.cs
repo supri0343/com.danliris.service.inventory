@@ -252,26 +252,10 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
                     Code = "Unit",
                     Name = "Unit"
                 },
-                ExpenditureGoodId = Guid.NewGuid(),
-                ExpenditureGoodNo = "no",
-                Buyer = new BuyerViewModel
-                {
-                    Id = 1,
-                    Code = "Buyer",
-                    Name = "Buyer"
-                },
                 ExpenditureDate = DateTimeOffset.Now,
                 ReceiptDate = DateTimeOffset.Now,
                 Description = "Remark",
-                RONo="roNo",
-                Article="art",
                 Carton=1,
-                Comodity= new ComodityViewModel
-                {
-                    Id = 1,
-                    Code = "Comodity",
-                    Name = "Comodity"
-                },
                 ContractNo="noContract",
                 ExpenditureDesc="desc",
                 Invoice="inv",
@@ -297,7 +281,23 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
                                 Id=1,
                                 Name="como",
                                 Code="como"
-                            }
+                            },
+                            ExpenditureGoodId = Guid.NewGuid(),
+                            ExpenditureGoodNo = "no",
+                            Buyer = new BuyerViewModel
+                            {
+                                Id = 1,
+                                Code = "Buyer",
+                                Name = "Buyer"
+                            },
+                            Comodity= new ComodityViewModel
+                            {
+                                Id = 1,
+                                Code = "Comodity",
+                                Name = "Comodity"
+                            },
+                            RONo="roNo",
+                            Article="art",
                         }
                     }
             };
@@ -340,7 +340,6 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
             GarmentLeftoverWarehouseReceiptFinishedGoodViewModel viewModel = new GarmentLeftoverWarehouseReceiptFinishedGoodViewModel()
             {
                 UnitFrom = null,
-                ExpenditureGoodNo = null,
                 ReceiptDate = DateTimeOffset.MinValue,
                 Items = new List<GarmentLeftoverWarehouseReceiptFinishedGoodItemViewModel>()
                     {
@@ -353,7 +352,6 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
             GarmentLeftoverWarehouseReceiptFinishedGoodViewModel viewModel1 = new GarmentLeftoverWarehouseReceiptFinishedGoodViewModel()
             {
                 UnitFrom = null,
-                ExpenditureGoodNo = null,
                 ReceiptDate = DateTimeOffset.Now.AddDays(4),
                 Items = new List<GarmentLeftoverWarehouseReceiptFinishedGoodItemViewModel>()
                     {
@@ -367,7 +365,6 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
             GarmentLeftoverWarehouseReceiptFinishedGoodViewModel viewModel2 = new GarmentLeftoverWarehouseReceiptFinishedGoodViewModel()
             {
                 UnitFrom = null,
-                ExpenditureGoodNo = null,
                 ReceiptDate = DateTimeOffset.Now.AddDays(4)
             };
             var result2 = viewModel2.Validate(null);
