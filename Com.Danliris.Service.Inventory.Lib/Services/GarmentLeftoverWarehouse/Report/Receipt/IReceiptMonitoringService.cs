@@ -1,9 +1,9 @@
-﻿using Com.Danliris.Service.Inventory.Lib.ViewModels.GarmentLeftoverWarehouse.Report;
+﻿using Com.Danliris.Service.Inventory.Lib.ViewModels.GarmentLeftoverWarehouse.Report.Receipt;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.Report
+namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.Report.Receipt
 {
     public interface IReceiptMonitoringService
     {

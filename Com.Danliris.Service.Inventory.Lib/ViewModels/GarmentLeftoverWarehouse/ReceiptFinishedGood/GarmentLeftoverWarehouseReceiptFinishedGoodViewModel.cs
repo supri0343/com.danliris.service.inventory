@@ -11,13 +11,7 @@ namespace Com.Danliris.Service.Inventory.Lib.ViewModels.GarmentLeftoverWarehouse
     public class GarmentLeftoverWarehouseReceiptFinishedGoodViewModel : BasicViewModel, IValidatableObject
     {
         public string FinishedGoodReceiptNo { get; set; }
-        public string ExpenditureGoodNo { get; set; }
-        public Guid ExpenditureGoodId { get; set; }
         public UnitViewModel UnitFrom { get; set; }
-        public string RONo { get; set; }
-        public string Article { get; set; }
-        public BuyerViewModel Buyer { get; set; }
-        public ComodityViewModel Comodity { get; set; }
         public string Invoice { get; set; }
         public string ContractNo { get; set; }
         public double Carton { get; set; }
@@ -34,19 +28,16 @@ namespace Com.Danliris.Service.Inventory.Lib.ViewModels.GarmentLeftoverWarehouse
                 yield return new ValidationResult("Unit Asal tidak boleh kosong", new List<string> { "UnitFrom" });
             }
 
-            if (string.IsNullOrWhiteSpace(ExpenditureGoodNo))
-            {
-                yield return new ValidationResult("No Bon Pengeluaran Barang Jadi tidak boleh kosong", new List<string> { "ExpenditureGoodNo" });
-            }
-            else if (Id == 0)
-            {
-                IGarmentLeftoverWarehouseReceiptFinishedGoodService service = (IGarmentLeftoverWarehouseReceiptFinishedGoodService)validationContext.GetService(typeof(IGarmentLeftoverWarehouseReceiptFinishedGoodService));
-                var existingByExpenditureGood = service.Read(1, 1, "{}", new List<string>(), null, JsonConvert.SerializeObject(new { ExpenditureGoodNo }));
-                if (existingByExpenditureGood.Count > 0)
-                {
-                    yield return new ValidationResult("No Bon Pengeluaran Barang Jadi sudah dibuat Penerimaan Gudang Sisa", new List<string> { "ExpenditureGoodNo" });
-                }
-            }
+            
+            //else if (Id == 0)
+            //{
+            //    IGarmentLeftoverWarehouseReceiptFinishedGoodService service = (IGarmentLeftoverWarehouseReceiptFinishedGoodService)validationContext.GetService(typeof(IGarmentLeftoverWarehouseReceiptFinishedGoodService));
+            //    var existingByExpenditureGood = service.Read(1, 1, "{}", new List<string>(), null, JsonConvert.SerializeObject(new { ExpenditureGoodNo }));
+            //    if (existingByExpenditureGood.Count > 0)
+            //    {
+            //        yield return new ValidationResult("No Bon Pengeluaran Barang Jadi sudah dibuat Penerimaan Gudang Sisa", new List<string> { "ExpenditureGoodNo" });
+            //    }
+            //}
 
             if (ReceiptDate == null || ReceiptDate <= DateTimeOffset.MinValue)
             {
@@ -65,6 +56,10 @@ namespace Com.Danliris.Service.Inventory.Lib.ViewModels.GarmentLeftoverWarehouse
             {
                 yield return new ValidationResult("Ada komoditi yang belum diisi", new List<string> { "LeftoverComodity" });
             }
+            else if (Items.Find(a => string.IsNullOrWhiteSpace(a.ExpenditureGoodNo)) != null)
+            {
+                yield return new ValidationResult("Ada No Bon Pengeluaran yang belum diisi", new List<string> { "ExpenditureGoodNo" });
+            }
             else
             {
                 int errorCount = 0;
@@ -74,6 +69,11 @@ namespace Com.Danliris.Service.Inventory.Lib.ViewModels.GarmentLeftoverWarehouse
                 {
                     Dictionary<string, string> errorItem = new Dictionary<string, string>();
 
+                    if (string.IsNullOrWhiteSpace(item.ExpenditureGoodNo))
+                    {
+                        errorItem["ExpenditureGoodNo"] = "No Bon Pengeluaran tidak boleh kosong";
+                        errorCount++;
+                    }
                     if (item.Size == null)
                     {
                         errorItem["Size"] = "Produk tidak boleh kosong";

@@ -8,6 +8,16 @@ namespace Com.Danliris.Service.Inventory.Lib.Models.GarmentLeftoverWarehouse.Gar
     public class GarmentLeftoverWarehouseReceiptFinishedGoodItem : StandardEntity
     {
         public Guid ExpenditureGoodItemId { get; set; }
+        public string ExpenditureGoodNo { get; set; }
+        public Guid ExpenditureGoodId { get; set; }
+        public string RONo { get; set; }
+        public string Article { get; set; }
+        public long BuyerId { get; set; }
+        public string BuyerCode { get; set; }
+        public string BuyerName { get; set; }
+        public long ComodityId { get; set; }
+        public string ComodityCode { get; set; }
+        public string ComodityName { get; set; }
         public long SizeId { get; set; }
         public string SizeName { get; set; }
         public string UomUnit { get; set; }

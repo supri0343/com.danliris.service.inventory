@@ -56,20 +56,6 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
                 model.UnitFromName = viewModel.UnitFrom.Name;
             }
 
-            if (viewModel.Buyer != null)
-            {
-                model.BuyerId = viewModel.Buyer.Id;
-                model.BuyerCode = viewModel.Buyer.Code;
-                model.BuyerName = viewModel.Buyer.Name;
-            }
-
-            if (viewModel.Comodity != null)
-            {
-                model.ComodityId = viewModel.Comodity.Id;
-                model.ComodityCode = viewModel.Comodity.Code;
-                model.ComodityName = viewModel.Comodity.Name;
-            }
-
             model.Items = new List<GarmentLeftoverWarehouseReceiptFinishedGoodItem>();
             foreach (var viewModelItem in viewModel.Items)
             {
@@ -95,6 +81,20 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
                     modelItem.LeftoverComodityName = viewModelItem.LeftoverComodity.Name;
                 }
 
+                if (viewModelItem.Buyer != null)
+                {
+                    modelItem.BuyerId = viewModelItem.Buyer.Id;
+                    modelItem.BuyerCode = viewModelItem.Buyer.Code;
+                    modelItem.BuyerName = viewModelItem.Buyer.Name;
+                }
+
+                if (viewModelItem.Comodity != null)
+                {
+                    modelItem.ComodityId = viewModelItem.Comodity.Id;
+                    modelItem.ComodityCode = viewModelItem.Comodity.Code;
+                    modelItem.ComodityName = viewModelItem.Comodity.Name;
+                }
+
                 model.Items.Add(modelItem);
             }
 
@@ -113,19 +113,6 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
                 Name = model.UnitFromName
             };
 
-            viewModel.Buyer = new BuyerViewModel
-            {
-                Id = model.BuyerId,
-                Code = model.BuyerCode,
-                Name = model.BuyerName
-            };
-
-            viewModel.Comodity = new ComodityViewModel
-            {
-                Id = model.ComodityId,
-                Code = model.ComodityCode,
-                Name = model.ComodityName
-            };
 
             if (model.Items != null)
             {
@@ -154,6 +141,20 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
                         Code = modelItem.LeftoverComodityCode
                     };
 
+                    viewModelItem.Buyer = new BuyerViewModel
+                    {
+                        Id = modelItem.BuyerId,
+                        Code = modelItem.BuyerCode,
+                        Name = modelItem.BuyerName
+                    };
+
+                    viewModelItem.Comodity = new ComodityViewModel
+                    {
+                        Id = modelItem.ComodityId,
+                        Code = modelItem.ComodityCode,
+                        Name = modelItem.ComodityName
+                    };
+
                     viewModel.Items.Add(viewModelItem);
                 }
             }
@@ -167,7 +168,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
 
             List<string> SearchAttributes = new List<string>()
             {
-                "FinishedGoodReceiptNo", "UnitFromName", "ExpenditureGoodNo", "ComodityName","RONo","Article"
+                "FinishedGoodReceiptNo", "UnitFromName"
             };
             Query = QueryHelper<GarmentLeftoverWarehouseReceiptFinishedGood>.Search(Query, SearchAttributes, keyword);
 
@@ -179,7 +180,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
 
             List<string> SelectedFields = (select != null && select.Count > 0) ? select : new List<string>()
             {
-                "Id", "FinishedGoodReceiptNo", "UnitFrom", "ExpenditureGoodNo", "Comodity", "ReceiptDate","RONo","Article"
+                "Id", "FinishedGoodReceiptNo", "UnitFrom", "ReceiptDate"
             };
 
             Query = Query.Select(s => new GarmentLeftoverWarehouseReceiptFinishedGood
@@ -189,13 +190,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
                 UnitFromId = s.UnitFromId,
                 UnitFromCode = s.UnitFromCode,
                 UnitFromName = s.UnitFromName,
-                ExpenditureGoodNo = s.ExpenditureGoodNo,
-                ComodityId = s.ComodityId,
-                ComodityCode = s.ComodityCode,
-                ComodityName = s.ComodityName,
-                ReceiptDate = s.ReceiptDate,
-                RONo=s.RONo,
-                Article=s.Article
+                ReceiptDate = s.ReceiptDate
             });
 
             Pageable<GarmentLeftoverWarehouseReceiptFinishedGood> pageable = new Pageable<GarmentLeftoverWarehouseReceiptFinishedGood>(Query, page - 1, size);
@@ -243,16 +238,16 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
                             UnitId = model.UnitFromId,
                             UnitCode = model.UnitFromCode,
                             UnitName = model.UnitFromName,
-                            RONo = model.RONo,
+                            RONo = item.RONo,
                             LeftoverComodityCode=item.LeftoverComodityCode,
                             LeftoverComodityId=item.LeftoverComodityId,
                             LeftoverComodityName=item.LeftoverComodityName,
                             Quantity = item.Quantity
                         };
                         await StockService.StockIn(stock, model.FinishedGoodReceiptNo, model.Id, item.Id);
+                        await UpdateExpenditureGoodIsReceived(item.ExpenditureGoodId, "true");
                     }
 
-                    await UpdateExpenditureGoodIsReceived(model.ExpenditureGoodId, "true");
 
                     transaction.Commit();
                 }
@@ -274,7 +269,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
             {
                 try
                 {
-                    GarmentLeftoverWarehouseReceiptFinishedGood existingModel = await DbSet.Where(w => w.Id == id).FirstOrDefaultAsync();
+                    GarmentLeftoverWarehouseReceiptFinishedGood existingModel = await ReadByIdAsync(id);
                     if (existingModel.ReceiptDate != model.ReceiptDate)
                     {
                         existingModel.ReceiptDate = model.ReceiptDate;
@@ -283,7 +278,67 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
                     {
                         existingModel.Description = model.Description;
                     }
+                    foreach (var existingItem in existingModel.Items)
+                    {
+                        GarmentLeftoverWarehouseStock stockOut = new GarmentLeftoverWarehouseStock
+                        {
+                            ReferenceType = GarmentLeftoverWarehouseStockReferenceTypeEnum.FINISHED_GOOD,
+                            UnitId = existingModel.UnitFromId,
+                            UnitCode = existingModel.UnitFromCode,
+                            UnitName = existingModel.UnitFromName,
+                            RONo = existingItem.RONo,
+                            Quantity = existingItem.Quantity,
+                            LeftoverComodityCode = existingItem.LeftoverComodityCode,
+                            LeftoverComodityId = existingItem.LeftoverComodityId,
+                            LeftoverComodityName = existingItem.LeftoverComodityName
+                        };
 
+                        await StockService.StockOut(stockOut, model.FinishedGoodReceiptNo, model.Id, existingItem.Id);
+                    }
+
+                    foreach (var existingItem in existingModel.Items)
+                    {
+                        var item = model.Items.FirstOrDefault(i => i.Id == existingItem.Id);
+                        if (item == null)
+                        {
+                            existingItem.FlagForDelete(IdentityService.Username, UserAgent);
+                        }
+                        else
+                        {
+                            if (existingItem.Quantity != item.Quantity)
+                            {
+                                existingItem.Quantity = item.Quantity;
+                            }
+                            existingItem.FlagForUpdate(IdentityService.Username, UserAgent);
+                        }
+                    }
+
+                    foreach (var item in model.Items.Where(i => i.Id == 0))
+                    {
+                        item.FlagForCreate(IdentityService.Username, UserAgent);
+                        item.FlagForUpdate(IdentityService.Username, UserAgent);
+                        existingModel.Items.Add(item);
+                    }
+
+                    Updated = await DbContext.SaveChangesAsync();
+
+                    foreach (var item in model.Items)
+                    {
+                        GarmentLeftoverWarehouseStock stock = new GarmentLeftoverWarehouseStock
+                        {
+                            ReferenceType = GarmentLeftoverWarehouseStockReferenceTypeEnum.FINISHED_GOOD,
+                            UnitId = existingModel.UnitFromId,
+                            UnitCode = existingModel.UnitFromCode,
+                            UnitName = existingModel.UnitFromName,
+                            RONo = item.RONo,
+                            Quantity = item.Quantity,
+                            LeftoverComodityCode = item.LeftoverComodityCode,
+                            LeftoverComodityId = item.LeftoverComodityId,
+                            LeftoverComodityName = item.LeftoverComodityName
+                        };
+
+                        await StockService.StockIn(stock, model.FinishedGoodReceiptNo, model.Id, item.Id);
+                    }
                     existingModel.FlagForUpdate(IdentityService.Username, UserAgent);
 
                     Updated = await DbContext.SaveChangesAsync();
@@ -324,7 +379,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
                             UnitId = model.UnitFromId,
                             UnitCode = model.UnitFromCode,
                             UnitName = model.UnitFromName,
-                            RONo = model.RONo,
+                            RONo = item.RONo,
                             LeftoverComodityCode = item.LeftoverComodityCode,
                             LeftoverComodityId = item.LeftoverComodityId,
                             LeftoverComodityName = item.LeftoverComodityName,
@@ -332,9 +387,9 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
                         };
 
                         await StockService.StockOut(stock, model.FinishedGoodReceiptNo, model.Id, item.Id);
+                        await UpdateExpenditureGoodIsReceived(item.ExpenditureGoodId, "false");
                     }
 
-                    await UpdateExpenditureGoodIsReceived(model.ExpenditureGoodId, "false");
 
                     transaction.Commit();
                 }

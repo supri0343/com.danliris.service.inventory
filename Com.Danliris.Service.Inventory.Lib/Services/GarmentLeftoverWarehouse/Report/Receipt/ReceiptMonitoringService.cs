@@ -1,16 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-using Com.Danliris.Service.Inventory.Lib.Helpers;
+﻿using Com.Danliris.Service.Inventory.Lib.Helpers;
 using Com.Danliris.Service.Inventory.Lib.Migrations;
-using Com.Danliris.Service.Inventory.Lib.ViewModels.GarmentLeftoverWarehouse.Report;
+using Com.Danliris.Service.Inventory.Lib.ViewModels;
+using Com.Danliris.Service.Inventory.Lib.ViewModels.GarmentLeftoverWarehouse.Report.Receipt;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
 using System.Linq;
-using Com.Danliris.Service.Inventory.Lib.ViewModels;
+using System.Text;
 
-namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.Report
+namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.Report.Receipt
 {
     public class ReceiptMonitoringService : IReceiptMonitoringService
     {
@@ -48,14 +47,14 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
 
             var join = from a in DbContext.GarmentLeftoverWarehouseReceiptFabrics
                        join b in DbContext.GarmentLeftoverWarehouseReceiptFabricItems on a.Id equals b.GarmentLeftoverWarehouseReceiptFabricId
-                       where a._IsDeleted==false    
+                       where a._IsDeleted == false
                        && a.ReceiptDate.AddHours(offset).Date >= DateFrom.Date
                        && a.ReceiptDate.AddHours(offset).Date <= DateTo.Date
                        select new
                        {
                            fabricId = a.Id,
                            itemId = b.Id,
-                           date= a.ReceiptDate
+                           date = a.ReceiptDate
                        };
 
             TotalCountReport = join.Distinct().OrderByDescending(o => o.date).Count();
@@ -101,6 +100,26 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
 
             return Tuple.Create(Data, TotalCountReport);
         }
+
+        private Dictionary<string, Object> GetBcFromShipping(string POSerialNumber)
+        {
+            var httpService = (IHttpService)ServiceProvider.GetService(typeof(IHttpService));
+
+            Dictionary<string, object> filterLocalCoverLetter = new Dictionary<string, object> { { "NoteNo", POSerialNumber } };
+            var filter = JsonConvert.SerializeObject(filterLocalCoverLetter);
+            var responseLocalCoverLetter = httpService.GetAsync($"{GarmentCustomsUri}?filter=" + filter).Result.Content.ReadAsStringAsync();
+
+            Dictionary<string, object> resultLocalCoverLetter = JsonConvert.DeserializeObject<Dictionary<string, object>>(responseLocalCoverLetter.Result);
+            var jsonLocalCoverLetter = resultLocalCoverLetter.Single(p => p.Key.Equals("data")).Value;
+            var a = JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(jsonLocalCoverLetter.ToString());
+            if (a.Count > 0)
+            {
+                Dictionary<string, object> dataLocalCoverLetter = JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(jsonLocalCoverLetter.ToString())[0];
+                return dataLocalCoverLetter;
+            }
+            return null;
+        }
+
 
         private List<ReceiptMonitoringViewModel> GetAccessoriesReceiptMonitoringQuery(DateTime? dateFrom, DateTime? dateTo, int offset, int page, int size)
         {
