@@ -31,6 +31,13 @@ namespace Com.Danliris.Service.Inventory.WebApi.Controllers.v1.GarmentLeftoverWa
             ApiVersion = "1.0.0";
         }
 
+        protected void VerifyUser()
+        {
+            IdentityService.Username = User.Claims.ToArray().SingleOrDefault(p => p.Type.Equals("username")).Value;
+            IdentityService.Token = Request.Headers["Authorization"].FirstOrDefault().Replace("Bearer ", "");
+            IdentityService.TimezoneOffset = Convert.ToInt32(Request.Headers["x-timezone-offset"]);
+        }
+
         [HttpGet]
         public IActionResult Get(DateTime? dateFrom, DateTime? dateTo, string type, int page, int size, string Order = "{}")
         {
@@ -39,7 +46,8 @@ namespace Com.Danliris.Service.Inventory.WebApi.Controllers.v1.GarmentLeftoverWa
 
             try
             {
-                if(type == "FABRIC")
+                VerifyUser();
+                if (type == "FABRIC")
                 {
                     var data = Service.GetFabricReceiptMonitoring(dateFrom, dateTo, page, size, Order, offset);
 
@@ -52,7 +60,7 @@ namespace Com.Danliris.Service.Inventory.WebApi.Controllers.v1.GarmentLeftoverWa
                 }
                 else
                 {
-                    var data = Service.GetFabricReceiptMonitoring(dateFrom, dateTo, page, size, Order, offset);
+                    var data = Service.GetAccessoriesReceiptMonitoring(dateFrom, dateTo, page, size, Order, offset);
 
                     return Ok(new
                     {
@@ -62,6 +70,48 @@ namespace Com.Danliris.Service.Inventory.WebApi.Controllers.v1.GarmentLeftoverWa
                     });
                 }
                 
+            }
+            catch (Exception e)
+            {
+                Dictionary<string, object> Result =
+                    new ResultFormatter(ApiVersion, General.INTERNAL_ERROR_STATUS_CODE, e.Message)
+                    .Fail();
+                return StatusCode(General.INTERNAL_ERROR_STATUS_CODE, Result);
+            }
+        }
+
+        [HttpGet("download")]
+        public IActionResult GetXlsAll(DateTime? dateFrom, DateTime? dateTo, string type)
+        {
+
+            try
+            {
+                VerifyUser();
+                byte[] xlsInBytes;
+                int offset = Convert.ToInt32(Request.Headers["x-timezone-offset"]);
+                DateTime DateFrom = dateFrom == null ? new DateTime(1970, 1, 1) : Convert.ToDateTime(dateFrom);
+                DateTime DateTo = dateTo == null ? DateTime.Now : Convert.ToDateTime(dateTo);
+
+                if (type == "FABRIC")
+                {
+                    var generatedExcel = Service.GenerateExcelFabric(dateFrom, dateTo,  offset);
+
+                    string filename = String.Format("Report Penerimaan Gudang Sisa Fabric - {0}.xlsx", DateTime.UtcNow.ToString("ddMMyyyy"));
+                    //xlsInBytes = xls.ToArray();
+                    //var file = File(xlsInBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", filename);
+                    //return file;
+                    return File(generatedExcel.Item1.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", generatedExcel.Item2);
+                    
+                }
+                else
+                {
+                    var generatedExcel = Service.GenerateExcelAccessories(dateFrom, dateTo, offset);
+
+                    string filename = String.Format("Report Pengeluaran Gudang Sisa Accessories- {0}.xlsx", DateTime.UtcNow.ToString("ddMMyyyy"));
+
+                    return File(generatedExcel.Item1.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", generatedExcel.Item2);
+                }
+
             }
             catch (Exception e)
             {
