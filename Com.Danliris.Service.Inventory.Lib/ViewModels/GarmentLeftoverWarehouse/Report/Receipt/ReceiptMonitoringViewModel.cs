@@ -19,9 +19,9 @@ namespace Com.Danliris.Service.Inventory.Lib.ViewModels.GarmentLeftoverWarehouse
         public double Quantity { get; set; }
         public UomViewModel Uom { get; set; }
 
-        public string CustomsNo { get; set; }
-        public string CustomsType { get; set; }
-        public string CustomsDate { get; set; }
+        public List<string> CustomsNo { get; set; }
+        public List<string> CustomsType { get; set; }
+        public List<DateTimeOffset> CustomsDate { get; set; }
 
 
     }
