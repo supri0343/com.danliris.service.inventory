@@ -4,14 +4,16 @@ using Com.Danliris.Service.Inventory.Lib;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Com.Danliris.Service.Inventory.Lib.Migrations
 {
     [DbContext(typeof(InventoryDbContext))]
-    partial class InventoryDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210420062513_AddInventoryWeaving")]
+    partial class AddInventoryWeaving
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1467,24 +1469,43 @@ namespace Com.Danliris.Service.Inventory.Lib.Migrations
 
                     b.Property<bool>("Active");
 
+                    b.Property<string>("Article");
+
+                    b.Property<string>("BuyerCode");
+
+                    b.Property<long>("BuyerId");
+
+                    b.Property<string>("BuyerName");
+
                     b.Property<double>("Carton");
 
-                    b.Property<string>("ContractNo")
-                        .HasMaxLength(20);
+                    b.Property<string>("ComodityCode");
+
+                    b.Property<long>("ComodityId");
+
+                    b.Property<string>("ComodityName");
+
+                    b.Property<string>("ContractNo");
 
                     b.Property<string>("Description")
                         .HasMaxLength(3000);
 
                     b.Property<DateTimeOffset>("ExpenditureDate");
 
-                    b.Property<string>("ExpenditureDesc")
-                        .HasMaxLength(3000);
+                    b.Property<string>("ExpenditureDesc");
+
+                    b.Property<Guid>("ExpenditureGoodId");
+
+                    b.Property<string>("ExpenditureGoodNo")
+                        .HasMaxLength(25);
 
                     b.Property<string>("FinishedGoodReceiptNo")
                         .IsRequired()
                         .HasMaxLength(25);
 
                     b.Property<string>("Invoice");
+
+                    b.Property<string>("RONo");
 
                     b.Property<DateTimeOffset>("ReceiptDate");
 
@@ -1494,7 +1515,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Migrations
                     b.Property<long>("UnitFromId");
 
                     b.Property<string>("UnitFromName")
-                        .HasMaxLength(50);
+                        .HasMaxLength(100);
 
                     b.Property<string>("_CreatedAgent")
                         .IsRequired()
@@ -1545,30 +1566,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Migrations
 
                     b.Property<bool>("Active");
 
-                    b.Property<string>("Article");
-
-                    b.Property<string>("BuyerCode")
-                        .HasMaxLength(20);
-
-                    b.Property<long>("BuyerId");
-
-                    b.Property<string>("BuyerName")
-                        .HasMaxLength(255);
-
-                    b.Property<string>("ComodityCode")
-                        .HasMaxLength(20);
-
-                    b.Property<long>("ComodityId");
-
-                    b.Property<string>("ComodityName")
-                        .HasMaxLength(255);
-
-                    b.Property<Guid>("ExpenditureGoodId");
-
                     b.Property<Guid>("ExpenditureGoodItemId");
-
-                    b.Property<string>("ExpenditureGoodNo")
-                        .HasMaxLength(25);
 
                     b.Property<int>("FinishedGoodReceiptId");
 
@@ -1582,9 +1580,6 @@ namespace Com.Danliris.Service.Inventory.Lib.Migrations
 
                     b.Property<double>("Quantity");
 
-                    b.Property<string>("RONo")
-                        .HasMaxLength(20);
-
                     b.Property<string>("Remark")
                         .HasMaxLength(4000);
 
@@ -1596,7 +1591,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Migrations
                     b.Property<long>("UomId");
 
                     b.Property<string>("UomUnit")
-                        .HasMaxLength(20);
+                        .HasMaxLength(255);
 
                     b.Property<string>("_CreatedAgent")
                         .IsRequired()
@@ -2501,7 +2496,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("InventoryWeavingMovements");
+                    b.ToTable("InventoryWeavingMovement");
                 });
 
             modelBuilder.Entity("Com.Danliris.Service.Inventory.Lib.Models.MaterialDistributionNoteModel.MaterialDistributionNote", b =>
