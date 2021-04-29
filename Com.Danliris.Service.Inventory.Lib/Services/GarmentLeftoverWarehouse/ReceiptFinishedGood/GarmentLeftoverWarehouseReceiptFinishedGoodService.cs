@@ -5,13 +5,18 @@ using Com.Danliris.Service.Inventory.Lib.Models.GarmentLeftoverWarehouse.Stock;
 using Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.Stock;
 using Com.Danliris.Service.Inventory.Lib.ViewModels;
 using Com.Danliris.Service.Inventory.Lib.ViewModels.GarmentLeftoverWarehouse.GarmentLeftoverWarehouseReceiptFinishedGoodViewModel;
+using Com.Danliris.Service.Inventory.Lib.ViewModels.GarmentLeftoverWarehouse.Report.Receipt;
 using Com.Moonlay.Models;
 using Com.Moonlay.NetCore.Lib;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Globalization;
+using System.IO;
 using System.Linq;
+using System.Linq.Dynamic.Core;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -239,9 +244,9 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
                             UnitCode = model.UnitFromCode,
                             UnitName = model.UnitFromName,
                             RONo = item.RONo,
-                            LeftoverComodityCode=item.LeftoverComodityCode,
-                            LeftoverComodityId=item.LeftoverComodityId,
-                            LeftoverComodityName=item.LeftoverComodityName,
+                            LeftoverComodityCode = item.LeftoverComodityCode,
+                            LeftoverComodityId = item.LeftoverComodityId,
+                            LeftoverComodityName = item.LeftoverComodityName,
                             Quantity = item.Quantity
                         };
                         await StockService.StockIn(stock, model.FinishedGoodReceiptNo, model.Id, item.Id);
@@ -435,6 +440,107 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
 
                 throw new Exception(string.Concat("Error from '", GarmentExpenditureGoodUri, "' : ", (string)result.GetValueOrDefault("error") ?? "- ", ". Message : ", (string)result.GetValueOrDefault("message") ?? "- ", ". Status : ", response.StatusCode, "."));
             }
+        }
+
+        public IQueryable<ReceiptFinishedGoodMonitoringViewModel> GetReportQuery(DateTime? dateFrom, DateTime? dateTo, int offset)
+        {
+            DateTime DateFrom = dateFrom == null ? new DateTime(1970, 1, 1) : (DateTime)dateFrom;
+            DateTime DateTo = dateTo == null ? new DateTime(1970, 1, 1) : (DateTime)dateTo;
+            int index = 0;
+            var Query = from a in (from data in DbContext.GarmentLeftoverWarehouseReceiptFinishedGoods
+                                   where data._IsDeleted == false
+                                   && data.ReceiptDate.AddHours(offset).Date >= DateFrom.Date
+                                   && data.ReceiptDate.AddHours(offset).Date <= DateTo.Date
+                                   select new { data.FinishedGoodReceiptNo, data.ReceiptDate, data.UnitFromCode, data.Id })
+                        join b in DbContext.GarmentLeftoverWarehouseReceiptFinishedGoodItems on a.Id equals b.FinishedGoodReceiptId
+                        select new ReceiptFinishedGoodMonitoringViewModel
+                        {
+                            ReceiptNoteNo = a.FinishedGoodReceiptNo,
+                            ReceiptDate = a.ReceiptDate,
+                            UnitFromCode = a.UnitFromCode,
+                            ExpenditureGoodNo = b.ExpenditureGoodNo,
+                            ComodityName = b.ComodityName,
+                            Quantity = b.Quantity,
+                            RONo = b.RONo,
+                            UomUnit = b.UomUnit
+                        };
+            var querySum= Query
+                .GroupBy(x => new { x.ReceiptNoteNo, x.ReceiptDate, x.UnitFromCode, x.ExpenditureGoodNo, x.ComodityName, x.RONo,x.UomUnit }, (key, group) => new
+            ReceiptFinishedGoodMonitoringViewModel
+            {
+                ReceiptNoteNo = key.ReceiptNoteNo,
+                ReceiptDate = key.ReceiptDate,
+                UnitFromCode = key.UnitFromCode,
+                ExpenditureGoodNo = key.ExpenditureGoodNo,
+                ComodityName = key.ComodityName,
+                Quantity = group.Sum(s=>s.Quantity),
+                RONo = key.RONo,
+                UomUnit = key.UomUnit
+            }).OrderBy(s => s.ReceiptDate);
+            return querySum;
+        }
+
+        public Tuple<List<ReceiptFinishedGoodMonitoringViewModel>, int> GetMonitoring(DateTime? dateFrom, DateTime? dateTo, int page, int size, string order, int offset)
+        {
+            var Query = GetReportQuery(dateFrom, dateTo, offset);
+
+            Dictionary<string, string> OrderDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(order);
+            if (OrderDictionary.Count.Equals(0))
+            {
+                Query = Query.OrderByDescending(b => b.ReceiptDate);
+            }
+            else
+            {
+                string Key = OrderDictionary.Keys.First();
+                string OrderType = OrderDictionary[Key];
+                Query = Query.OrderBy(string.Concat(Key, " ", OrderType));
+            }
+
+            Pageable<ReceiptFinishedGoodMonitoringViewModel> pageable = new Pageable<ReceiptFinishedGoodMonitoringViewModel>(Query, page - 1, size);
+            List<ReceiptFinishedGoodMonitoringViewModel> Data = pageable.Data.ToList<ReceiptFinishedGoodMonitoringViewModel>();
+
+            int TotalData = pageable.TotalCount;
+            int index = 0;
+            Data.ForEach(c =>
+            {
+                index += 1;
+                c.index = index;
+
+            });
+            return Tuple.Create(Data, TotalData);
+        }
+        public MemoryStream GenerateExcel(DateTime? dateFrom, DateTime? dateTo, int offset)
+        {
+            var Query = GetReportQuery(dateFrom, dateTo, offset);
+            Query = Query.OrderByDescending(b => b.ReceiptDate);
+            DataTable result = new DataTable();
+
+            result.Columns.Add(new DataColumn() { ColumnName = "No", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "No Bon Terima", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Tanggal Bon", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Asal barang", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "No Bon Pengeluaran Barang", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "RO", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Komoditi", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Qty", DataType = typeof(double) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Satuan", DataType = typeof(String) });
+
+            if (Query.ToArray().Count() == 0)
+                result.Rows.Add("", "", "", "", "", "", "", 0, ""); // to allow column name to be generated properly for empty data as template
+            else
+            {
+                int index = 0;
+                foreach (var item in Query)
+                {
+                    index++;
+                    //DateTimeOffset date = item.date ?? new DateTime(1970, 1, 1);
+                    //string dateString = date == new DateTime(1970, 1, 1) ? "-" : date.ToOffset(new TimeSpan(offset, 0, 0)).ToString("dd MMM yyyy", new CultureInfo("id-ID"));
+                    result.Rows.Add(index, item.ReceiptNoteNo, item.ReceiptDate.AddHours(offset).ToString("dd MMM yyyy", new CultureInfo("id-ID")), item.UnitFromCode, item.ExpenditureGoodNo, item.RONo, item.ComodityName, item.Quantity, item.UomUnit);
+                }
+            }
+
+            return Excel.CreateExcel(new List<KeyValuePair<DataTable, string>>() { new KeyValuePair<DataTable, string>(result, "Report Pengeluaran Gudang Sisa Barang Jadi") }, true);
+
         }
     }
 }
