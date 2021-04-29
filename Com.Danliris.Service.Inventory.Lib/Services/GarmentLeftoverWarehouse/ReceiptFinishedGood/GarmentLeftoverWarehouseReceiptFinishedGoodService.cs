@@ -302,6 +302,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
                         if (item == null)
                         {
                             existingItem.FlagForDelete(IdentityService.Username, UserAgent);
+                            await UpdateExpenditureGoodIsReceived(existingItem.ExpenditureGoodId, "false");
                         }
                         else
                         {
@@ -316,6 +317,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
                     foreach (var item in model.Items.Where(i => i.Id == 0))
                     {
                         item.FlagForCreate(IdentityService.Username, UserAgent);
+                        await UpdateExpenditureGoodIsReceived(item.ExpenditureGoodId, "true");
                         item.FlagForUpdate(IdentityService.Username, UserAgent);
                         existingModel.Items.Add(item);
                     }
