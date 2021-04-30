@@ -175,7 +175,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                         }
                         no += x;
                     }
-                    foreach (var y in item.CustomsNo)
+                    foreach (var y in item.CustomsType)
                     {
                         if (type != "")
                         {
@@ -371,7 +371,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                         }
                         no += x;
                     }
-                    foreach (var y in item.CustomsNo)
+                    foreach (var y in item.CustomsType)
                     {
                         if (type != "")
                         {
