@@ -30,6 +30,8 @@ using Com.Danliris.Service.Inventory.Lib.Models.GarmentLeftoverWarehouse.Expendi
 using Com.Danliris.Service.Inventory.Lib.Models.GarmentLeftoverWarehouse.ReceiptAccessories;
 using Com.Danliris.Service.Inventory.Lib.Models.GarmentLeftoverWarehouse.ExpenditureAccessories;
 using Com.Danliris.Service.Inventory.Lib.Configs.GarmentLeftoverWarehouse.ExpenditureAccessories;
+using Com.Danliris.Service.Inventory.Lib.Models.GarmentLeftoverWarehouse.BalanceStock;
+using Com.Danliris.Service.Inventory.Lib.Configs.GarmentLeftoverWarehouse.BalanceStock;
 
 namespace Com.Danliris.Service.Inventory.Lib
 {
@@ -82,6 +84,9 @@ namespace Com.Danliris.Service.Inventory.Lib
         public DbSet<GarmentLeftoverWarehouseReceiptAccessory> GarmentLeftoverWarehouseReceiptAccessories { get; set; }
         public DbSet<GarmentLeftoverWarehouseReceiptAccessoryItem> GarmentLeftoverWarehouseReceiptAccessoryItems { get; set; }
 
+        public DbSet<GarmentLeftoverWarehouseBalanceStock> GarmentLeftoverWarehouseBalanceStocks { get; set; }
+        public DbSet<GarmentLeftoverWarehouseBalanceStockItem> GarmentLeftoverWarehouseBalanceStocksItems { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -123,6 +128,9 @@ namespace Com.Danliris.Service.Inventory.Lib
 
             modelBuilder.ApplyConfiguration(new GarmentLeftoverWarehouseExpenditureAvalConfig());
             modelBuilder.ApplyConfiguration(new GarmentLeftoverWarehouseExpenditureAvalItemConfig());
+
+            modelBuilder.ApplyConfiguration(new GarmentLeftoverWarehouseBalanceStockConfig());
+            modelBuilder.ApplyConfiguration(new GarmentLeftoverWarehouseBalanceStockItemConfig());
         }
     }
 }
