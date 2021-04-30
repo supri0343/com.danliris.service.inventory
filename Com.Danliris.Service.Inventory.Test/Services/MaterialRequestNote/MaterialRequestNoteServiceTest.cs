@@ -1,6 +1,7 @@
 ﻿using Com.Danliris.Service.Inventory.Lib;
 using Com.Danliris.Service.Inventory.Lib.Services;
 using Com.Danliris.Service.Inventory.Lib.Services.MaterialRequestNoteServices;
+using Com.Danliris.Service.Inventory.Lib.ViewModels;
 using Com.Danliris.Service.Inventory.Lib.ViewModels.MaterialsRequestNoteViewModel;
 using Com.Danliris.Service.Inventory.Test.DataUtils.MaterialRequestNoteDataUtil;
 using Com.Danliris.Service.Inventory.Test.Helpers;
@@ -15,6 +16,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Xunit;
+using Newtonsoft.Json;
 
 namespace Com.Danliris.Service.Inventory.Test.Services.MaterialRequestNote
 {
@@ -283,6 +285,20 @@ namespace Com.Danliris.Service.Inventory.Test.Services.MaterialRequestNote
         }
 
         [Fact]
+        public async Task Should_Success_GetReport_with_order()
+        {
+            NewMaterialRequestNoteService service = new NewMaterialRequestNoteService(GetServiceProvider().Object, _dbContext(GetCurrentMethod()));
+            var data = await _dataUtil(service).GetTestData();
+            var orderProperty = new
+            {
+                Code ="asc"
+            };
+            string order = JsonConvert.SerializeObject(orderProperty);
+            var response = service.GetReport(null, null, null, null, null, null, null, 1, 25, order, 6);
+            Assert.True(true);
+        }
+
+        [Fact]
         public async Task Should_Success_ValidateVM()
         {
             var serviceProvider = GetServiceProvider();
@@ -317,13 +333,86 @@ namespace Com.Danliris.Service.Inventory.Test.Services.MaterialRequestNote
         {
             var serviceProvider = GetServiceProvider();
             NewMaterialRequestNoteService utilService = new NewMaterialRequestNoteService(serviceProvider.Object, _dbContext(GetCurrentMethod()));
-            var vm = new MaterialsRequestNoteViewModel() { RequestType = "a", MaterialsRequestNote_Items = new List<MaterialsRequestNote_ItemViewModel>() { new MaterialsRequestNote_ItemViewModel() } };
+            var vm = new MaterialsRequestNoteViewModel()
+            {
+                RequestType = "a",
+                MaterialsRequestNote_Items = new List<MaterialsRequestNote_ItemViewModel>() {
+                    new MaterialsRequestNote_ItemViewModel()
+                    {
+                         ProductionOrder = new ProductionOrderViewModel()
+                        {
+                                OrderQuantity = 1
+                        }
+                    }
+
+                }
+            };
             ValidationContext validationContext = new ValidationContext(vm, serviceProvider.Object, null);
             var response = vm.Validate(validationContext);
 
             Assert.True(response.Count() > 0);
+        }
 
+        [Fact]
+        public void Validate_When_MaterialsRequestNoteItem_length_isZero()
+        {
+            var serviceProvider = GetServiceProvider();
+            NewMaterialRequestNoteService utilService = new NewMaterialRequestNoteService(serviceProvider.Object, _dbContext(GetCurrentMethod()));
+            var vm = new MaterialsRequestNoteViewModel()
+            {
+                RequestType = "a",
+                MaterialsRequestNote_Items = new List<MaterialsRequestNote_ItemViewModel>() {
+                    new MaterialsRequestNote_ItemViewModel()
+                    {
+                        Length =0,
 
+                    }
+                }
+            };
+            ValidationContext validationContext = new ValidationContext(vm, serviceProvider.Object, null);
+            var response = vm.Validate(validationContext);
+
+            Assert.True(response.Count() > 0);
+        }
+
+        [Fact]
+        public void Validate_When_Duplicate_ProductionOrderId()
+        {
+            var serviceProvider = GetServiceProvider();
+            NewMaterialRequestNoteService utilService = new NewMaterialRequestNoteService(serviceProvider.Object, _dbContext(GetCurrentMethod()));
+            var vm = new MaterialsRequestNoteViewModel()
+            {
+                Id=1,
+                RequestType = "a",
+                MaterialsRequestNote_Items = new List<MaterialsRequestNote_ItemViewModel>() {
+                    new MaterialsRequestNote_ItemViewModel()
+                    {
+                        Id =1,
+                        Length =2,
+                         ProductionOrder = new ProductionOrderViewModel()
+                        {
+                             Id ="1",
+                             OrderQuantity = 1
+                        }
+
+                    },
+                    new MaterialsRequestNote_ItemViewModel()
+                    {
+                        Id =1,
+                        Length =2,
+                         ProductionOrder = new ProductionOrderViewModel()
+                        {
+                             Id ="1",
+                             OrderQuantity = 1
+                        }
+
+                    }
+                }
+            };
+            ValidationContext validationContext = new ValidationContext(vm, serviceProvider.Object, null);
+            var response = vm.Validate(validationContext);
+
+            Assert.True(response.Count() > 0);
         }
     }
 }

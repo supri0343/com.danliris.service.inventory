@@ -63,6 +63,7 @@ namespace Com.Danliris.Service.Inventory.Test.DataUtils.FpRegradingResultDataUti
                 OriginalGrade = "test grade",
                 Remark = "test remark",
                 UnitName = "PRINTING",
+                _CreatedUtc = new DateTime(2019,8,11,1,1,1),
 
                 Details = new List<FpRegradingResultDocsDetails> { new FpRegradingResultDocsDetails(){
                     Grade = "a",
@@ -72,7 +73,8 @@ namespace Com.Danliris.Service.Inventory.Test.DataUtils.FpRegradingResultDataUti
                     ProductName = "name",
                     Quantity = 1,
                     Remark = "remar",
-                    Retur = "retur"
+                    Retur = "retur",
+                      _CreatedUtc = new DateTime(2019,8,11,1,1,1),
                 } }
 
             };

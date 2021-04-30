@@ -2,6 +2,7 @@
 using Com.Danliris.Service.Inventory.Lib.Services;
 using Com.Danliris.Service.Inventory.Lib.Services.Inventory;
 using Com.Danliris.Service.Inventory.Lib.Services.StockTransferNoteService;
+using Com.Danliris.Service.Inventory.Lib.ViewModels.InventoryViewModel;
 using Com.Danliris.Service.Inventory.Lib.ViewModels.StockTransferNoteViewModel;
 using Com.Danliris.Service.Inventory.Test.DataUtils.StockTransferNoteDataUtil;
 using Com.Danliris.Service.Inventory.Test.Helpers;
@@ -399,6 +400,7 @@ namespace Com.Danliris.Service.Inventory.Test.Services.StockTransferNote
         [Fact]
         public void Should_Success_ValidateNullDetailVM()
         {
+            //Setup
             var serviceProvider = GetServiceProvider();
             InventorySummaryService inventorySummaryService = new InventorySummaryService(serviceProvider.Object, _dbContext(GetCurrentMethod()));
             serviceProvider.Setup(s => s.GetService(typeof(IInventorySummaryService)))
@@ -412,13 +414,122 @@ namespace Com.Danliris.Service.Inventory.Test.Services.StockTransferNote
             serviceProvider.Setup(s => s.GetService(typeof(IInventoryDocumentService)))
                 .Returns(inventoryDocumentFacade);
             NewStockTransferNoteService service = new NewStockTransferNoteService(serviceProvider.Object, _dbContext(GetCurrentMethod()));
-            var vm = new StockTransferNoteViewModel() { StockTransferNoteItems = new List<StockTransferNote_ItemViewModel>() { new StockTransferNote_ItemViewModel() } };
+
+            var vm = new StockTransferNoteViewModel()
+            {
+
+                StockTransferNoteItems = new List<StockTransferNote_ItemViewModel>()
+                {
+                    new StockTransferNote_ItemViewModel()
+                    {
+                        Summary=null
+                    }
+                }
+            };
             ValidationContext validationContext = new ValidationContext(vm, serviceProvider.Object, null);
+
+            //Act
             var response = vm.Validate(validationContext);
 
+            //Assert
             Assert.True(response.Count() > 0);
+        }
 
+        [Fact]
+        public void Should_Success_Validate_when_Duplicate_SummaryId()
+        {
+            //Setup
+            var serviceProvider = GetServiceProvider();
+            InventorySummaryService inventorySummaryService = new InventorySummaryService(serviceProvider.Object, _dbContext(GetCurrentMethod()));
+            serviceProvider.Setup(s => s.GetService(typeof(IInventorySummaryService)))
+                .Returns(inventorySummaryService);
 
+            InventoryMovementService inventoryMovementService = new InventoryMovementService(serviceProvider.Object, _dbContext(GetCurrentMethod()));
+            serviceProvider.Setup(s => s.GetService(typeof(IInventoryMovementService)))
+                .Returns(inventoryMovementService);
+
+            InventoryDocumentService inventoryDocumentFacade = new InventoryDocumentService(serviceProvider.Object, _dbContext(GetCurrentMethod()));
+            serviceProvider.Setup(s => s.GetService(typeof(IInventoryDocumentService)))
+                .Returns(inventoryDocumentFacade);
+            NewStockTransferNoteService service = new NewStockTransferNoteService(serviceProvider.Object, _dbContext(GetCurrentMethod()));
+
+            var vm = new StockTransferNoteViewModel()
+            {
+
+                StockTransferNoteItems = new List<StockTransferNote_ItemViewModel>() {
+                    new StockTransferNote_ItemViewModel()
+                    {
+
+                        Summary = new InventorySummaryViewModel()
+                        {
+                            productId =1,
+                            productName ="productName",
+                            quantity=1
+                        }
+                    },
+
+                }
+            };
+            ValidationContext validationContext = new ValidationContext(vm, serviceProvider.Object, null);
+
+            //Act
+            var response = vm.Validate(validationContext);
+
+            //Assert
+            Assert.True(response.Count() > 0);
+        }
+
+        [Fact]
+        public void Validate_When_TransferedQuantity_is_Greater_Than_Stock()
+        {
+            //Setup
+            var serviceProvider = GetServiceProvider();
+            InventorySummaryService inventorySummaryService = new InventorySummaryService(serviceProvider.Object, _dbContext(GetCurrentMethod()));
+            serviceProvider.Setup(s => s.GetService(typeof(IInventorySummaryService)))
+                .Returns(inventorySummaryService);
+
+            InventoryMovementService inventoryMovementService = new InventoryMovementService(serviceProvider.Object, _dbContext(GetCurrentMethod()));
+            serviceProvider.Setup(s => s.GetService(typeof(IInventoryMovementService)))
+                .Returns(inventoryMovementService);
+
+            InventoryDocumentService inventoryDocumentFacade = new InventoryDocumentService(serviceProvider.Object, _dbContext(GetCurrentMethod()));
+            serviceProvider.Setup(s => s.GetService(typeof(IInventoryDocumentService)))
+                .Returns(inventoryDocumentFacade);
+            NewStockTransferNoteService service = new NewStockTransferNoteService(serviceProvider.Object, _dbContext(GetCurrentMethod()));
+
+            var vm = new StockTransferNoteViewModel()
+            {
+
+                StockTransferNoteItems = new List<StockTransferNote_ItemViewModel>() {
+                    new StockTransferNote_ItemViewModel()
+                    {
+
+                        Summary = new InventorySummaryViewModel()
+                        {
+                            productId =1,
+                            productName ="productName",
+                            quantity =1
+                        },
+                        TransferedQuantity=2
+                    },
+                    new StockTransferNote_ItemViewModel()
+                    {
+
+                        Summary = new InventorySummaryViewModel()
+                        {
+                            productId =1,
+                            productName ="productName"
+                        },
+                    }
+                }
+            };
+            ValidationContext validationContext = new ValidationContext(vm, serviceProvider.Object, null);
+
+            //Act
+            var response = vm.Validate(validationContext);
+
+            //Assert
+            Assert.True(response.Count() > 0);
         }
     }
 }

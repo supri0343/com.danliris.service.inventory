@@ -8,5 +8,7 @@ namespace Com.Danliris.Service.Inventory.Test.Helpers
     {
         public const string CONTROLLER_TEST_DATA = "Controller";
         public const string SERVICE_TEST_DATA = "Service";
+        public const string ASCENDING = "asc";
+        public const string DESCENDING = "desc";
     }
 }

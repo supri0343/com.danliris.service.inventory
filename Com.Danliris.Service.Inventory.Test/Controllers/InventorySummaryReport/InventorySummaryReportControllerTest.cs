@@ -85,7 +85,7 @@ namespace Com.Danliris.Service.Inventory.Test.Controllers.InventorySummaryReport
             mocks.Service.Setup(f => f.GetReport(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<int>()))
                 .Returns(new Tuple<List<InventorySummaryViewModel>, int>(new List<InventorySummaryViewModel>(), 1));
             var controller = GetController(mocks);
-            var response = controller.GetReportAll(null, null, 1, 25);
+            var response = controller.GetReportAll(null, null, 0, 0);
             Assert.Equal((int)HttpStatusCode.OK, GetStatusCode(response));
         }
 
