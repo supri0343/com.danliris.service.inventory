@@ -4,14 +4,16 @@ using Com.Danliris.Service.Inventory.Lib;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Com.Danliris.Service.Inventory.Lib.Migrations
 {
     [DbContext(typeof(InventoryDbContext))]
-    partial class InventoryDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210426040912_RenameTableMovement")]
+    partial class RenameTableMovement
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -526,150 +528,6 @@ namespace Com.Danliris.Service.Inventory.Lib.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("FpReturnFromBuyerModel");
-                });
-
-            modelBuilder.Entity("Com.Danliris.Service.Inventory.Lib.Models.GarmentLeftoverWarehouse.BalanceStock.GarmentLeftoverWarehouseBalanceStock", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<bool>("Active");
-
-                    b.Property<DateTimeOffset>("BalanceStockDate");
-
-                    b.Property<string>("TypeOfGoods");
-
-                    b.Property<string>("_CreatedAgent")
-                        .IsRequired()
-                        .HasMaxLength(255);
-
-                    b.Property<string>("_CreatedBy")
-                        .IsRequired()
-                        .HasMaxLength(255);
-
-                    b.Property<DateTime>("_CreatedUtc");
-
-                    b.Property<string>("_DeletedAgent")
-                        .IsRequired()
-                        .HasMaxLength(255);
-
-                    b.Property<string>("_DeletedBy")
-                        .IsRequired()
-                        .HasMaxLength(255);
-
-                    b.Property<DateTime>("_DeletedUtc");
-
-                    b.Property<bool>("_IsDeleted");
-
-                    b.Property<string>("_LastModifiedAgent")
-                        .IsRequired()
-                        .HasMaxLength(255);
-
-                    b.Property<string>("_LastModifiedBy")
-                        .IsRequired()
-                        .HasMaxLength(255);
-
-                    b.Property<DateTime>("_LastModifiedUtc");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("GarmentLeftoverWarehouseBalanceStocks");
-                });
-
-            modelBuilder.Entity("Com.Danliris.Service.Inventory.Lib.Models.GarmentLeftoverWarehouse.BalanceStock.GarmentLeftoverWarehouseBalanceStockItem", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<bool>("Active");
-
-                    b.Property<int>("BalanceStockId");
-
-                    b.Property<string>("Composition")
-                        .HasMaxLength(255);
-
-                    b.Property<string>("Construction")
-                        .HasMaxLength(255);
-
-                    b.Property<string>("LeftoverComodityCode")
-                        .HasMaxLength(20);
-
-                    b.Property<long>("LeftoverComodityId");
-
-                    b.Property<string>("LeftoverComodityName")
-                        .HasMaxLength(255);
-
-                    b.Property<string>("PONo")
-                        .HasMaxLength(25);
-
-                    b.Property<string>("ProductCode")
-                        .HasMaxLength(25);
-
-                    b.Property<long>("ProductId");
-
-                    b.Property<string>("ProductName")
-                        .HasMaxLength(100);
-
-                    b.Property<string>("ProductRemark")
-                        .HasMaxLength(3000);
-
-                    b.Property<int>("Quantity");
-
-                    b.Property<string>("RONo")
-                        .HasMaxLength(50);
-
-                    b.Property<string>("UnitCode")
-                        .HasMaxLength(25);
-
-                    b.Property<long>("UnitId");
-
-                    b.Property<string>("UnitName")
-                        .HasMaxLength(100);
-
-                    b.Property<long>("UomId");
-
-                    b.Property<string>("UomUnit")
-                        .HasMaxLength(100);
-
-                    b.Property<string>("_CreatedAgent")
-                        .IsRequired()
-                        .HasMaxLength(255);
-
-                    b.Property<string>("_CreatedBy")
-                        .IsRequired()
-                        .HasMaxLength(255);
-
-                    b.Property<DateTime>("_CreatedUtc");
-
-                    b.Property<string>("_DeletedAgent")
-                        .IsRequired()
-                        .HasMaxLength(255);
-
-                    b.Property<string>("_DeletedBy")
-                        .IsRequired()
-                        .HasMaxLength(255);
-
-                    b.Property<DateTime>("_DeletedUtc");
-
-                    b.Property<bool>("_IsDeleted");
-
-                    b.Property<string>("_LastModifiedAgent")
-                        .IsRequired()
-                        .HasMaxLength(255);
-
-                    b.Property<string>("_LastModifiedBy")
-                        .IsRequired()
-                        .HasMaxLength(255);
-
-                    b.Property<DateTime>("_LastModifiedUtc");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("BalanceStockId");
-
-                    b.ToTable("GarmentLeftoverWarehouseBalanceStocksItems");
                 });
 
             modelBuilder.Entity("Com.Danliris.Service.Inventory.Lib.Models.GarmentLeftoverWarehouse.ExpenditureAccessories.GarmentLeftoverWarehouseExpenditureAccessories", b =>
@@ -1611,24 +1469,43 @@ namespace Com.Danliris.Service.Inventory.Lib.Migrations
 
                     b.Property<bool>("Active");
 
+                    b.Property<string>("Article");
+
+                    b.Property<string>("BuyerCode");
+
+                    b.Property<long>("BuyerId");
+
+                    b.Property<string>("BuyerName");
+
                     b.Property<double>("Carton");
 
-                    b.Property<string>("ContractNo")
-                        .HasMaxLength(20);
+                    b.Property<string>("ComodityCode");
+
+                    b.Property<long>("ComodityId");
+
+                    b.Property<string>("ComodityName");
+
+                    b.Property<string>("ContractNo");
 
                     b.Property<string>("Description")
                         .HasMaxLength(3000);
 
                     b.Property<DateTimeOffset>("ExpenditureDate");
 
-                    b.Property<string>("ExpenditureDesc")
-                        .HasMaxLength(3000);
+                    b.Property<string>("ExpenditureDesc");
+
+                    b.Property<Guid>("ExpenditureGoodId");
+
+                    b.Property<string>("ExpenditureGoodNo")
+                        .HasMaxLength(25);
 
                     b.Property<string>("FinishedGoodReceiptNo")
                         .IsRequired()
                         .HasMaxLength(25);
 
                     b.Property<string>("Invoice");
+
+                    b.Property<string>("RONo");
 
                     b.Property<DateTimeOffset>("ReceiptDate");
 
@@ -1638,7 +1515,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Migrations
                     b.Property<long>("UnitFromId");
 
                     b.Property<string>("UnitFromName")
-                        .HasMaxLength(50);
+                        .HasMaxLength(100);
 
                     b.Property<string>("_CreatedAgent")
                         .IsRequired()
@@ -1689,30 +1566,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Migrations
 
                     b.Property<bool>("Active");
 
-                    b.Property<string>("Article");
-
-                    b.Property<string>("BuyerCode")
-                        .HasMaxLength(20);
-
-                    b.Property<long>("BuyerId");
-
-                    b.Property<string>("BuyerName")
-                        .HasMaxLength(255);
-
-                    b.Property<string>("ComodityCode")
-                        .HasMaxLength(20);
-
-                    b.Property<long>("ComodityId");
-
-                    b.Property<string>("ComodityName")
-                        .HasMaxLength(255);
-
-                    b.Property<Guid>("ExpenditureGoodId");
-
                     b.Property<Guid>("ExpenditureGoodItemId");
-
-                    b.Property<string>("ExpenditureGoodNo")
-                        .HasMaxLength(25);
 
                     b.Property<int>("FinishedGoodReceiptId");
 
@@ -1726,9 +1580,6 @@ namespace Com.Danliris.Service.Inventory.Lib.Migrations
 
                     b.Property<double>("Quantity");
 
-                    b.Property<string>("RONo")
-                        .HasMaxLength(20);
-
                     b.Property<string>("Remark")
                         .HasMaxLength(4000);
 
@@ -1740,7 +1591,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Migrations
                     b.Property<long>("UomId");
 
                     b.Property<string>("UomUnit")
-                        .HasMaxLength(20);
+                        .HasMaxLength(255);
 
                     b.Property<string>("_CreatedAgent")
                         .IsRequired()
@@ -3196,14 +3047,6 @@ namespace Com.Danliris.Service.Inventory.Lib.Migrations
                     b.HasOne("Com.Danliris.Service.Inventory.Lib.Models.FpReturnFromBuyers.FpReturnFromBuyerDetailModel", "FpReturnFromBuyerDetail")
                         .WithMany("Items")
                         .HasForeignKey("FpReturnFromBuyerDetailId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("Com.Danliris.Service.Inventory.Lib.Models.GarmentLeftoverWarehouse.BalanceStock.GarmentLeftoverWarehouseBalanceStockItem", b =>
-                {
-                    b.HasOne("Com.Danliris.Service.Inventory.Lib.Models.GarmentLeftoverWarehouse.BalanceStock.GarmentLeftoverWarehouseBalanceStock", "GarmentLeftoverWarehouseBalanceStock")
-                        .WithMany("Items")
-                        .HasForeignKey("BalanceStockId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
