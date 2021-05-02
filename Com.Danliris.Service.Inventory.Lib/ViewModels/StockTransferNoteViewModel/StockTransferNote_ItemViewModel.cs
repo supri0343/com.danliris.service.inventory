@@ -1,6 +1,7 @@
 ﻿using Com.Danliris.Service.Inventory.Lib.Helpers;
 using System.ComponentModel.DataAnnotations;
 using System.Collections.Generic;
+using Com.Danliris.Service.Inventory.Lib.ViewModels.InventoryViewModel;
 
 namespace Com.Danliris.Service.Inventory.Lib.ViewModels.StockTransferNoteViewModel
 {

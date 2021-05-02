@@ -9,6 +9,7 @@ using Com.Danliris.Service.Inventory.Lib.Models;
 using Com.Danliris.Service.Inventory.Lib.Services;
 using Com.Danliris.Service.Inventory.WebApi.Helpers;
 using Com.Danliris.Service.Inventory.Lib.ViewModels;
+using Com.Danliris.Service.Inventory.Lib.Services.FpRegradingResultDocs;
 
 namespace Com.Danliris.Service.Inventory.WebApi.Controllers.v1.Loaders
 {
@@ -18,12 +19,17 @@ namespace Com.Danliris.Service.Inventory.WebApi.Controllers.v1.Loaders
     [Authorize]
     public class FpRegradingResultDocsLoaderController : Controller
     {
-        private string ApiVersion = "1.0.0";
-        private readonly FpRegradingResultDocsService service;
+        private IIdentityService IdentityService;
+        private readonly IValidateService ValidateService;
+        private readonly IFpRegradingResultDocsService Service;
+        private readonly string ApiVersion;
 
-        public FpRegradingResultDocsLoaderController(FpRegradingResultDocsService service)
+        public FpRegradingResultDocsLoaderController(IIdentityService identityService, IValidateService validateService, IFpRegradingResultDocsService service)
         {
-            this.service = service;
+            IdentityService = identityService;
+            ValidateService = validateService;
+            Service = service;
+            ApiVersion = "1.0.0";
         }
 
         [HttpGet]
@@ -31,11 +37,11 @@ namespace Com.Danliris.Service.Inventory.WebApi.Controllers.v1.Loaders
         {
             try
             {
-                Tuple<List<FpRegradingResultDocs>, int, Dictionary<string, string>, List<string>> Data = service.ReadNo(Keyword, Filter);
+                Tuple<List<FpRegradingResultDocs>, int, Dictionary<string, string>, List<string>> Data = Service.ReadNo(Keyword, Filter);
 
                 Dictionary<string, object> Result =
                     new ResultFormatter(ApiVersion, General.OK_STATUS_CODE, General.OK_MESSAGE)
-                    .Ok<FpRegradingResultDocs, FpRegradingResultDocsViewModel>(Data.Item1, service.MapToViewModel, 1, 25, Data.Item2, Data.Item1.Count, Data.Item3, Data.Item4);
+                    .Ok<FpRegradingResultDocs, FpRegradingResultDocsViewModel>(Data.Item1, Service.MapToViewModel, 1, 25, Data.Item2, Data.Item1.Count, Data.Item3, Data.Item4);
 
                 return Ok(Result);
             }

@@ -180,6 +180,15 @@ namespace Com.Danliris.Service.Inventory.Lib.Facades.InventoryFacades
             //    return no + lastNoNumber.ToString().PadLeft(Padding, '0');
             //}
         }
+        public List<InventorySummary> GetByStorageAndMTR(string storageName)
+        {
+            IQueryable<InventorySummary> Query = this.dbSet;
+
+            Query = Query
+                .Where(s => s.StorageName.Equals(storageName) && s.UomUnit.Equals("MTR"));
+
+            return Query.ToList();
+        }
     }
 }
 

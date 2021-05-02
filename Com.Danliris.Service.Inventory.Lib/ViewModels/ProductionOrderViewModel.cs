@@ -7,11 +7,11 @@ namespace Com.Danliris.Service.Inventory.Lib.ViewModels
 {
     public class ProductionOrderViewModel
     {
-        public string _id { get; set; }
-        public string orderNo { get; set; }
-        public double? orderQuantity { get; set; }
-        public bool isCompleted { get; set; }
-        public double? distributedQuantity { get; set; }
-        public OrderTypeViewModel orderType { get; set; }
+        public string Id { get; set; }
+        public string OrderNo { get; set; }
+        public double? OrderQuantity { get; set; }
+        public bool IsCompleted { get; set; }
+        public double? DistributedQuantity { get; set; }
+        public OrderTypeViewModel OrderType { get; set; }
     }
 }

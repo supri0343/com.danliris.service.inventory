@@ -63,24 +63,24 @@ namespace Com.Danliris.Service.Inventory.Test
                 .ConfigureServices(services =>
                 {
                     services
-                        .AddTransient<MaterialRequestNoteDataUtil>()
-                        .AddTransient<MaterialRequestNoteItemDataUtil>()
+                        //.AddTransient<MaterialRequestNoteDataUtil>()
+                        //.AddTransient<MaterialRequestNoteItemDataUtil>()
 
-                        .AddTransient<FpRegradingResultDataUtil>()
-                        .AddTransient<FpRegradingResultDetailsDataUtil>()
+                        //.AddTransient<FpRegradingResultDataUtil>()
+                        //.AddTransient<FpRegradingResultDetailsDataUtil>()
 
-                        .AddTransient<MaterialDistributionNoteDataUtil>()
-                        .AddTransient<MaterialDistributionNoteItemDataUtil>()
-                        .AddTransient<MaterialDistributionNoteDetailDataUtil>()
+                        //.AddTransient<MaterialDistributionNoteDataUtil>()
+                        //.AddTransient<MaterialDistributionNoteItemDataUtil>()
+                        //.AddTransient<MaterialDistributionNoteDetailDataUtil>()
 
                         .AddTransient<StockTransferNoteDataUtil>()
-                        .AddTransient<StockTransferNoteItemDataUtil>()
+                        //.AddTransient<StockTransferNoteItemDataUtil>()
 
-                        .AddTransient<FPReturnInvToPurchasingDataUtil>()
+                        //.AddTransient<FPReturnInvToPurchasingDataUtil>()
                         .AddTransient<FPReturnInvToPurchasingDetailDataUtil>()
 
                         .AddTransient<InventoryDocumentDataUtil>()
-                        .AddTransient<InventoryDocumentItemDataUtil>()
+                        //.AddTransient<InventoryDocumentItemDataUtil>()
 
                         .AddTransient<InventoryMovementDataUtil>()
 

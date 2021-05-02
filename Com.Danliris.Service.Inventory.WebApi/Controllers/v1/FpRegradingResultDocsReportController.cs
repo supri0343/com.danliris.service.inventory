@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Com.Danliris.Service.Inventory.Lib.Facades;
+﻿using Com.Danliris.Service.Inventory.Lib.Services;
+using Com.Danliris.Service.Inventory.Lib.Services.FpRegradingResultDocs;
 using Com.Danliris.Service.Inventory.WebApi.Helpers;
+using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Collections.Generic;
 
 namespace Com.Danliris.Service.Inventory.WebApi.Controllers.v1
 {
@@ -14,12 +12,17 @@ namespace Com.Danliris.Service.Inventory.WebApi.Controllers.v1
     [Route("v{version:apiVersion}/fp-regrading-result-docs-report")]
     public class FpRegradingResultDocsReportController : Controller
     {
-        private static readonly string ApiVersion = "1.0";
-        private readonly FpRegradingResultDocsReportFacade fpRegradingResultDocsReportFacade;
+        private IIdentityService IdentityService;
+        private readonly IValidateService ValidateService;
+        private readonly IFpRegradingResultDocsService Service;
+        private readonly string ApiVersion;
 
-        public FpRegradingResultDocsReportController(FpRegradingResultDocsReportFacade fpRegradingResultDocsReportFacade)
+        public FpRegradingResultDocsReportController(IIdentityService identityService, IValidateService validateService, IFpRegradingResultDocsService service)
         {
-            this.fpRegradingResultDocsReportFacade = fpRegradingResultDocsReportFacade;
+            IdentityService = identityService;
+            ValidateService = validateService;
+            Service = service;
+            ApiVersion = "1.0.0";
         }
 
         [HttpGet]
@@ -30,7 +33,7 @@ namespace Com.Danliris.Service.Inventory.WebApi.Controllers.v1
 
             try
             {
-                var data = fpRegradingResultDocsReportFacade.GetReport(unitName, code, productName, isReturn, isReturnedToPurchasing, dateFrom, dateTo, page, size, Order);
+                var data = Service.GetReport(unitName, code, productName, isReturn, isReturnedToPurchasing, dateFrom, dateTo, page, size, Order);
 
                 return Ok(new
                 {

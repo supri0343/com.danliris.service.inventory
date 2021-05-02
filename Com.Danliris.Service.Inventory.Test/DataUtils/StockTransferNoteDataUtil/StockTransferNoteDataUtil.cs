@@ -1,70 +1,68 @@
-﻿using Com.Danliris.Service.Inventory.Lib;
-using Com.Danliris.Service.Inventory.Lib.Models.StockTransferNoteModel;
+﻿using Com.Danliris.Service.Inventory.Lib.Models.StockTransferNoteModel;
 using Com.Danliris.Service.Inventory.Lib.Services.StockTransferNoteService;
 using Com.Danliris.Service.Inventory.Lib.ViewModels;
 using Com.Danliris.Service.Inventory.Lib.ViewModels.StockTransferNoteViewModel;
-using Com.Danliris.Service.Inventory.Test.DataUtils.IntegrationDataUtil;
 using Com.Danliris.Service.Inventory.Test.Helpers;
-using Com.Danliris.Service.Inventory.Test.Interfaces;
-using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Com.Danliris.Service.Inventory.Test.DataUtils.StockTransferNoteDataUtil
 {
-    public class StockTransferNoteDataUtil : BasicDataUtil<InventoryDbContext, StockTransferNoteService, StockTransferNote>, IEmptyData<StockTransferNoteViewModel>
+    public class StockTransferNoteDataUtil
     {
-        private readonly HttpClientTestService client;
-        private readonly StockTransferNoteItemDataUtil stockTransferNoteItemDataUtil;
+        private readonly NewStockTransferNoteService Service;
 
-        public StockTransferNoteDataUtil(InventoryDbContext dbContext, StockTransferNoteService service, HttpClientTestService client, StockTransferNoteItemDataUtil stockTransferNoteItemDataUtil) : base(dbContext, service)
+        public StockTransferNoteDataUtil(NewStockTransferNoteService service)
         {
-            this.client = client;
-            this.stockTransferNoteItemDataUtil = stockTransferNoteItemDataUtil;
+            Service = service;
         }
 
         public StockTransferNoteViewModel GetEmptyData()
         {
-            StockTransferNoteViewModel Data = new StockTransferNoteViewModel();
-
-            Data.ReferenceNo = string.Empty;
-            Data.ReferenceType = string.Empty;
-            Data.SourceStorage = new StorageViewModel();
-            Data.TargetStorage = new StorageViewModel();
-            Data.StockTransferNoteItems = new List<StockTransferNote_ItemViewModel> { new StockTransferNote_ItemViewModel() };
+            StockTransferNoteViewModel Data = new StockTransferNoteViewModel
+            {
+                ReferenceNo = string.Empty,
+                ReferenceType = string.Empty,
+                SourceStorage = new StorageViewModel(),
+                TargetStorage = new StorageViewModel(),
+                StockTransferNoteItems = new List<StockTransferNote_ItemViewModel> { new StockTransferNote_ItemViewModel() }
+            };
 
             return Data;
         }
 
-        public override StockTransferNote GetNewData()
+        public StockTransferNote GetNewData()
         {
-            StorageViewModel storage = StorageDataUtil.GetPrintingGreigeStorage(client);
-            InventorySummaryViewModel inventorySummary = InventorySummaryDataUtil.GetInventorySummary(client);
-
             StockTransferNote TestData = new StockTransferNote
             {
                 ReferenceNo = "Reference No Test",
                 ReferenceType = "Reference Type Test",
-                SourceStorageId = inventorySummary.storageId,
-                SourceStorageCode = inventorySummary.storageCode,
-                SourceStorageName = inventorySummary.storageName,
-                TargetStorageId = storage._id,
-                TargetStorageCode = storage.code,
-                TargetStorageName = storage.name,
+                SourceStorageId = "1",
+                SourceStorageCode = "code",
+                SourceStorageName = "name",
+                TargetStorageId = "1",
+                TargetStorageCode = "code",
+                TargetStorageName = "name",
                 IsApproved = false,
-                StockTransferNoteItems = new List<StockTransferNote_Item> { stockTransferNoteItemDataUtil.GetNewData(inventorySummary) }
+                StockTransferNoteItems = new List<StockTransferNote_Item> { new StockTransferNote_Item(){
+                    ProductCode = "code",
+                    ProductId = "1",
+                    ProductName = "name",
+                    StockQuantity = 1,
+                    TransferedQuantity = 1,
+                    UomId = "1",
+                    UomUnit = "unit"
+                } }
             };
 
             return TestData;
         }
 
 
-        public override async Task<StockTransferNote> GetTestData()
+        public async Task<StockTransferNote> GetTestData()
         {
             StockTransferNote Data = GetNewData();
-            this.Service.Token = HttpClientTestService.Token;
-            await this.Service.CreateModel(Data);
+            await this.Service.CreateAsync(Data);
             return Data;
         }
     }

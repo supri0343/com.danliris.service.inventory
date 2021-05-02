@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authorization;
-using Com.Danliris.Service.Inventory.Lib.Services.MaterialsRequestNoteServices;
-using Microsoft.EntityFrameworkCore;
+﻿using Com.Danliris.Service.Inventory.Lib.Services;
+using Com.Danliris.Service.Inventory.Lib.Services.MaterialRequestNoteServices;
 using Com.Danliris.Service.Inventory.WebApi.Helpers;
-using System.IO;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Collections.Generic;
 
 namespace Com.Danliris.Service.Inventory.WebApi.Controllers.v1
 {
@@ -18,12 +14,19 @@ namespace Com.Danliris.Service.Inventory.WebApi.Controllers.v1
     [Authorize]
     public class MaterialsRequestNoteReportController : Controller
     {
-        private static readonly string ApiVersion = "1.0";
-        private MaterialsRequestNoteService materialsRequestNoteService { get; }
+        private IIdentityService IdentityService;
+        private readonly IValidateService ValidateService;
+        private readonly IMaterialRequestNoteService Service;
+        private readonly string ApiVersion;
+        //private static readonly string ApiVersion = "1.0";
+        //private MaterialsRequestNoteService materialsRequestNoteService { get; }
 
-        public MaterialsRequestNoteReportController(MaterialsRequestNoteService materialsRequestNoteService)
+        public MaterialsRequestNoteReportController(IIdentityService identityService, IValidateService validateService, IMaterialRequestNoteService service)
         {
-            this.materialsRequestNoteService = materialsRequestNoteService;
+            IdentityService = identityService;
+            ValidateService = validateService;
+            Service = service;
+            ApiVersion = "1.0.0";
         }
 
         [HttpGet]
@@ -35,7 +38,7 @@ namespace Com.Danliris.Service.Inventory.WebApi.Controllers.v1
             try
             {
 
-                var data = materialsRequestNoteService.GetReport(materialsRequestNoteCode, productionOrderId, unitId, productId, status, dateFrom, dateTo, page, size, Order, offset);
+                var data = Service.GetReport(materialsRequestNoteCode, productionOrderId, unitId, productId, status, dateFrom, dateTo, page, size, Order, offset);
 
                 return Ok(new
                 {

@@ -10,6 +10,7 @@ using System.IO;
 using System.Threading.Tasks;
 using System;
 using System.Collections.Generic;
+using Com.Danliris.Service.Inventory.Lib.Services.FpRegradingResultDocs;
 
 namespace Com.Danliris.Service.Inventory.WebApi.Controllers.v1.BasicControllers
 {
@@ -17,10 +18,9 @@ namespace Com.Danliris.Service.Inventory.WebApi.Controllers.v1.BasicControllers
     [ApiVersion("1.0")]
     [Route("v{version:apiVersion}/FpRegradingResultDocs")]
     [Authorize]
-    public class FpRegradingResultDocsController : BasicController<InventoryDbContext, FpRegradingResultDocsService, FpRegradingResultDocsViewModel, FpRegradingResultDocs>
+    public class FpRegradingResultDocsController : BaseController<FpRegradingResultDocs, FpRegradingResultDocsViewModel, IFpRegradingResultDocsService>
     {
-        private static readonly string ApiVersion = "1.0";
-        public FpRegradingResultDocsController(FpRegradingResultDocsService service) : base(service, ApiVersion)
+        public FpRegradingResultDocsController(IIdentityService identityService, IValidateService validateService, IFpRegradingResultDocsService service) : base(identityService, validateService, service, "1.0.0")
         {
         }
 
@@ -29,7 +29,7 @@ namespace Com.Danliris.Service.Inventory.WebApi.Controllers.v1.BasicControllers
         {
             try
             {
-                var model = await Service.ReadModelById(Id);
+                var model = await Service.ReadByIdAsync(Id);
                 var viewModel = Service.MapToViewModel(model);
 
                 FpRegradingResultDocsPdfTemplate PdfTemplate = new FpRegradingResultDocsPdfTemplate();

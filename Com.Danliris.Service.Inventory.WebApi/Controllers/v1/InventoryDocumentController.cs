@@ -1,8 +1,6 @@
-﻿using AutoMapper;
-using Com.Danliris.Service.Inventory.Lib;
-using Com.Danliris.Service.Inventory.Lib.Facades.InventoryFacades;
-using Com.Danliris.Service.Inventory.Lib.Models.InventoryModel;
+﻿using Com.Danliris.Service.Inventory.Lib.Models.InventoryModel;
 using Com.Danliris.Service.Inventory.Lib.Services;
+using Com.Danliris.Service.Inventory.Lib.Services.Inventory;
 using Com.Danliris.Service.Inventory.Lib.ViewModels.InventoryViewModel;
 using Com.Danliris.Service.Inventory.WebApi.Helpers;
 using Com.Moonlay.NetCore.Lib.Service;
@@ -21,81 +19,37 @@ namespace Com.Danliris.Service.Inventory.WebApi.Controllers.v1
     [Authorize]
     public class InventoryDocumentController : Controller
     {
-        private string ApiVersion = "1.0.0";
-        private readonly IMapper _mapper;
-        private readonly InventoryDocumentFacade _facade;
-        private readonly IdentityService identityService;
-        public InventoryDocumentController(IMapper mapper, InventoryDocumentFacade facade, IdentityService identityService)
+        protected IIdentityService IdentityService;
+        protected readonly IValidateService ValidateService;
+        protected readonly IInventoryDocumentService Service;
+        protected readonly string ApiVersion;
+        public InventoryDocumentController(IIdentityService identityService, IValidateService validateService, IInventoryDocumentService service)
         {
-            _mapper = mapper;
-            _facade = facade;
-            this.identityService = identityService;
+            IdentityService = identityService;
+            ValidateService = validateService;
+            Service = service;
+            ApiVersion = "1.0.0";
+        }
+
+        protected void VerifyUser()
+        {
+            IdentityService.Username = User.Claims.ToArray().SingleOrDefault(p => p.Type.Equals("username")).Value;
+            IdentityService.Token = Request.Headers["Authorization"].FirstOrDefault().Replace("Bearer ", "");
+            IdentityService.TimezoneOffset = Convert.ToInt32(Request.Headers["x-timezone-offset"]);
         }
 
         [HttpGet]
         public IActionResult Get(int page = 1, int size = 25, string order = "{}", string keyword = null, string filter = "{}")
         {
-            identityService.Username = User.Claims.Single(p => p.Type.Equals("username")).Value;
-
             try
             {
+                Lib.Helpers.ReadResponse<InventoryDocument> read = Service.Read(page, size, order, keyword, filter);
 
-
-                var Data = _facade.Read(page, size, order, keyword, filter);
-                List<InventoryDocumentViewModel> newData = new List<InventoryDocumentViewModel>();
-                foreach (var model in Data.Item1)
+                List<InventoryDocumentViewModel> listData = new List<InventoryDocumentViewModel>();
+                foreach (var item in read.Data)
                 {
-                    List<InventoryDocumentItemViewModel> items = new List<InventoryDocumentItemViewModel>();
-                    foreach (var item in model.Items)
-                    {
-                        items.Add(new InventoryDocumentItemViewModel
-                        {
-                            productCode = item.ProductCode,
-                            productId = item.ProductId,
-                            productName = item.ProductName,
-                            remark = item.ProductRemark,
-                            quantity = item.Quantity,
-                            stockPlanning = item.StockPlanning,
-                            uomId = item.UomId,
-                            uom = item.UomUnit,
-
-                        });
-                    }
-                    InventoryDocumentViewModel viewModel = new InventoryDocumentViewModel
-                    {
-                        Id = model.Id,
-                        no = model.No,
-                        referenceNo = model.ReferenceNo,
-                        referenceType = model.ReferenceType,
-                        remark = model.Remark,
-                        storageCode = model.StorageCode,
-                        storageId = model.StorageId,
-                        storageName = model.StorageName,
-                        date = model.Date,
-                        type = model.Type,
-                        items = items
-                    };
-                    newData.Add(viewModel);
+                    listData.Add(Service.MapToViewModel(item));
                 }
-
-                List<object> listData = new List<object>();
-                listData.AddRange(
-                    newData.AsQueryable().Select(s => new
-                    {
-                        s.no,
-                        s.Id,
-                        s.code,
-                        s.date,
-                        s.items,
-                        s.storageCode,
-                        s.storageId,
-                        s.storageName,
-                        s.referenceNo,
-                        s.referenceType,
-                        s.type
-                    }).ToList()
-                );
-
                 return Ok(new
                 {
                     apiVersion = ApiVersion,
@@ -105,8 +59,8 @@ namespace Com.Danliris.Service.Inventory.WebApi.Controllers.v1
                     info = new Dictionary<string, object>
                     {
                         { "count", listData.Count },
-                        { "total", Data.Item2 },
-                        { "order", Data.Item3 },
+                        { "total", read.Count },
+                        { "order", read.Order },
                         { "page", page },
                         { "size", size }
                     },
@@ -119,60 +73,32 @@ namespace Com.Danliris.Service.Inventory.WebApi.Controllers.v1
                     .Fail();
                 return StatusCode(General.INTERNAL_ERROR_STATUS_CODE, Result);
             }
+
         }
 
         [HttpGet("{id}")]
-        public IActionResult Get(int id)
+        public IActionResult GetById(int id)
         {
             try
             {
                 var indexAcceptPdf = Request.Headers["Accept"].ToList().IndexOf("application/pdf");
 
-                InventoryDocument model = _facade.ReadModelById(id);
-                //InventoryDocumentViewModel viewModel = _mapper.Map<InventoryDocumentViewModel>(model);
-                List<InventoryDocumentItemViewModel> items = new List<InventoryDocumentItemViewModel>();
-                foreach (var item in model.Items)
-                {
-                    items.Add(new InventoryDocumentItemViewModel
-                    {
-                        productCode = item.ProductCode,
-                        productId = item.ProductId,
-                        productName = item.ProductName,
-                        remark = item.ProductRemark,
-                        quantity = item.Quantity,
-                        stockPlanning = item.StockPlanning,
-                        uomId = item.UomId,
-                        uom = item.UomUnit,
+                InventoryDocument model = Service.ReadModelById(id);
 
-                    });
+                if (model == null)
+                {
+                    Dictionary<string, object> Result =
+                        new ResultFormatter(ApiVersion, General.NOT_FOUND_STATUS_CODE, General.NOT_FOUND_MESSAGE)
+                        .Fail();
+                    return NotFound(Result);
                 }
-                InventoryDocumentViewModel viewModel = new InventoryDocumentViewModel
+                else
                 {
-                    no = model.No,
-                    referenceNo = model.ReferenceNo,
-                    referenceType = model.ReferenceType,
-                    remark = model.Remark,
-                    storageCode = model.StorageCode,
-                    storageId = model.StorageId,
-                    storageName = model.StorageName,
-                    date = model.Date,
-                    type = model.Type,
-                    items = items
-                };
-                if (viewModel == null)
-                {
-                    throw new Exception("Invalid Id");
+                    Dictionary<string, object> Result =
+                        new ResultFormatter(ApiVersion, General.OK_STATUS_CODE, General.OK_MESSAGE)
+                        .Ok<InventoryDocument, InventoryDocumentViewModel>(model, Service.MapToViewModel);
+                    return Ok(Result);
                 }
-
-                return Ok(new
-                {
-                    apiVersion = ApiVersion,
-                    statusCode = General.OK_STATUS_CODE,
-                    message = General.OK_MESSAGE,
-                    data = viewModel,
-                });
-
-
             }
             catch (Exception e)
             {
@@ -182,9 +108,7 @@ namespace Com.Danliris.Service.Inventory.WebApi.Controllers.v1
                 return StatusCode(General.INTERNAL_ERROR_STATUS_CODE, Result);
             }
         }
-
-
-
+        
         //[HttpPost]
         //public async Task<ActionResult> Post([FromBody] InventoryDocumentViewModel viewModel)
         //{
@@ -197,49 +121,15 @@ namespace Com.Danliris.Service.Inventory.WebApi.Controllers.v1
         //}
 
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody]InventoryDocumentViewModel vm)
+        public async Task<IActionResult> Post([FromBody]InventoryDocumentViewModel viewModel)
         {
-            identityService.Token = Request.Headers["Authorization"].First().Replace("Bearer ", "");
-            identityService.Username = User.Claims.Single(p => p.Type.Equals("username")).Value;
-
-            //InventoryDocument m = _mapper.Map<InventoryDocument>(vm);
-            List<InventoryDocumentItem> items = new List<InventoryDocumentItem>();
-            foreach (var item in vm.items)
-            {
-                items.Add(new InventoryDocumentItem
-                {
-                    ProductCode = item.productCode,
-                    ProductId = item.productId,
-                    ProductName = item.productName,
-                    ProductRemark = item.remark,
-                    Quantity = item.quantity,
-                    StockPlanning = item.stockPlanning,
-                    UomId = item.uomId,
-                    UomUnit = item.uom,
-
-                });
-            }
-            InventoryDocument m = new InventoryDocument
-            {
-                ReferenceNo = vm.referenceNo,
-                ReferenceType = vm.referenceType,
-                Remark = vm.remark,
-                StorageCode = vm.storageCode,
-                StorageId = Convert.ToInt32(vm.storageId),
-                StorageName = vm.storageName,
-                Date = vm.date,
-                Type = vm.type,
-                Items = items
-            };
-
-            ValidateService validateService = (ValidateService)_facade.serviceProvider.GetService(typeof(ValidateService));
-
             try
             {
-                validateService.Validate(vm);
+                VerifyUser();
+                ValidateService.Validate(viewModel);
 
-                //int clientTimeZoneOffset = int.Parse(Request.Headers["x-timezone-offset"].First());
-                int result = await _facade.Create(m, identityService.Username);
+                InventoryDocument model = Service.MapToModel(viewModel);
+                await Service.Create(model);
 
                 Dictionary<string, object> Result =
                     new ResultFormatter(ApiVersion, General.CREATED_STATUS_CODE, General.OK_MESSAGE)
@@ -252,7 +142,6 @@ namespace Com.Danliris.Service.Inventory.WebApi.Controllers.v1
                     new ResultFormatter(ApiVersion, General.BAD_REQUEST_STATUS_CODE, General.BAD_REQUEST_MESSAGE)
                     .Fail(e);
                 return BadRequest(Result);
-
             }
             catch (Exception e)
             {
@@ -262,89 +151,43 @@ namespace Com.Danliris.Service.Inventory.WebApi.Controllers.v1
                 return StatusCode(General.INTERNAL_ERROR_STATUS_CODE, Result);
             }
 
+
         }
 
         [HttpPost("multi")]
         public async Task<IActionResult> MultiplePost([FromBody]List<InventoryDocumentViewModel> vms)
         {
-            identityService.Token = Request.Headers["Authorization"].First().Replace("Bearer ", "");
-            identityService.Username = User.Claims.Single(p => p.Type.Equals("username")).Value;
-
-            //InventoryDocument m = _mapper.Map<InventoryDocument>(vm);
-
-            List<InventoryDocument> modelList = vms.Select(x => new InventoryDocument()
+            try
             {
-                Active = x.Active,
-                Date = x.date,
-                Id = x.Id,
-                No = x.no,
-                ReferenceNo = x.referenceNo,
-                ReferenceType = x.referenceType,
-                Remark = x.remark,
-                StorageCode = x.storageCode,
-                StorageId = x.storageId,
-                StorageName = x.storageName,
-                Type = x.type,
-                _CreatedBy = x._CreatedBy,
-                _CreatedAgent = x._CreatedAgent,
-                _CreatedUtc = x._CreatedUtc,
-                _IsDeleted = x._IsDeleted,
-                _LastModifiedAgent = x._LastModifiedAgent,
-                _LastModifiedBy = x._LastModifiedBy,
-                _LastModifiedUtc = x._LastModifiedUtc,
-                Items = x.items.Select(y => new InventoryDocumentItem()
+                VerifyUser();
+
+                List<InventoryDocument> models = new List<InventoryDocument>();
+                foreach (var item in vms)
                 {
-                    Active = y.Active,
-                    Id = y.Id,
-                    ProductCode = y.productCode,
-                    ProductId = y.productId,
-                    ProductName = y.productName,
-                    ProductRemark = y.remark,
-                    Quantity = y.quantity,
-                    StockPlanning = y.stockPlanning,
-                    UomId = y.uomId,
-                    UomUnit = y.uom
-                }).ToList()
-            }).ToList();
-            
-            using (var transaction = _facade.dbContext.Database.BeginTransaction())
-            {
-                ValidateService validateService = (ValidateService)_facade.serviceProvider.GetService(typeof(ValidateService));
+                    ValidateService.Validate(item);
+                    var model = Service.MapToModel(item);
+                    models.Add(model);
+                }
 
-                try
-                {
-                    foreach (var vm in vms)
-                    {
-                        validateService.Validate(vm);
-                    }
-                    //int clientTimeZoneOffset = int.Parse(Request.Headers["x-timezone-offset"].First());
-
-
-                    var result = await Task.WhenAll(modelList.Select(x => _facade.Create(x, identityService.Username)));
-
-                    Dictionary<string, object> Result =
+                await Service.CreateMulti(models);
+                Dictionary<string, object> Result =
                         new ResultFormatter(ApiVersion, General.CREATED_STATUS_CODE, General.OK_MESSAGE)
                         .Ok();
-                    transaction.Commit();
-                    return Created(String.Concat(Request.Path, "/", 0), Result);
-                }
-                catch (ServiceValidationExeption e)
-                {
-                    transaction.Rollback();
-                    Dictionary<string, object> Result =
-                        new ResultFormatter(ApiVersion, General.BAD_REQUEST_STATUS_CODE, General.BAD_REQUEST_MESSAGE)
-                        .Fail(e);
-                    return BadRequest(Result);
-
-                }
-                catch (Exception e)
-                {
-                    transaction.Rollback();
-                    Dictionary<string, object> Result =
-                        new ResultFormatter(ApiVersion, General.INTERNAL_ERROR_STATUS_CODE, e.Message)
-                        .Fail();
-                    return StatusCode(General.INTERNAL_ERROR_STATUS_CODE, Result);
-                }
+                return Created(String.Concat(Request.Path, "/", 0), Result);
+            }
+            catch (ServiceValidationExeption e)
+            {
+                Dictionary<string, object> Result =
+                    new ResultFormatter(ApiVersion, General.BAD_REQUEST_STATUS_CODE, General.BAD_REQUEST_MESSAGE)
+                    .Fail(e);
+                return BadRequest(Result);
+            }
+            catch (Exception e)
+            {
+                Dictionary<string, object> Result =
+                    new ResultFormatter(ApiVersion, General.INTERNAL_ERROR_STATUS_CODE, e.Message)
+                    .Fail();
+                return StatusCode(General.INTERNAL_ERROR_STATUS_CODE, Result);
             }
         }
     }

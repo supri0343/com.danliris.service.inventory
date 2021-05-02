@@ -42,7 +42,7 @@ namespace Com.Danliris.Service.Inventory.Lib.ViewModels.StockTransferNoteViewMod
                 foreach (StockTransferNote_ItemViewModel stockTransferNoteItem in this.StockTransferNoteItems)
                 {
                     stockTransferNoteItemError += "{ ";
-                    if (stockTransferNoteItem.Summary == null || string.IsNullOrWhiteSpace(stockTransferNoteItem.Summary.productId))
+                    if (stockTransferNoteItem.Summary == null || stockTransferNoteItem.Summary.productId == 0)
                     {
                         Count++;
                         stockTransferNoteItemError += "SummaryId: 'Barang harus diisi', ";

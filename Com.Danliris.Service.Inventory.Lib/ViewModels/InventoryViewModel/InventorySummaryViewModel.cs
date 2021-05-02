@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
+
 namespace Com.Danliris.Service.Inventory.Lib.ViewModels.InventoryViewModel
 {
     public class InventorySummaryViewModel : BasicViewModel

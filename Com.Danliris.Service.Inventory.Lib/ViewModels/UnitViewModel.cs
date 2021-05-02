@@ -6,10 +6,10 @@ using System.Text;
 
 namespace Com.Danliris.Service.Inventory.Lib.ViewModels
 {
-    public class UnitViewModel : BasicViewModel
+    public class UnitViewModel
     {
-        public string _id { get; set; }
-        public string code { get; set; }
-        public string name { get; set; }
+        public string Id { get; set; }
+        public string Code { get; set; }
+        public string Name { get; set; }
     }
 }

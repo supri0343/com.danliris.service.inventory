@@ -1,27 +1,23 @@
-﻿using Com.Danliris.Service.Inventory.Lib;
-using Com.Danliris.Service.Inventory.Lib.Models.MaterialDistributionNoteModel;
+﻿using Com.Danliris.Service.Inventory.Lib.Models.MaterialDistributionNoteModel;
 using Com.Danliris.Service.Inventory.Lib.Services.MaterialDistributionNoteService;
+using Com.Danliris.Service.Inventory.Lib.Services.MaterialRequestNoteServices;
+using Com.Danliris.Service.Inventory.Lib.ViewModels;
 using Com.Danliris.Service.Inventory.Lib.ViewModels.MaterialDistributionNoteViewModel;
 using Com.Danliris.Service.Inventory.Test.Helpers;
-using Com.Danliris.Service.Inventory.Test.Interfaces;
+using System;
 using System.Collections.Generic;
-using Com.Danliris.Service.Inventory.Lib.Helpers;
-using Newtonsoft.Json;
-using Com.Danliris.Service.Inventory.Test.DataUtils.IntegrationDataUtil;
-using Com.Danliris.Service.Inventory.Lib.ViewModels;
 using System.Threading.Tasks;
 
 namespace Com.Danliris.Service.Inventory.Test.DataUtils.MaterialDistributionNoteDataUtil
 {
-    public class MaterialDistributionNoteDataUtil : BasicDataUtil<InventoryDbContext, MaterialDistributionNoteService, MaterialDistributionNote>, IEmptyData<MaterialDistributionNoteViewModel>
+    public class MaterialDistributionNoteDataUtil
     {
-        private readonly HttpClientTestService client;
-        private readonly MaterialDistributionNoteItemDataUtil materialDistributionNoteItemDataUtil;
-
-        public MaterialDistributionNoteDataUtil(InventoryDbContext dbContext, MaterialDistributionNoteService service, HttpClientTestService client, MaterialDistributionNoteItemDataUtil materialDistributionNoteItemDataUtil) : base(dbContext, service)
+        private readonly NewMaterialDistributionNoteService Service;
+        private readonly NewMaterialRequestNoteService mrnService;
+        public MaterialDistributionNoteDataUtil(NewMaterialDistributionNoteService service, NewMaterialRequestNoteService newMaterialRequestNoteService)
         {
-            this.client = client;
-            this.materialDistributionNoteItemDataUtil = materialDistributionNoteItemDataUtil;
+            Service = service;
+            mrnService = newMaterialRequestNoteService;
         }
 
         public MaterialDistributionNoteViewModel GetEmptyData()
@@ -29,10 +25,18 @@ namespace Com.Danliris.Service.Inventory.Test.DataUtils.MaterialDistributionNote
             MaterialDistributionNoteViewModel Data = new MaterialDistributionNoteViewModel();
 
             Data.Type = string.Empty;
-            Data.Unit = new UnitViewModel();
+            Data.Unit = new UnitViewModel()
+            {
+                Id = "1"
+            };
             Data.MaterialDistributionNoteItems = new List<MaterialDistributionNoteItemViewModel> {
                     new MaterialDistributionNoteItemViewModel {
                         MaterialDistributionNoteDetails = new List<MaterialDistributionNoteDetailViewModel>() { new MaterialDistributionNoteDetailViewModel()
+                        {
+                            Product = new ProductViewModel(),
+                            ProductionOrder = new ProductionOrderViewModel(),
+                            Supplier = new SupplierViewModel()
+                        }
                     }
                 }
             };
@@ -40,31 +44,70 @@ namespace Com.Danliris.Service.Inventory.Test.DataUtils.MaterialDistributionNote
             return Data;
         }
 
-        public override MaterialDistributionNote GetNewData()
+        public MaterialDistributionNote GetNewData()
         {
-            UnitViewModel fp = UnitDataUtil.GetFinishingUnit(client);
 
             MaterialDistributionNote TestData = new MaterialDistributionNote
             {
-                UnitId = fp._id,
-                UnitCode = fp.code,
-                UnitName = fp.name,
+                UnitId = "1",
+                UnitCode = "code",
+                UnitName = "name",
                 Type = "PRODUKSI",
                 IsApproved = false,
                 IsDisposition = false,
-                MaterialDistributionNoteItems = new List<MaterialDistributionNoteItem> { materialDistributionNoteItemDataUtil.GetNewData() }
+                MaterialDistributionNoteItems = new List<MaterialDistributionNoteItem> {
+                    new MaterialDistributionNoteItem()
+                    {
+                        MaterialRequestNoteCode = "code",
+                        MaterialRequestNoteCreatedDateUtc = DateTime.UtcNow,
+                        MaterialDistributionNoteDetails = new List<MaterialDistributionNoteDetail>()
+                        {
+                            new MaterialDistributionNoteDetail()
+                            {
+                                DistributedLength = 1,
+                                Grade = "a",
+                                ProductCode = "code",
+                                ProductId = "1",
+                                MaterialsRequestNoteItemId = 1,
+                                MaterialRequestNoteItemLength = 1,
+                                ProductionOrderId = "1",
+                                ProductionOrderNo = "no",
+                                ProductName = "name",
+                                SupplierCode = "code",
+                                SupplierId = "1",
+                                SupplierName = "name",
+                                ReceivedLength = 1,
+                                Quantity = 1
+                            }
+                        }
+                    }
+                }
             };
 
             return TestData;
         }
 
 
-        public override async Task<MaterialDistributionNote> GetTestData()
+        public async Task<MaterialDistributionNote> GetTestData()
         {
+            MaterialRequestNoteDataUtil.MaterialRequestNoteDataUtil materialRequestNoteDataUtil = new MaterialRequestNoteDataUtil.MaterialRequestNoteDataUtil(mrnService);
+            var mrn = await materialRequestNoteDataUtil.GetTestData();
+
             MaterialDistributionNote Data = GetNewData();
-            this.Service.Token = HttpClientTestService.Token;
-            await this.Service.CreateModel(Data);
+            foreach(var item in Data.MaterialDistributionNoteItems)
+            {
+                item.MaterialRequestNoteId = mrn.Id;
+                item.MaterialRequestNoteCreatedDateUtc = mrn._CreatedUtc;
+                item.MaterialRequestNoteCode = mrn.Code;
+                foreach(var detail in item.MaterialDistributionNoteDetails)
+                {
+                    detail.MaterialsRequestNoteItemId = mrn.Id;
+                }
+            }
+            await this.Service.CreateAsync(Data);
             return Data;
         }
+
+
     }
 }

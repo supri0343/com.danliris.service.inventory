@@ -92,7 +92,7 @@ namespace Com.Danliris.Service.Inventory.Lib.PDFTemplates
                 cell.Phrase = new Phrase(index.ToString(), normal_font);
                 table.AddCell(cell);
 
-                leftCell.Phrase = new Phrase(item.Product.name  , normal_font);
+                leftCell.Phrase = new Phrase(item.Product.Name  , normal_font);
                 table.AddCell(leftCell);
 
                 rightCell.Phrase = new Phrase(string.Format("{0:n}", item.Quantity), normal_font);

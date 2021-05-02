@@ -1,31 +1,19 @@
-﻿using Com.Danliris.Service.Inventory.Lib;
-using Com.Danliris.Service.Inventory.Lib.Helpers;
-using Com.Danliris.Service.Inventory.Lib.Models.MaterialsRequestNoteModel;
-using Com.Danliris.Service.Inventory.Lib.Services.MaterialsRequestNoteServices;
+﻿using Com.Danliris.Service.Inventory.Lib.Models.MaterialsRequestNoteModel;
+using Com.Danliris.Service.Inventory.Lib.Services.MaterialRequestNoteServices;
 using Com.Danliris.Service.Inventory.Lib.ViewModels;
 using Com.Danliris.Service.Inventory.Lib.ViewModels.MaterialsRequestNoteViewModel;
-using Com.Danliris.Service.Inventory.Test.DataUtils.IntegrationDataUtil;
-using Com.Danliris.Service.Inventory.Test.Helpers;
-using Com.Danliris.Service.Inventory.Test.Interfaces;
-using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Com.Danliris.Service.Inventory.Test.DataUtils.MaterialRequestNoteDataUtil
 {
-    public class MaterialRequestNoteDataUtil : BasicDataUtil<InventoryDbContext, MaterialsRequestNoteService, MaterialsRequestNote>, IEmptyData<MaterialsRequestNoteViewModel>
+    public class MaterialRequestNoteDataUtil
     {
-        private readonly HttpClientTestService client;
-        private readonly MaterialRequestNoteItemDataUtil materialRequestNoteItemDataUtil;
+        private readonly NewMaterialRequestNoteService Service;
 
-        public MaterialRequestNoteDataUtil(InventoryDbContext dbContext, MaterialsRequestNoteService service, HttpClientTestService client, MaterialRequestNoteItemDataUtil materialRequestNoteItemDataUtil) : base(dbContext, service)
+        public MaterialRequestNoteDataUtil(NewMaterialRequestNoteService service)
         {
-            this.client = client;
-            this.materialRequestNoteItemDataUtil = materialRequestNoteItemDataUtil;
+            Service = service;
         }
 
         public MaterialsRequestNoteViewModel GetEmptyData()
@@ -35,46 +23,65 @@ namespace Com.Danliris.Service.Inventory.Test.DataUtils.MaterialRequestNoteDataU
             Data.RequestType = string.Empty;
             Data.Unit = new UnitViewModel();
             Data.Remark = string.Empty;
-            Data.MaterialsRequestNote_Items = new List<MaterialsRequestNote_ItemViewModel> { new MaterialsRequestNote_ItemViewModel() };
+            Data.MaterialsRequestNote_Items = new List<MaterialsRequestNote_ItemViewModel> { new MaterialsRequestNote_ItemViewModel() {
+                Product = new ProductViewModel()
+                {
+
+                },
+                ProductionOrder = new ProductionOrderViewModel()
+                {
+                    OrderQuantity = 0,
+                    OrderType = new OrderTypeViewModel()
+                    {
+
+                    }
+                }
+                
+            } };
 
             return Data;
         }
 
-        public override MaterialsRequestNote GetNewData()
+        public MaterialsRequestNote GetNewData()
         {
-            UnitViewModel fp = UnitDataUtil.GetFinishingUnit(client);
 
             MaterialsRequestNote TestData = new MaterialsRequestNote
             {
-                UnitId = fp._id,
-                UnitCode = fp.code,
-                UnitName = fp.name,
+                UnitId = "1",
+                UnitCode = "a",
+                UnitName = "name",
                 Remark = "",
                 RequestType = "AWAL",
                 IsDistributed = false,
                 IsCompleted = false,
-                MaterialsRequestNote_Items = new List<MaterialsRequestNote_Item> { materialRequestNoteItemDataUtil.GetNewData() }
+                MaterialsRequestNote_Items = new List<MaterialsRequestNote_Item> { new MaterialsRequestNote_Item()
+                {
+                    Grade="a",
+                    Length = 1,
+                    OrderQuantity = 1,
+                    OrderTypeCode = "code",
+                    OrderTypeId = "1",
+                    OrderTypeName = "name",
+                    ProductCode = "code",
+                    ProductionOrderNo = "c",
+                    Remark = "a",
+                    ProductId = "1",
+                    ProductionOrderId = "1",
+                    ProductionOrderIsCompleted = true,
+                    ProductName = "name"
+                }}
             };
 
             return TestData;
         }
 
 
-        public override async Task<MaterialsRequestNote> GetTestData()
+        public async Task<MaterialsRequestNote> GetTestData()
         {
             MaterialsRequestNote Data = GetNewData();
-            this.Service.Token = HttpClientTestService.Token;
-            await this.Service.CreateModel(Data);
+            await this.Service.CreateAsync(Data);
             return Data;
         }
 
-        public async Task<MaterialsRequestNote> GetTestDataCustom()
-        {
-            MaterialsRequestNote Data = GetNewData();
-            Data.MaterialsRequestNote_Items = new List<MaterialsRequestNote_Item> { materialRequestNoteItemDataUtil.GetNewData(), materialRequestNoteItemDataUtil.GetNewDataCustom() };
-            this.Service.Token = HttpClientTestService.Token;
-            await this.Service.CreateModel(Data);
-            return Data;
-        }
     }
 }

@@ -1,15 +1,15 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authorization;
-using Com.Danliris.Service.Inventory.Lib.Facades;
-using Com.Danliris.Service.Inventory.Lib.ViewModels.FPReturnInvToPurchasingViewModel;
-using Com.Danliris.Service.Inventory.Lib.Services;
-using Com.Danliris.Service.Inventory.WebApi.Helpers;
-using Com.Danliris.Service.Inventory.Lib.Models.FPReturnInvToPurchasingModel;
+﻿using Com.Danliris.Service.Inventory.Lib.Models.FPReturnInvToPurchasingModel;
 using Com.Danliris.Service.Inventory.Lib.PDFTemplates;
+using Com.Danliris.Service.Inventory.Lib.Services;
+using Com.Danliris.Service.Inventory.Lib.Services.FPReturnInvToPurchasingService;
+using Com.Danliris.Service.Inventory.Lib.ViewModels.FPReturnInvToPurchasingViewModel;
+using Com.Danliris.Service.Inventory.WebApi.Helpers;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace Com.Danliris.Service.Inventory.WebApi.Controllers.v1
 {
@@ -17,80 +17,92 @@ namespace Com.Danliris.Service.Inventory.WebApi.Controllers.v1
     [ApiVersion("1.0")]
     [Route("v{version:apiVersion}/fp-return-inv-to-purchasings")]
     [Authorize]
-    public class FPReturnInvToPurchasingController : Controller
+    public class FPReturnInvToPurchasingController : BaseController<FPReturnInvToPurchasing, FPReturnInvToPurchasingViewModel, IFPReturnInvToPurchasingService>
     {
-        private string ApiVersion = "1.0.0";
-        private readonly FPReturnInvToPurchasingFacade fpReturnInvToPurchasingFacade;
-        private readonly IdentityService identityService;
-
-        public FPReturnInvToPurchasingController(FPReturnInvToPurchasingFacade fpReturnInvToPurchasingFacade, IdentityService identityService)
+        public FPReturnInvToPurchasingController(IIdentityService identityService, IValidateService validateService, IFPReturnInvToPurchasingService service) : base(identityService, validateService, service, "1.0.0")
         {
-            this.fpReturnInvToPurchasingFacade = fpReturnInvToPurchasingFacade;
-            this.identityService = identityService;
+
         }
 
-        [HttpGet]
-        public ActionResult Get(int page = 1, int size = 25, string order = "{}", string keyword = null, string filter = "{}")
+        public override IActionResult Get(int Page = 1, int Size = 25, string Order = "{}", [Bind(Prefix = "Select[]")]List<string> Select = null, string Keyword = null, string Filter = "{}")
         {
-            return new BaseGet<FPReturnInvToPurchasingFacade>(fpReturnInvToPurchasingFacade)
-                .Get(page, size, order, keyword, filter);
-        }
-
-        [HttpGet("{Id}")]
-        public async Task<ActionResult> GetById([FromRoute] int id)
-        {
-            if (!ModelState.IsValid)
+            try
             {
-                return BadRequest(ModelState);
-            }
+                var read = Service.Read(Page, Size, Order, Keyword, Filter);
 
+                return Ok(new
+                {
+                    apiVersion = ApiVersion,
+                    data = read.Item1,
+                    info = new Dictionary<string, object>
+                    {
+                        { "count", read.Item1.Count },
+                        { "total", read.Item2 },
+                        { "order", read.Item3 },
+                        { "page", Page },
+                        { "size", Size }
+                    },
+                    message = Helpers.General.OK_MESSAGE,
+                    statusCode = Helpers.General.OK_STATUS_CODE
+                });
+            }
+            catch (Exception e)
+            {
+                Dictionary<string, object> Result =
+                    new ResultFormatter(ApiVersion, Helpers.General.INTERNAL_ERROR_STATUS_CODE, e.Message)
+                    .Fail();
+                return StatusCode(Helpers.General.INTERNAL_ERROR_STATUS_CODE, Result);
+            }
+        }
+
+        public override async Task<IActionResult> GetById([FromRoute] int id)
+        {
             int offset = Convert.ToInt32(Request.Headers["x-timezone-offset"]);
             string accept = Request.Headers["Accept"];
             string pdf = "application/pdf";
-
             if (accept != null && accept.IndexOf(pdf) != -1) // PDF
             {
-                var model = await fpReturnInvToPurchasingFacade.ReadById(id);
-
+                var model = await Service.ReadByIdAsync(id);
                 FPReturnInvToPurchasingPdfTemplate PdfTemplate = new FPReturnInvToPurchasingPdfTemplate();
-                MemoryStream stream = PdfTemplate.GeneratePdfTemplate(new FPReturnInvToPurchasingViewModel(model), offset);
+                MemoryStream stream = PdfTemplate.GeneratePdfTemplate(Service.MapToViewModel(model), offset);
 
                 return new FileStreamResult(stream, pdf)
                 {
                     FileDownloadName = $"Bon Retur Barang {model.No}.pdf"
-                };                
+                };
             }
             else
             {
-                return await new BaseGetById<FPReturnInvToPurchasing, FPReturnInvToPurchasingViewModel, FPReturnInvToPurchasingFacade>(fpReturnInvToPurchasingFacade, ApiVersion)
-                    .GetById(id);
+
+                return await base.GetById(id);
             }
         }
 
-        [HttpPost]
-        public async Task<ActionResult> Post([FromBody] FPReturnInvToPurchasingViewModel viewModel)
+        public override async Task<IActionResult> Delete([FromRoute] int id)
         {
-            this.identityService.Token = Request.Headers["Authorization"].First().Replace("Bearer ", "");
-            this.identityService.Username = User.Claims.Single(p => p.Type.Equals("username")).Value;
-
-            ValidateService validateService = (ValidateService)fpReturnInvToPurchasingFacade.serviceProvider.GetService(typeof(ValidateService));
-            return await new BasePost<FPReturnInvToPurchasing, FPReturnInvToPurchasingViewModel, FPReturnInvToPurchasingFacade>(fpReturnInvToPurchasingFacade, ApiVersion, validateService, Request.Path)
-                .Post(viewModel);
-        }
-
-        [HttpDelete("{Id}")]
-        public async Task<IActionResult> Delete([FromRoute] int id)
-        {
-            if (!ModelState.IsValid)
+            try
             {
-                return BadRequest(ModelState);
+                VerifyUser();
+                int Result = await Service.DeleteAsync(id);
+
+                if (Result.Equals(0))
+                {
+                    Dictionary<string, object> ResultNotFound =
+                       new ResultFormatter(ApiVersion, General.NOT_FOUND_STATUS_CODE, General.NOT_FOUND_MESSAGE)
+                       .Fail();
+                    return NotFound(ResultNotFound);
+                }
+
+                return NoContent();
             }
-
-            this.identityService.Username = User.Claims.Single(p => p.Type.Equals("username")).Value;
-            this.identityService.Token = Request.Headers["Authorization"].First().Replace("Bearer ", "");
-
-            return await new BaseDelete<FPReturnInvToPurchasingFacade>(fpReturnInvToPurchasingFacade, ApiVersion)
-                .Delete(id);
+            catch (Exception e)
+            {
+                Dictionary<string, object> Result =
+                    new ResultFormatter(ApiVersion, General.INTERNAL_ERROR_STATUS_CODE, e.Message)
+                    .Fail();
+                return StatusCode(General.INTERNAL_ERROR_STATUS_CODE, Result);
+            }
         }
+
     }
 }

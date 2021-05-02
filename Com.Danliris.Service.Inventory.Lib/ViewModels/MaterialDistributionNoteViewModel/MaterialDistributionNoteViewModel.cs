@@ -1,13 +1,10 @@
 ﻿using Com.Danliris.Service.Inventory.Lib.Helpers;
-using Com.Danliris.Service.Inventory.Lib.Services.MaterialDistributionNoteService;
-using Newtonsoft.Json;
-using System;
+using Com.Danliris.Service.Inventory.Lib.Models.InventoryModel;
+using Com.Danliris.Service.Inventory.Lib.Services.Inventory;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Text;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Com.Danliris.Service.Inventory.Lib.ViewModels.MaterialDistributionNoteViewModel
 {
@@ -24,7 +21,7 @@ namespace Com.Danliris.Service.Inventory.Lib.ViewModels.MaterialDistributionNote
         {
             int Count = 0;
 
-            if (this.Unit == null || string.IsNullOrWhiteSpace(this.Unit._id))
+            if (this.Unit == null || string.IsNullOrWhiteSpace(this.Unit.Id))
                 yield return new ValidationResult("Unit is required", new List<string> { "Unit" });
 
             if (string.IsNullOrWhiteSpace(this.Type))
@@ -50,26 +47,28 @@ namespace Com.Danliris.Service.Inventory.Lib.ViewModels.MaterialDistributionNote
                 if (Count.Equals(0))
                 {
                     /* Get Inventory Summaries */
-                    string inventorySummaryURI = "inventory/inventory-summary?order=%7B%7D&page=1&size=1000000000&";
+                    //string inventorySummaryURI = "inventory/inventory-summary?order=%7B%7D&page=1&size=1000000000&";
 
-                    MaterialDistributionNoteService Service = (MaterialDistributionNoteService)validationContext.GetService(typeof(MaterialDistributionNoteService));
-                    HttpClient httpClient = new HttpClient();
-                    httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Service.Token);
+                    //MaterialDistributionNoteService Service = (MaterialDistributionNoteService)validationContext.GetService(typeof(MaterialDistributionNoteService));
+                    //HttpClient httpClient = new HttpClient();
+                    //httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Service.Token);
+                    var inventorySummaryFacade = validationContext.GetService<IInventorySummaryService>();
+
 
                     List<string> products = new List<string>();
                     foreach (MaterialDistributionNoteItemViewModel mdni in this.MaterialDistributionNoteItems)
                     {
-                        products.AddRange(mdni.MaterialDistributionNoteDetails.Select(p => p.Product.code).ToList());
+                        products.AddRange(mdni.MaterialDistributionNoteDetails.Select(p => p.Product.Code).ToList());
                     }
 
-                    var storageName = this.Unit.name.Equals("PRINTING") ? "Gudang Greige Printing" : "Gudang Greige Finishing";
+                    var storageName = this.Unit.Name.Equals("PRINTING") ? "Gudang Greige Printing" : "Gudang Greige Finishing";
+                    List<InventorySummary> inventorySummaries = inventorySummaryFacade.GetByStorageAndMTR(storageName);
+                    //Dictionary<string, object> filter = new Dictionary<string, object> { { "storageName", storageName }, { "uom", "MTR" }, { "productCode", new Dictionary<string, object> { { "$in", products.ToArray() } } } };
+                    //var response = httpClient.GetAsync($@"{APIEndpoint.Inventory}{inventorySummaryURI}filter=" + JsonConvert.SerializeObject(filter)).Result.Content.ReadAsStringAsync();
+                    //Dictionary<string, object> result = JsonConvert.DeserializeObject<Dictionary<string, object>>(response.Result);
 
-                    Dictionary<string, object> filter = new Dictionary<string, object> { { "storageName", storageName }, { "uom", "MTR" }, { "productCode", new Dictionary<string, object> { { "$in", products.ToArray() } } } };
-                    var response = httpClient.GetAsync($@"{APIEndpoint.Inventory}{inventorySummaryURI}filter=" + JsonConvert.SerializeObject(filter)).Result.Content.ReadAsStringAsync();
-                    Dictionary<string, object> result = JsonConvert.DeserializeObject<Dictionary<string, object>>(response.Result);
-
-                    var json = result.Single(p => p.Key.Equals("data")).Value;
-                    List<InventorySummaryViewModel> inventorySummaries = JsonConvert.DeserializeObject<List<InventorySummaryViewModel>>(json.ToString());
+                    //var json = result.Single(p => p.Key.Equals("data")).Value;
+                    //List<InventorySummaryViewModel> inventorySummaries = JsonConvert.DeserializeObject<List<InventorySummaryViewModel>>(json.ToString());
 
                     foreach (MaterialDistributionNoteItemViewModel mdni in this.MaterialDistributionNoteItems)
                     {
@@ -92,10 +91,10 @@ namespace Com.Danliris.Service.Inventory.Lib.ViewModels.MaterialDistributionNote
                                     continue;
                                 }
 
-                                InventorySummaryViewModel inventorySummary = inventorySummaries.SingleOrDefault(p => p.productCode.Equals(mdnd.Product.code) && p.uom.Equals("MTR"));
+                                var inventorySummary = inventorySummaries.FirstOrDefault(p => p.ProductCode.Equals(mdnd.Product.Code));
 
                                 materialDistributionNoteDetailError += "{";
-                                
+
                                 if (inventorySummary == null)
                                 {
                                     CountDetail++;
@@ -124,14 +123,14 @@ namespace Com.Danliris.Service.Inventory.Lib.ViewModels.MaterialDistributionNote
                                         CountDetail++;
                                         materialDistributionNoteDetailError += "ReceivedLength: 'Length must be greater than zero', ";
                                     }
-                                    else if (mdnd.ReceivedLength > inventorySummary.quantity)
+                                    else if (mdnd.ReceivedLength > inventorySummary.Quantity)
                                     {
                                         CountDetail++;
                                         materialDistributionNoteDetailError += "ReceivedLength: 'Length must be less than or equal than stock', ";
                                     }
                                     else
                                     {
-                                        inventorySummary.quantity -= (double)mdnd.ReceivedLength;
+                                        inventorySummary.Quantity -= (double)mdnd.ReceivedLength;
                                     }
 
                                     if (mdnd.Supplier == null || string.IsNullOrWhiteSpace(mdnd.Supplier._id))

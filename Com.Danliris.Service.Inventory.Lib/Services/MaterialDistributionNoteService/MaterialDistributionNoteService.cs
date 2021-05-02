@@ -3,7 +3,6 @@ using Com.Danliris.Service.Inventory.Lib.Interfaces;
 using Com.Danliris.Service.Inventory.Lib.Models.MaterialDistributionNoteModel;
 using Com.Danliris.Service.Inventory.Lib.ViewModels;
 using Com.Danliris.Service.Inventory.Lib.ViewModels.MaterialDistributionNoteViewModel;
-using Com.Danliris.Service.Inventory.Lib.Services.MaterialsRequestNoteServices;
 using Com.Moonlay.NetCore.Lib;
 using Newtonsoft.Json;
 using System;
@@ -19,6 +18,7 @@ using Com.Danliris.Service.Inventory.Lib.ViewModels.InventoryDocumentViewModel;
 using System.Text;
 using Com.Danliris.Service.Inventory.Lib.Models.MaterialsRequestNoteModel;
 using System.Linq.Dynamic.Core;
+using Com.Danliris.Service.Inventory.Lib.Services.MaterialRequestNoteServices;
 
 namespace Com.Danliris.Service.Inventory.Lib.Services.MaterialDistributionNoteService
 {
@@ -74,9 +74,9 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.MaterialDistributionNoteSe
             MaterialDistributionNote model = new MaterialDistributionNote();
             PropertyCopier<MaterialDistributionNoteViewModel, MaterialDistributionNote>.Copy(viewModel, model);
 
-            model.UnitId = viewModel.Unit._id;
-            model.UnitCode = viewModel.Unit.code;
-            model.UnitName = viewModel.Unit.name;
+            model.UnitId = viewModel.Unit.Id.ToString();
+            model.UnitCode = viewModel.Unit.Code;
+            model.UnitName = viewModel.Unit.Name;
 
             model.MaterialDistributionNoteItems = new List<MaterialDistributionNoteItem>();
             foreach (MaterialDistributionNoteItemViewModel mdni in viewModel.MaterialDistributionNoteItems)
@@ -90,14 +90,14 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.MaterialDistributionNoteSe
                     MaterialDistributionNoteDetail materialDistributionNoteDetail = new MaterialDistributionNoteDetail();
                     PropertyCopier<MaterialDistributionNoteDetailViewModel, MaterialDistributionNoteDetail>.Copy(mdnd, materialDistributionNoteDetail);
 
-                    materialDistributionNoteDetail.ProductionOrderId = mdnd.ProductionOrder._id;
-                    materialDistributionNoteDetail.ProductionOrderNo = mdnd.ProductionOrder.orderNo;
-                    materialDistributionNoteDetail.ProductionOrderIsCompleted = mdnd.ProductionOrder.isCompleted;
+                    materialDistributionNoteDetail.ProductionOrderId = mdnd.ProductionOrder.Id;
+                    materialDistributionNoteDetail.ProductionOrderNo = mdnd.ProductionOrder.OrderNo;
+                    materialDistributionNoteDetail.ProductionOrderIsCompleted = mdnd.ProductionOrder.IsCompleted;
                     materialDistributionNoteDetail.DistributedLength = (double)mdnd.DistributedLength;
 
-                    materialDistributionNoteDetail.ProductId = mdnd.Product._id;
-                    materialDistributionNoteDetail.ProductCode = mdnd.Product.code;
-                    materialDistributionNoteDetail.ProductName = mdnd.Product.name;
+                    materialDistributionNoteDetail.ProductId = mdnd.Product.Id;
+                    materialDistributionNoteDetail.ProductCode = mdnd.Product.Code;
+                    materialDistributionNoteDetail.ProductName = mdnd.Product.Name;
 
                     materialDistributionNoteDetail.SupplierId = mdnd.Supplier._id;
                     materialDistributionNoteDetail.SupplierCode = mdnd.Supplier.code;
@@ -119,9 +119,9 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.MaterialDistributionNoteSe
 
             UnitViewModel Unit = new UnitViewModel()
             {
-                _id = model.UnitId,
-                code = model.UnitCode,
-                name = model.UnitName
+                Id = model.UnitId,
+                Code = model.UnitCode,
+                Name = model.UnitName
             };
 
             viewModel.Unit = Unit;
@@ -142,16 +142,16 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.MaterialDistributionNoteSe
 
                         ProductionOrderViewModel productionOrder = new ProductionOrderViewModel
                         {
-                            _id = mdnd.ProductionOrderId,
-                            orderNo = mdnd.ProductionOrderNo,
-                            isCompleted = mdnd.ProductionOrderIsCompleted,
+                            Id = mdnd.ProductionOrderId,
+                            OrderNo = mdnd.ProductionOrderNo,
+                            IsCompleted = mdnd.ProductionOrderIsCompleted,
                         };
 
                         ProductViewModel product = new ProductViewModel
                         {
-                            _id = mdnd.ProductId,
-                            code = mdnd.ProductCode,
-                            name = mdnd.ProductName
+                            Id = mdnd.ProductId,
+                            Code = mdnd.ProductCode,
+                            Name = mdnd.ProductName
                         };
 
                         SupplierViewModel supplier = new SupplierViewModel
@@ -342,12 +342,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.MaterialDistributionNoteSe
                     Model = await this.CustomCodeGenerator(Model);
                     Created = await this.CreateAsync(Model);
 
-                    MaterialsRequestNoteService materialsRequestNoteService = ServiceProvider.GetService<MaterialsRequestNoteService>();
-                    MaterialsRequestNote_ItemService materialsRequestNote_ItemService = ServiceProvider.GetService<MaterialsRequestNote_ItemService>();
-                    materialsRequestNoteService.Username = Username;
-                    materialsRequestNoteService.Token = Token;
-                    materialsRequestNote_ItemService.Username = Username;
-
+                    IMaterialRequestNoteService materialsRequestNoteService = ServiceProvider.GetService<IMaterialRequestNoteService>();
+                    
                     List<InventorySummaryViewModel> data = new List<InventorySummaryViewModel>();
 
 
@@ -375,7 +371,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.MaterialDistributionNoteSe
                         //    }
                         //}
 
-                        MaterialsRequestNote materialsRequestNote = await materialsRequestNoteService.ReadModelById(materialDistributionNoteItem.MaterialRequestNoteId);
+                        MaterialsRequestNote materialsRequestNote = await materialsRequestNoteService.ReadByIdAsync(materialDistributionNoteItem.MaterialRequestNoteId);
                         materialsRequestNote.IsDistributed = true;
 
                         if (Model.Type.ToUpper().Equals("PRODUKSI"))
@@ -386,15 +382,15 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.MaterialDistributionNoteSe
                             }
                             materialsRequestNoteService.UpdateDistributedQuantity(materialsRequestNote.Id, materialsRequestNote);
 
-                            foreach (MaterialsRequestNote_Item materialRequestNoteItem in materialsRequestNote.MaterialsRequestNote_Items)
-                            {
-                                materialsRequestNote_ItemService.OnUpdating(materialRequestNoteItem.Id, materialRequestNoteItem);
-                                materialsRequestNote_ItemService.DbSet.Update(materialRequestNoteItem);
-                            }
+                            //foreach (MaterialsRequestNote_Item materialRequestNoteItem in materialsRequestNote.MaterialsRequestNote_Items)
+                            //{
+                            //    materialsRequestNote_ItemService.OnUpdating(materialRequestNoteItem.Id, materialRequestNoteItem);
+                            //    materialsRequestNote_ItemService.DbSet.Update(materialRequestNoteItem);
+                            //}
                         }
-
-                        materialsRequestNoteService.OnUpdating(materialsRequestNote.Id, materialsRequestNote);
-                        materialsRequestNoteService.DbSet.Update(materialsRequestNote);
+                        await materialsRequestNoteService.UpdateAsync(materialsRequestNote.Id, materialsRequestNote);
+                        //materialsRequestNoteService.OnUpdating(materialsRequestNote.Id, materialsRequestNote);
+                        //materialsRequestNoteService.DbSet.Update(materialsRequestNote);
 
                     }
 
@@ -414,7 +410,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.MaterialDistributionNoteSe
                 catch (Exception e)
                 {
                     transaction.Rollback();
-                    throw new ServiceValidationExeption(null, null);
+                    throw e;
                 }
             }
             return Created;
@@ -524,15 +520,15 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.MaterialDistributionNoteSe
                         await materialDistributionNoteItemService.DeleteAsync(item);
                     }
 
-                    MaterialsRequestNoteService materialsRequestNoteService = ServiceProvider.GetService<MaterialsRequestNoteService>();
-                    MaterialsRequestNote_ItemService materialsRequestNote_ItemService = ServiceProvider.GetService<MaterialsRequestNote_ItemService>();
-                    materialsRequestNoteService.Username = Username;
-                    materialsRequestNoteService.Token = Token;
-                    materialsRequestNote_ItemService.Username = Username;
+                    IMaterialRequestNoteService materialsRequestNoteService = ServiceProvider.GetService<IMaterialRequestNoteService>();
+                    //MaterialsRequestNote_ItemService materialsRequestNote_ItemService = ServiceProvider.GetService<MaterialsRequestNote_ItemService>();
+                    //materialsRequestNoteService.Username = Username;
+                    //materialsRequestNoteService.Token = Token;
+                    //materialsRequestNote_ItemService.Username = Username;
 
                     foreach (MaterialDistributionNoteItem materialDistributionNoteItem in materialDistributionNote.MaterialDistributionNoteItems)
                     {
-                        MaterialsRequestNote materialsRequestNote = await materialsRequestNoteService.ReadModelById(materialDistributionNoteItem.MaterialRequestNoteId);
+                        MaterialsRequestNote materialsRequestNote = await materialsRequestNoteService.ReadByIdAsync(materialDistributionNoteItem.MaterialRequestNoteId);
                         materialsRequestNote.IsDistributed = true;
 
                         //inventory summary data
@@ -547,15 +543,15 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.MaterialDistributionNoteSe
                             }
                             materialsRequestNoteService.UpdateDistributedQuantity(materialsRequestNote.Id, materialsRequestNote);
 
-                            foreach (MaterialsRequestNote_Item materialRequestNoteItem in materialsRequestNote.MaterialsRequestNote_Items)
-                            {
-                                materialsRequestNote_ItemService.OnUpdating(materialRequestNoteItem.Id, materialRequestNoteItem);
-                                materialsRequestNote_ItemService.DbSet.Update(materialRequestNoteItem);
-                            }
+                            //foreach (MaterialsRequestNote_Item materialRequestNoteItem in materialsRequestNote.MaterialsRequestNote_Items)
+                            //{
+                            //    materialsRequestNote_ItemService.OnUpdating(materialRequestNoteItem.Id, materialRequestNoteItem);
+                            //    materialsRequestNote_ItemService.DbSet.Update(materialRequestNoteItem);
+                            //}
                         }
-
-                        materialsRequestNoteService.OnUpdating(materialsRequestNote.Id, materialsRequestNote);
-                        materialsRequestNoteService.DbSet.Update(materialsRequestNote);
+                        await materialsRequestNoteService.UpdateAsync(materialsRequestNote.Id, materialsRequestNote);
+                        //materialsRequestNoteService.OnUpdating(materialsRequestNote.Id, materialsRequestNote);
+                        //materialsRequestNoteService.DbSet.Update(materialsRequestNote);
                     }
 
                     DbContext.SaveChanges();

@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using Com.Danliris.Service.Inventory.WebApi.Helpers;
 using System.IO;
 using Com.Danliris.Service.Inventory.Lib.PDFTemplates;
+using Com.Danliris.Service.Inventory.Lib.Services;
 
 namespace Com.Danliris.Service.Inventory.WebApi.Controllers.v1
 {
@@ -19,12 +20,17 @@ namespace Com.Danliris.Service.Inventory.WebApi.Controllers.v1
     [Authorize]
     public class MaterialDistributionNoteReportController : Controller
     {
-        private static readonly string ApiVersion = "1.0";
-        private MaterialDistributionNoteService materialDistributionNoteService { get; }
+        private IIdentityService IdentityService;
+        private readonly IValidateService ValidateService;
+        private readonly IMaterialDistributionService Service;
+        private readonly string ApiVersion;
 
-        public MaterialDistributionNoteReportController(MaterialDistributionNoteService materialDistributionNoteService)
+        public MaterialDistributionNoteReportController(IIdentityService identityService, IValidateService validateService, IMaterialDistributionService service)
         {
-            this.materialDistributionNoteService = materialDistributionNoteService;
+            IdentityService = identityService;
+            ValidateService = validateService;
+            Service = service;
+            ApiVersion = "1.0.0";
         }
 
         [HttpGet]
@@ -38,7 +44,7 @@ namespace Com.Danliris.Service.Inventory.WebApi.Controllers.v1
             {
                 if (accept.IndexOf(pdf) == -1) // Not PDF
                 {
-                    var data = materialDistributionNoteService.GetReport(unitId, type, date, page, size, Order, offset);
+                    var data = Service.GetReport(unitId, type, date, page, size, Order, offset);
 
                     return Ok(new
                     {
@@ -49,7 +55,7 @@ namespace Com.Danliris.Service.Inventory.WebApi.Controllers.v1
                 }
                 else
                 {
-                    var Data = materialDistributionNoteService.GetPdfReport(unitId, unitName, type, date, offset);
+                    var Data = Service.GetPdfReport(unitId, unitName, type, date, offset);
 
                     if (Data.Count.Equals(0))
                     {

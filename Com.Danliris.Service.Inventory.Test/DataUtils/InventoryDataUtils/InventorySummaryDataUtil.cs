@@ -1,20 +1,17 @@
-﻿using Com.Danliris.Service.Inventory.Lib.Facades.InventoryFacades;
-using Com.Danliris.Service.Inventory.Lib.Models.InventoryModel;
+﻿using Com.Danliris.Service.Inventory.Lib.Models.InventoryModel;
+using Com.Danliris.Service.Inventory.Lib.Services.Inventory;
 using Com.Danliris.Service.Inventory.Lib.ViewModels.InventoryViewModel;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Com.Danliris.Service.Inventory.Test.DataUtils.InventoryDataUtils
 {
     public class InventorySummaryDataUtil
     {
-        private readonly InventorySummaryFacade facade;
+        private readonly InventorySummaryService Service;
 
-        public InventorySummaryDataUtil(InventorySummaryFacade facade)
+        public InventorySummaryDataUtil(InventorySummaryService facade)
         {
-            this.facade = facade;
+            this.Service = facade;
         }
 
         public InventorySummary GetNewData()
@@ -44,15 +41,16 @@ namespace Com.Danliris.Service.Inventory.Test.DataUtils.InventoryDataUtils
                 productCode = "ProductCode1",
                 productName = "ProductName1",
                 quantity = 1,
+                stockPlanning = "1",
                 uom = "UomUnit1",
             };
         }
 
-        public async Task<InventorySummary> GetTestData(string user)
+        public async Task<InventorySummary> GetTestData()
         {
             InventorySummary invSum = GetNewData();
 
-            await facade.Create(invSum, user);
+            await Service.Create(invSum);
 
             return invSum;
         }

@@ -1,20 +1,18 @@
-﻿using Com.Danliris.Service.Inventory.Lib.Facades.InventoryFacades;
-using Com.Danliris.Service.Inventory.Lib.Models.InventoryModel;
+﻿using Com.Danliris.Service.Inventory.Lib.Models.InventoryModel;
+using Com.Danliris.Service.Inventory.Lib.Services.Inventory;
 using Com.Danliris.Service.Inventory.Lib.ViewModels.InventoryViewModel;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Com.Danliris.Service.Inventory.Test.DataUtils.InventoryDataUtils
 {
     public class InventoryMovementDataUtil
     {
-        private readonly InventoryMovementFacade facade;
+        private readonly InventoryMovementService Service;
 
-        public InventoryMovementDataUtil(InventoryMovementFacade facade)
+        public InventoryMovementDataUtil(InventoryMovementService service)
         {
-            this.facade = facade;
+            Service = service;
         }
 
         public InventoryMovement GetNewData()
@@ -62,21 +60,21 @@ namespace Com.Danliris.Service.Inventory.Test.DataUtils.InventoryDataUtils
             };
         }
 
-        public async Task<InventoryMovement> GetTestData(string user)
+        public async Task<InventoryMovement> GetTestData()
         {
             InventoryMovement invMov = GetNewData();
 
-            await facade.Create(invMov, user);
+            await Service.Create(invMov);
 
             return invMov;
         }
 
-        public async Task<InventoryMovement> GetTestDataOUT(string user)
+        public async Task<InventoryMovement> GetTestDataOUT()
         {
             InventoryMovement invMov = GetNewData();
             invMov.Type = "OUT";
 
-            await facade.Create(invMov, user);
+            await Service.Create(invMov);
 
             return invMov;
         }

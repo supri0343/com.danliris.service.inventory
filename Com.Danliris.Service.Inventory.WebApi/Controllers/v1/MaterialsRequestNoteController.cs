@@ -1,18 +1,16 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Com.Danliris.Service.Inventory.WebApi.Helpers;
-using Com.Danliris.Service.Inventory.Lib;
-using Microsoft.AspNetCore.Authorization;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using System;
+﻿using Com.Danliris.Service.Inventory.Lib.Models.MaterialsRequestNoteModel;
 using Com.Danliris.Service.Inventory.Lib.PDFTemplates;
-
+using Com.Danliris.Service.Inventory.Lib.Services;
+using Com.Danliris.Service.Inventory.Lib.Services.MaterialRequestNoteServices;
+using Com.Danliris.Service.Inventory.Lib.ViewModels.MaterialsRequestNoteViewModel;
+using Com.Danliris.Service.Inventory.WebApi.Helpers;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Collections.Generic;
 //using System.Reflection.Metadata;
 using System.IO;
-using Com.Danliris.Service.Inventory.Lib.Services.MaterialsRequestNoteServices;
-using Com.Danliris.Service.Inventory.Lib.ViewModels.MaterialsRequestNoteViewModel;
-using Com.Danliris.Service.Inventory.Lib.Models.MaterialsRequestNoteModel;
-using System.Linq;
+using System.Threading.Tasks;
 
 namespace Com.Danliris.Service.Inventory.WebApi.Controllers.v1.BasicControllers
 {
@@ -20,10 +18,9 @@ namespace Com.Danliris.Service.Inventory.WebApi.Controllers.v1.BasicControllers
     [ApiVersion("1.0")]
     [Route("v{version:apiVersion}/materials-request-notes")]
     [Authorize]
-    public class MaterialsRequestNoteController : BasicController<InventoryDbContext, MaterialsRequestNoteService, MaterialsRequestNoteViewModel, MaterialsRequestNote>
+    public class MaterialsRequestNoteController : BaseController<MaterialsRequestNote, MaterialsRequestNoteViewModel, IMaterialRequestNoteService>
     {
-        private static readonly string ApiVersion = "1.0";
-        public MaterialsRequestNoteController(MaterialsRequestNoteService service) : base(service, ApiVersion)
+        public MaterialsRequestNoteController(IIdentityService identityService, IValidateService validateService, IMaterialRequestNoteService service) : base(identityService, validateService, service, "1.0.0")
         {
         }
 
@@ -32,7 +29,7 @@ namespace Com.Danliris.Service.Inventory.WebApi.Controllers.v1.BasicControllers
         {
             try
             {
-                var model = await Service.ReadModelById(Id);
+                var model = await Service.ReadByIdAsync(Id);
                 var viewModel = Service.MapToViewModel(model);
 
                 MaterialsRequestNotePdfTemplate PdfTemplate = new MaterialsRequestNotePdfTemplate();
@@ -57,8 +54,6 @@ namespace Com.Danliris.Service.Inventory.WebApi.Controllers.v1.BasicControllers
         {
             try
             {
-                Service.Username = User.Claims.Single(p => p.Type.Equals("username")).Value;
-                Service.Token = Request.Headers["Authorization"].First().Replace("Bearer ", "");
                 MaterialsRequestNote Model = Service.MapToModel(ViewModel);
 
 
@@ -67,7 +62,10 @@ namespace Com.Danliris.Service.Inventory.WebApi.Controllers.v1.BasicControllers
             }
             catch (Exception e)
             {
-                return StatusCode(General.INTERNAL_ERROR_STATUS_CODE);
+                Dictionary<string, object> Result =
+                       new ResultFormatter(ApiVersion, General.INTERNAL_ERROR_STATUS_CODE, e.Message)
+                       .Fail();
+                return StatusCode(General.INTERNAL_ERROR_STATUS_CODE, Result);
             }
         }
 

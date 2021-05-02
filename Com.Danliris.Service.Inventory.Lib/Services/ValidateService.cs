@@ -1,13 +1,11 @@
-﻿using Com.Danliris.Service.Inventory.Lib.Helpers;
-using Com.Moonlay.NetCore.Lib.Service;
+﻿using Com.Moonlay.NetCore.Lib.Service;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Text;
 
 namespace Com.Danliris.Service.Inventory.Lib.Services
 {
-    public class ValidateService
+    public class ValidateService : IValidateService
     {
         private readonly IServiceProvider serviceProvider;
 

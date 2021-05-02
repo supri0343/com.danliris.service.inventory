@@ -11,6 +11,7 @@ using System.Linq;
 using Com.Danliris.Service.Inventory.Lib.PDFTemplates;
 using System.IO;
 using System.Threading.Tasks;
+using Com.Danliris.Service.Inventory.Lib.Services;
 
 namespace Com.Danliris.Service.Inventory.WebApi.Controllers.v1
 {
@@ -18,20 +19,18 @@ namespace Com.Danliris.Service.Inventory.WebApi.Controllers.v1
     [ApiVersion("1.0")]
     [Route("v{version:apiVersion}/stock-transfer-notes")]
     [Authorize]
-    public class StockTransferNoteController : BasicController<InventoryDbContext, StockTransferNoteService, StockTransferNoteViewModel, StockTransferNote>
+    public class StockTransferNoteController : BaseController<StockTransferNote, StockTransferNoteViewModel, IStockTransferNoteService>
     {
-        private static readonly string ApiVersion = "1.0";
-        public StockTransferNoteController(StockTransferNoteService service) : base(service, ApiVersion)
+        public StockTransferNoteController(IIdentityService identityService, IValidateService validateService, IStockTransferNoteService service) : base(identityService, validateService, service, "1.0.0")
         {
         }
 
         [HttpPut("approve/{Id}")]
-        public async Task<IActionResult> Put([FromRoute] int Id)
+        public async Task<IActionResult> Approve([FromRoute] int Id)
         {
             try
             {
-                Service.Username = User.Claims.Single(p => p.Type.Equals("username")).Value;
-                Service.Token = Request.Headers["Authorization"].First().Replace("Bearer ", "");
+                VerifyUser();
                 bool result = await this.Service.UpdateIsApprove(Id);
                 if (result)
                 {
@@ -39,12 +38,18 @@ namespace Com.Danliris.Service.Inventory.WebApi.Controllers.v1
                 }
                 else
                 {
-                    return StatusCode(General.INTERNAL_ERROR_STATUS_CODE);
+                    Dictionary<string, object> Result =
+                       new ResultFormatter(ApiVersion, General.INTERNAL_ERROR_STATUS_CODE, "false")
+                       .Fail();
+                    return StatusCode(General.INTERNAL_ERROR_STATUS_CODE, Result);
                 }
             }
             catch (Exception e)
             {
-                return StatusCode(General.INTERNAL_ERROR_STATUS_CODE);
+                Dictionary<string, object> Result =
+                       new ResultFormatter(ApiVersion, General.INTERNAL_ERROR_STATUS_CODE, e.Message)
+                       .Fail();
+                return StatusCode(General.INTERNAL_ERROR_STATUS_CODE, Result);
             }
         }
 
@@ -53,7 +58,7 @@ namespace Com.Danliris.Service.Inventory.WebApi.Controllers.v1
         {
             try
             {
-                Service.Username = User.Claims.Single(p => p.Type.Equals("username")).Value;
+                VerifyUser();
                 Tuple<List<StockTransferNote>, int, Dictionary<string, string>, List<string>> Data = Service.ReadModelByNotUser(Page, Size, Order, Select, Keyword, Filter);
 
                 Dictionary<string, object> Result =

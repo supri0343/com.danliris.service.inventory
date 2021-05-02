@@ -3,6 +3,7 @@ using Com.Danliris.Service.Inventory.Lib.Interfaces;
 using Com.Danliris.Service.Inventory.Lib.Models;
 using Com.Danliris.Service.Inventory.Lib.Models.FPReturnInvToPurchasingModel;
 using Com.Danliris.Service.Inventory.Lib.Services;
+using Com.Danliris.Service.Inventory.Lib.Services.FpRegradingResultDocs;
 using Com.Danliris.Service.Inventory.Lib.Services.FPReturnInvToPurchasingService;
 using Com.Danliris.Service.Inventory.Lib.ViewModels.FPReturnInvToPurchasingViewModel;
 using Com.Danliris.Service.Inventory.Lib.ViewModels.InventoryDocumentViewModel;
@@ -24,10 +25,10 @@ namespace Com.Danliris.Service.Inventory.Lib.Facades
     {
         private readonly FPReturnInvToPurchasingService fpReturnInvToPurchasingService;
         private readonly FPReturnInvToPurchasingDetailService fpReturnInvToPurchasingDetailService;
-        private readonly FpRegradingResultDocsService fpRegradingResultDocsService;
+        private readonly IFpRegradingResultDocsService fpRegradingResultDocsService;
         public readonly IServiceProvider serviceProvider;
 
-        public FPReturnInvToPurchasingFacade(IServiceProvider serviceProvider, FPReturnInvToPurchasingService fpReturnInvToPurchasingService, FPReturnInvToPurchasingDetailService fpReturnInvToPurchasingDetailService, FpRegradingResultDocsService fpRegradingResultDocsService)
+        public FPReturnInvToPurchasingFacade(IServiceProvider serviceProvider, FPReturnInvToPurchasingService fpReturnInvToPurchasingService, FPReturnInvToPurchasingDetailService fpReturnInvToPurchasingDetailService, IFpRegradingResultDocsService fpRegradingResultDocsService)
         {
             this.serviceProvider = serviceProvider;
             this.fpReturnInvToPurchasingService = fpReturnInvToPurchasingService;
@@ -63,7 +64,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Facades
                 catch (Exception e)
                 {
                     transaction.Rollback();
-                    throw new Exception("Insert Error");
+                    throw new Exception("Insert Error : " + e.Message);
                 }
             }
 

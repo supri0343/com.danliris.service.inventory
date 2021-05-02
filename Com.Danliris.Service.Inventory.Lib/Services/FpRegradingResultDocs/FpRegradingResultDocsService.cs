@@ -20,16 +20,16 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Com.Danliris.Service.Inventory.Lib.Services
 {
-    public class FpRegradingResultDocsService : BasicService<InventoryDbContext, FpRegradingResultDocs>, IMap<FpRegradingResultDocs, FpRegradingResultDocsViewModel>
+    public class FpRegradingResultDocsService : BasicService<InventoryDbContext, Models.FpRegradingResultDocs>, IMap<Models.FpRegradingResultDocs, FpRegradingResultDocsViewModel>
     {
         public FpRegradingResultDocsService(IServiceProvider serviceProvider) : base(serviceProvider)
         {
         }
 
-        public FpRegradingResultDocs MapToModel(FpRegradingResultDocsViewModel viewModel)
+        public Models.FpRegradingResultDocs MapToModel(FpRegradingResultDocsViewModel viewModel)
         {
-            FpRegradingResultDocs model = new FpRegradingResultDocs();
-            PropertyCopier<FpRegradingResultDocsViewModel, FpRegradingResultDocs>.Copy(viewModel, model);
+            Models.FpRegradingResultDocs model = new Models.FpRegradingResultDocs();
+            PropertyCopier<FpRegradingResultDocsViewModel, Models.FpRegradingResultDocs>.Copy(viewModel, model);
 
             model.NoBon = viewModel.Bon.no;
             model.NoBonId = viewModel.Bon._id;
@@ -70,10 +70,10 @@ namespace Com.Danliris.Service.Inventory.Lib.Services
             return model;
         }
 
-        public FpRegradingResultDocsViewModel MapToViewModel(FpRegradingResultDocs model)
+        public FpRegradingResultDocsViewModel MapToViewModel(Models.FpRegradingResultDocs model)
         {
             FpRegradingResultDocsViewModel viewModel = new FpRegradingResultDocsViewModel();
-            PropertyCopier<FpRegradingResultDocs, FpRegradingResultDocsViewModel>.Copy(model, viewModel);
+            PropertyCopier<Models.FpRegradingResultDocs, FpRegradingResultDocsViewModel>.Copy(model, viewModel);
 
             viewModel.Details = new List<FpRegradingResultDetailsDocsViewModel>();
             viewModel.Bon = new FpRegradingResultDocsViewModel.noBon();
@@ -122,10 +122,10 @@ namespace Com.Danliris.Service.Inventory.Lib.Services
             return viewModel;
         }
 
-        public override Tuple<List<FpRegradingResultDocs>, int, Dictionary<string, string>, List<string>> ReadModel(int Page = 1, int Size = 25, string Order = "{}", List<string> Select = null, string Keyword = null, string Filter = "{}")
+        public override Tuple<List<Models.FpRegradingResultDocs>, int, Dictionary<string, string>, List<string>> ReadModel(int Page = 1, int Size = 25, string Order = "{}", List<string> Select = null, string Keyword = null, string Filter = "{}")
         {
 
-            IQueryable<FpRegradingResultDocs> Query = this.DbContext.fpRegradingResultDocs;
+            IQueryable<Models.FpRegradingResultDocs> Query = this.DbContext.fpRegradingResultDocs;
 
             List<string> SearchAttributes = new List<string>()
                 {
@@ -138,7 +138,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services
                     "Id", "Code", "Date", "Bon", "Supplier", "Product", "Details", "Machine", "Remark", "Operator", "IsReturnedToPurchasing"
                 };
             Query = Query
-                .Select(o => new FpRegradingResultDocs
+                .Select(o => new Models.FpRegradingResultDocs
                 {
                     Id = o.Id,
                     Code = o.Code,
@@ -170,13 +170,13 @@ namespace Com.Danliris.Service.Inventory.Lib.Services
             Dictionary<string, string> OrderDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(Order);
             Query = ConfigureOrder(Query, OrderDictionary);
 
-            Pageable<FpRegradingResultDocs> pageable = new Pageable<FpRegradingResultDocs>(Query, Page - 1, Size);
-            List<FpRegradingResultDocs> Data = pageable.Data.ToList<FpRegradingResultDocs>();
+            Pageable<Models.FpRegradingResultDocs> pageable = new Pageable<Models.FpRegradingResultDocs>(Query, Page - 1, Size);
+            List<Models.FpRegradingResultDocs> Data = pageable.Data.ToList<Models.FpRegradingResultDocs>();
             int TotalData = pageable.TotalCount;
 
             return Tuple.Create(Data, TotalData, OrderDictionary, SelectedFields);
         }
-        public override async Task<FpRegradingResultDocs> ReadModelById(int id)
+        public override async Task<Models.FpRegradingResultDocs> ReadModelById(int id)
         {
             return await this.DbSet
                 .Where(d => d.Id.Equals(id) && d._IsDeleted.Equals(false))
@@ -184,7 +184,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services
                 .FirstOrDefaultAsync();
         }
 
-        public void CreateInventoryDocument(FpRegradingResultDocs Model, string Type)
+        public void CreateInventoryDocument(Models.FpRegradingResultDocs Model, string Type)
         {
             string inventoryDocumentURI = "inventory/inventory-documents";
             string storageURI = "master/storages";
@@ -252,7 +252,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services
             response.EnsureSuccessStatusCode();
         }
 
-        public async Task<FpRegradingResultDocs> CustomCodeGenerator(FpRegradingResultDocs Model)
+        public async Task<Models.FpRegradingResultDocs> CustomCodeGenerator(Models.FpRegradingResultDocs Model)
         {
             var unit = string.Equals(Model.UnitName.ToUpper(), "PRINTING") ? "PR" : "FS";
             var lastData = await this.DbSet.Where(w => w.UnitName == Model.UnitName).OrderByDescending(o => o._CreatedUtc).FirstOrDefaultAsync();
@@ -286,7 +286,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services
             return Model;
         }
 
-        public override async Task<int> CreateModel(FpRegradingResultDocs Model)
+        public override async Task<int> CreateModel(Models.FpRegradingResultDocs Model)
         {
             int Created = 0;
             using (var transaction = this.DbContext.Database.BeginTransaction())
@@ -312,7 +312,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services
             return Created;
         }
 
-        public override void OnCreating(FpRegradingResultDocs model)
+        public override void OnCreating(Models.FpRegradingResultDocs model)
         {
             //do
             //{
@@ -350,7 +350,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services
             {
                 try
                 {
-                    FpRegradingResultDocs fpReturProInvDocs = await ReadModelById(Id);
+                    Models.FpRegradingResultDocs fpReturProInvDocs = await ReadModelById(Id);
                     Count = this.Delete(Id);
 
 
@@ -379,25 +379,25 @@ namespace Com.Danliris.Service.Inventory.Lib.Services
             return Count;
         }
 
-        public override void OnUpdating(int id, FpRegradingResultDocs model)
+        public override void OnUpdating(int id, Models.FpRegradingResultDocs model)
         {
             base.OnUpdating(id, model);
             model._LastModifiedAgent = "Service";
             model._LastModifiedBy = this.Username;
         }
 
-        public override void OnDeleting(FpRegradingResultDocs model)
+        public override void OnDeleting(Models.FpRegradingResultDocs model)
         {
             base.OnDeleting(model);
             model._DeletedAgent = "Service";
             model._DeletedBy = this.Username;
         }
 
-        public Tuple<List<FpRegradingResultDocs>, int, Dictionary<string, string>, List<string>> ReadNo(string Keyword = null, string Filter = "{}", int Page = 1, int Size = 25, string Order = "{}", List<string> Select = null)
+        public Tuple<List<Models.FpRegradingResultDocs>, int, Dictionary<string, string>, List<string>> ReadNo(string Keyword = null, string Filter = "{}", int Page = 1, int Size = 25, string Order = "{}", List<string> Select = null)
         {
             Dictionary<string, string> FilterDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(Filter);
 
-            IQueryable<FpRegradingResultDocs> Query = this.DbContext.fpRegradingResultDocs.Where(p => p._IsDeleted == false && p.IsReturnedToPurchasing == false && p.UnitName == FilterDictionary["UnitName"] && p.SupplierId == FilterDictionary["SupplierId"]);
+            IQueryable<Models.FpRegradingResultDocs> Query = this.DbContext.fpRegradingResultDocs.Where(p => p._IsDeleted == false && p.IsReturnedToPurchasing == false && p.UnitName == FilterDictionary["UnitName"] && p.SupplierId == FilterDictionary["SupplierId"]);
 
             List<string> SearchAttributes = new List<string>()
             {
@@ -411,7 +411,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services
             };
 
             Query = Query
-                .Select(o => new FpRegradingResultDocs
+                .Select(o => new Models.FpRegradingResultDocs
                 {
                     Id = o.Id,
                     Code = o.Code,
@@ -424,8 +424,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Services
             Dictionary<string, string> OrderDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(Order);
             Query = ConfigureOrder(Query, OrderDictionary);
 
-            Pageable<FpRegradingResultDocs> pageable = new Pageable<FpRegradingResultDocs>(Query, Page - 1, Size);
-            List<FpRegradingResultDocs> Data = pageable.Data.ToList<FpRegradingResultDocs>();
+            Pageable<Models.FpRegradingResultDocs> pageable = new Pageable<Models.FpRegradingResultDocs>(Query, Page - 1, Size);
+            List<Models.FpRegradingResultDocs> Data = pageable.Data.ToList<Models.FpRegradingResultDocs>();
             int TotalData = pageable.TotalCount;
 
             return Tuple.Create(Data, TotalData, OrderDictionary, SelectedFields);
@@ -433,7 +433,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services
 
         public void UpdateIsReturnedToPurchasing(int fPRegradingResultDocsId, bool flag)
         {
-            FpRegradingResultDocs model = new FpRegradingResultDocs { Id = fPRegradingResultDocsId, IsReturnedToPurchasing = flag };
+            Models.FpRegradingResultDocs model = new Models.FpRegradingResultDocs { Id = fPRegradingResultDocsId, IsReturnedToPurchasing = flag };
  
             DbContext.fpRegradingResultDocs.Attach(model);
             DbContext.Entry(model).Property(x => x.IsReturnedToPurchasing).IsModified = true;

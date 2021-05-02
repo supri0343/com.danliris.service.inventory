@@ -1,26 +1,18 @@
 ﻿using Com.Danliris.Service.Inventory.Lib;
+using Com.Danliris.Service.Inventory.Lib.Facades;
 using Com.Danliris.Service.Inventory.Lib.Helpers;
 using Com.Danliris.Service.Inventory.Lib.Services;
-using Com.Danliris.Service.Inventory.Lib.Services.MaterialDistributionNoteService;
-using Com.Danliris.Service.Inventory.Lib.Services.MaterialsRequestNoteServices;
-using Com.Danliris.Service.Inventory.Lib.Services.StockTransferNoteService;
-using Com.Danliris.Service.Inventory.Test.DataUtils.FpRegradingResultDataUtil;
-using Com.Danliris.Service.Inventory.Test.DataUtils.MaterialDistributionNoteDataUtil;
-
-using Com.Danliris.Service.Inventory.Test.DataUtils.MaterialRequestNoteDataUtil;
+using Com.Danliris.Service.Inventory.Lib.Services.FPReturnInvToPurchasingService;
+using Com.Danliris.Service.Inventory.Test.DataUtils.FPReturnInvToPurchasingDataUtil;
+using Com.Danliris.Service.Inventory.Test.DataUtils.InventoryDataUtils;
 using Com.Danliris.Service.Inventory.Test.DataUtils.StockTransferNoteDataUtil;
-using TestHelpers = Com.Danliris.Service.Inventory.Test.Helpers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using Xunit;
-using Com.Danliris.Service.Inventory.Test.DataUtils.FPReturnInvToPurchasingDataUtil;
-using Com.Danliris.Service.Inventory.Lib.Services.FPReturnInvToPurchasingService;
-using Com.Danliris.Service.Inventory.Lib.Facades;
-using Com.Danliris.Service.Inventory.Test.DataUtils.InventoryDataUtils;
-using Com.Danliris.Service.Inventory.Lib.Facades.InventoryFacades;
+using TestHelpers = Com.Danliris.Service.Inventory.Test.Helpers;
 
 namespace Com.Danliris.Service.Inventory.Test
 {
@@ -34,6 +26,7 @@ namespace Com.Danliris.Service.Inventory.Test
             APIEndpoint.Inventory = Configuration.GetValue<string>("InventoryEndpoint") ?? Configuration["InventoryEndpoint"];
             APIEndpoint.Production = Configuration.GetValue<string>("ProductionEndpoint") ?? Configuration["ProductionEndpoint"];
             APIEndpoint.Purchasing = Configuration.GetValue<string>("PurchasingEndpoint") ?? Configuration["PurchasingEndpoint"];
+            APIEndpoint.Sales = Configuration.GetValue<string>("SalesEndpoint") ?? Configuration["SalesEndpoint"];
         }
 
         public ServiceProviderFixture()
@@ -71,43 +64,39 @@ namespace Com.Danliris.Service.Inventory.Test
                 {
                     options.UseSqlServer(connectionString);
                 }, ServiceLifetime.Transient)
-                .AddTransient<MaterialDistributionNoteService>(provider => new MaterialDistributionNoteService(provider))
-                .AddTransient<MaterialDistributionNoteItemService>(provider => new MaterialDistributionNoteItemService(provider))
-                .AddTransient<MaterialDistributionNoteDetailService>(provider => new MaterialDistributionNoteDetailService(provider))
-                .AddTransient<MaterialsRequestNoteService>(provider => new MaterialsRequestNoteService(provider))
-                .AddTransient<MaterialsRequestNote_ItemService>(provider => new MaterialsRequestNote_ItemService(provider))
-                .AddTransient<StockTransferNoteService>(provider => new StockTransferNoteService(provider))
-                .AddTransient<StockTransferNote_ItemService>(provider => new StockTransferNote_ItemService(provider))
+                //.AddTransient<MaterialDistributionNoteService>(provider => new MaterialDistributionNoteService(provider))
+                //.AddTransient<MaterialDistributionNoteItemService>(provider => new MaterialDistributionNoteItemService(provider))
+                //.AddTransient<MaterialDistributionNoteDetailService>(provider => new MaterialDistributionNoteDetailService(provider))
+                //.AddTransient<StockTransferNoteService>(provider => new StockTransferNoteService(provider))
+                //.AddTransient<StockTransferNote_ItemService>(provider => new StockTransferNote_ItemService(provider))
                 .AddTransient<FPReturnInvToPurchasingService>(provider => new FPReturnInvToPurchasingService(provider))
                 .AddTransient<FPReturnInvToPurchasingDetailService>(provider => new FPReturnInvToPurchasingDetailService(provider))
                 .AddTransient<FPReturnInvToPurchasingFacade>()
-                .AddTransient<MaterialRequestNoteDataUtil>()
-                .AddTransient<MaterialRequestNoteItemDataUtil>()
-                .AddTransient<Lib.Services.FpRegradingResultDocsService>(provider => new Lib.Services.FpRegradingResultDocsService(provider))
-                .AddTransient<Lib.Services.FpRegradingResultDetailsDocsService>(provider => new Lib.Services.FpRegradingResultDetailsDocsService(provider))
-                .AddTransient<FpRegradingResultDataUtil>()
-                .AddTransient<FpRegradingResultDetailsDataUtil>()
-                .AddTransient<MaterialDistributionNoteDataUtil>()
-                .AddTransient<MaterialDistributionNoteItemDataUtil>()
-                .AddTransient<MaterialDistributionNoteDetailDataUtil>()
+                //.AddTransient<MaterialRequestNoteItemDataUtil>()
+                //.AddTransient<Lib.Services.FpRegradingResultDocsService>(provider => new Lib.Services.FpRegradingResultDocsService(provider))
+                //.AddTransient<Lib.Services.FpRegradingResultDetailsDocsService>(provider => new Lib.Services.FpRegradingResultDetailsDocsService(provider))
+                //.AddTransient<FpRegradingResultDataUtil>()
+                //.AddTransient<FpRegradingResultDetailsDataUtil>()
+                //.AddTransient<MaterialDistributionNoteDataUtil>()
+                //.AddTransient<MaterialDistributionNoteDetailDataUtil>()
                 .AddTransient<StockTransferNoteDataUtil>()
-                .AddTransient<StockTransferNoteItemDataUtil>()
-                .AddTransient<FPReturnInvToPurchasingDataUtil>()
+                //.AddTransient<StockTransferNoteItemDataUtil>()
+                //.AddTransient<FPReturnInvToPurchasingDataUtil>()
                 .AddTransient<FPReturnInvToPurchasingDetailDataUtil>()
 
-                .AddTransient<InventoryDocumentFacade>()
+                //.AddTransient<InventoryDocumentFacade>()
                 .AddTransient<InventoryDocumentDataUtil>()
-                .AddTransient<InventoryDocumentItemDataUtil>()
+                //.AddTransient<InventoryDocumentItemDataUtil>()
 
-                .AddTransient<InventoryMovementFacade>()
+                //.AddTransient<InventoryMovementFacade>()
                 .AddTransient<InventoryMovementDataUtil>()
 
-                .AddTransient<InventorySummaryFacade>()
+                //.AddTransient<InventorySummaryFacade>()
                 .AddTransient<InventorySummaryDataUtil>()
 
-                .AddTransient<InventoryMovementReportFacade>()
+                //.AddTransient<InventoryMovementReportFacade>()
 
-                .AddTransient<InventorySummaryReportFacade>()
+                //.AddTransient<InventorySummaryReportFacade>()
 
                 .AddSingleton<TestHelpers.HttpClientTestService>(provider => new TestHelpers.HttpClientTestService(provider))
                 .AddSingleton<HttpClientService>()

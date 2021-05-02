@@ -1,25 +1,19 @@
-﻿using Com.Danliris.Service.Inventory.Lib;
-using Com.Danliris.Service.Inventory.Lib.Models;
+﻿using Com.Danliris.Service.Inventory.Lib.Models;
+using Com.Danliris.Service.Inventory.Lib.Services.FpRegradingResultDocs;
 using Com.Danliris.Service.Inventory.Lib.ViewModels;
 using Com.Danliris.Service.Inventory.Test.Helpers;
-using Com.Danliris.Service.Inventory.Test.Interfaces;
-using Com.Danliris.Service.Inventory.Lib.Services;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
-using Com.Danliris.Service.Inventory.Test.DataUtils.IntegrationDataUtil;
 
 namespace Com.Danliris.Service.Inventory.Test.DataUtils.FpRegradingResultDataUtil
 {
-    public class FpRegradingResultDataUtil : BasicDataUtil<InventoryDbContext, FpRegradingResultDocsService, FpRegradingResultDocs>, IEmptyData<FpRegradingResultDocsViewModel>
+    public class FpRegradingResultDataUtil
     {
-        private readonly HttpClientTestService client;
-        private readonly FpRegradingResultDetailsDataUtil fpRegradingResultDetailsDataUtil;
-        public FpRegradingResultDataUtil(InventoryDbContext dbContext, FpRegradingResultDocsService service, HttpClientTestService client, FpRegradingResultDetailsDataUtil fpRegradingResultDetailsDataUtil) : base(dbContext, service)
+        private readonly NewFpRegradingResultDocsService Service;
+        public FpRegradingResultDataUtil(NewFpRegradingResultDocsService service)
         {
-            this.client = client;
-            this.fpRegradingResultDetailsDataUtil = fpRegradingResultDetailsDataUtil;
+            Service = service;
         }
         public FpRegradingResultDocsViewModel GetEmptyData()
         {
@@ -39,49 +33,59 @@ namespace Com.Danliris.Service.Inventory.Test.DataUtils.FpRegradingResultDataUti
             return Data;
         }
 
-        public override FpRegradingResultDocs GetNewData()
+        public FpRegradingResultDocs GetNewData()
         {
-            UnitReceiptNoteViewModel unit = UnitReceiptNoteDataUtil.GetUnitReceiptNote(client);
-            //ProductViewModel product = ProductDataUtil.GetProduct(client);
-            MachineViewModel machine = MachineDataUtil.GetMachine(client);
+            //UnitReceiptNoteViewModel unit = UnitReceiptNoteDataUtil.GetUnitReceiptNote(client);
+            ////ProductViewModel product = ProductDataUtil.GetProduct(client);
+            //MachineViewModel machine = MachineDataUtil.GetMachine(client);
             //SupplierViewModel supplier = SupplierDataUtil.GetSupplier(client);
 
             FpRegradingResultDocs TestData = new FpRegradingResultDocs
             {
                 Date = DateTimeOffset.UtcNow,
-                NoBon = unit.no,
-                NoBonId = unit._id,
+                NoBon = "no",
+                NoBonId = "1",
 
-                MachineId = machine._id,
-                MachineCode = machine.code,
-                MachineName = machine.name,
+                MachineId = "1",
+                MachineCode = "code",
+                MachineName = "name",
 
-                ProductId = unit.items[0].product._id,
-                ProductCode = unit.items[0].product.code,
-                ProductName = unit.items[0].product.name,
+                ProductId = "1",
+                ProductCode = "code",
+                ProductName = "name",
 
-                SupplierId = unit.supplier._id,
-                SupplierCode = unit.supplier.code,
-                SupplierName = unit.supplier.name,
+                SupplierId = "1",
+                SupplierCode = "code",
+                SupplierName = "name",
                 Operator = "operator test",
                 Shift = "shift 1 test",
                 TotalLength = 100,
                 OriginalGrade = "test grade",
                 Remark = "test remark",
                 UnitName = "PRINTING",
+                _CreatedUtc = new DateTime(2019,8,11,1,1,1),
 
-                Details = new List<FpRegradingResultDocsDetails> { fpRegradingResultDetailsDataUtil.GetNewData() }
+                Details = new List<FpRegradingResultDocsDetails> { new FpRegradingResultDocsDetails(){
+                    Grade = "a",
+                    Length = 1,
+                    ProductCode = "code",
+                    ProductId = "1",
+                    ProductName = "name",
+                    Quantity = 1,
+                    Remark = "remar",
+                    Retur = "retur",
+                      _CreatedUtc = new DateTime(2019,8,11,1,1,1),
+                } }
 
             };
 
             return TestData;
         }
 
-        public override async Task<FpRegradingResultDocs> GetTestData()
+        public async Task<FpRegradingResultDocs> GetTestData()
         {
             FpRegradingResultDocs Data = GetNewData();
-            this.Service.Token = HttpClientTestService.Token;
-            await this.Service.CreateModel(Data);
+            await this.Service.CreateAsync(Data);
             return Data;
         }
     }
