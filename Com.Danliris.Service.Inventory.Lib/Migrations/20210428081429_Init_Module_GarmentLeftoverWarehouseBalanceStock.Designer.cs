@@ -4,14 +4,16 @@ using Com.Danliris.Service.Inventory.Lib;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Com.Danliris.Service.Inventory.Lib.Migrations
 {
     [DbContext(typeof(InventoryDbContext))]
-    partial class InventoryDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210428081429_Init_Module_GarmentLeftoverWarehouseBalanceStock")]
+    partial class Init_Module_GarmentLeftoverWarehouseBalanceStock
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2391,263 +2393,6 @@ namespace Com.Danliris.Service.Inventory.Lib.Migrations
                     b.ToTable("InventorySummaries");
                 });
 
-            modelBuilder.Entity("Com.Danliris.Service.Inventory.Lib.Models.InventoryWeavingModel.InventoryWeavingDocument", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<bool>("Active");
-
-                    b.Property<string>("BonNo")
-                        .HasMaxLength(255);
-
-                    b.Property<string>("BonType")
-                        .HasMaxLength(255);
-
-                    b.Property<DateTimeOffset>("Date");
-
-                    b.Property<string>("Remark");
-
-                    b.Property<string>("StorageCode")
-                        .HasMaxLength(255);
-
-                    b.Property<int>("StorageId")
-                        .HasMaxLength(255);
-
-                    b.Property<string>("StorageName")
-                        .HasMaxLength(255);
-
-                    b.Property<string>("Type");
-
-                    b.Property<string>("_CreatedAgent")
-                        .IsRequired()
-                        .HasMaxLength(255);
-
-                    b.Property<string>("_CreatedBy")
-                        .IsRequired()
-                        .HasMaxLength(255);
-
-                    b.Property<DateTime>("_CreatedUtc");
-
-                    b.Property<string>("_DeletedAgent")
-                        .IsRequired()
-                        .HasMaxLength(255);
-
-                    b.Property<string>("_DeletedBy")
-                        .IsRequired()
-                        .HasMaxLength(255);
-
-                    b.Property<DateTime>("_DeletedUtc");
-
-                    b.Property<bool>("_IsDeleted");
-
-                    b.Property<string>("_LastModifiedAgent")
-                        .IsRequired()
-                        .HasMaxLength(255);
-
-                    b.Property<string>("_LastModifiedBy")
-                        .IsRequired()
-                        .HasMaxLength(255);
-
-                    b.Property<DateTime>("_LastModifiedUtc");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("InventoryWeavingDocuments");
-                });
-
-            modelBuilder.Entity("Com.Danliris.Service.Inventory.Lib.Models.InventoryWeavingModel.InventoryWeavingDocumentItem", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<bool>("Active");
-
-                    b.Property<string>("Construction")
-                        .HasMaxLength(255);
-
-                    b.Property<string>("Grade")
-                        .HasMaxLength(255);
-
-                    b.Property<int>("InventoryWeavingDocumentId");
-
-                    b.Property<string>("MaterialName");
-
-                    b.Property<string>("Piece");
-
-                    b.Property<string>("ProductOrderName")
-                        .HasMaxLength(255);
-
-                    b.Property<string>("ProductRemark");
-
-                    b.Property<double>("Quantity");
-
-                    b.Property<double>("QuantityPiece");
-
-                    b.Property<string>("ReferenceNo")
-                        .HasMaxLength(255);
-
-                    b.Property<int>("UomId")
-                        .HasMaxLength(255);
-
-                    b.Property<string>("UomUnit")
-                        .HasMaxLength(255);
-
-                    b.Property<string>("Width");
-
-                    b.Property<string>("WovenType");
-
-                    b.Property<string>("Yarn1");
-
-                    b.Property<string>("Yarn2");
-
-                    b.Property<string>("YarnOrigin1");
-
-                    b.Property<string>("YarnOrigin2");
-
-                    b.Property<string>("YarnType1");
-
-                    b.Property<string>("YarnType2");
-
-                    b.Property<string>("_CreatedAgent")
-                        .IsRequired()
-                        .HasMaxLength(255);
-
-                    b.Property<string>("_CreatedBy")
-                        .IsRequired()
-                        .HasMaxLength(255);
-
-                    b.Property<DateTime>("_CreatedUtc");
-
-                    b.Property<string>("_DeletedAgent")
-                        .IsRequired()
-                        .HasMaxLength(255);
-
-                    b.Property<string>("_DeletedBy")
-                        .IsRequired()
-                        .HasMaxLength(255);
-
-                    b.Property<DateTime>("_DeletedUtc");
-
-                    b.Property<bool>("_IsDeleted");
-
-                    b.Property<string>("_LastModifiedAgent")
-                        .IsRequired()
-                        .HasMaxLength(255);
-
-                    b.Property<string>("_LastModifiedBy")
-                        .IsRequired()
-                        .HasMaxLength(255);
-
-                    b.Property<DateTime>("_LastModifiedUtc");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("InventoryWeavingDocumentId");
-
-                    b.ToTable("InventoryWeavingDocumentItems");
-                });
-
-            modelBuilder.Entity("Com.Danliris.Service.Inventory.Lib.Models.InventoryWeavingModel.InventoryWeavingMovement", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<bool>("Active");
-
-                    b.Property<string>("BonNo");
-
-                    b.Property<string>("Construction")
-                        .HasMaxLength(255);
-
-                    b.Property<string>("Grade")
-                        .HasMaxLength(255);
-
-                    b.Property<int>("InventoryWeavingDocumentId");
-
-                    b.Property<int>("InventoryWeavingDocumentItemId");
-
-                    b.Property<string>("MaterialName");
-
-                    b.Property<string>("Piece")
-                        .HasMaxLength(1000);
-
-                    b.Property<string>("ProductOrderName")
-                        .HasMaxLength(255);
-
-                    b.Property<string>("ProductRemark");
-
-                    b.Property<double>("Quantity");
-
-                    b.Property<double>("QuantityPiece");
-
-                    b.Property<string>("ReferenceNo")
-                        .HasMaxLength(255);
-
-                    b.Property<string>("Type");
-
-                    b.Property<int>("UomId")
-                        .HasMaxLength(255);
-
-                    b.Property<string>("UomUnit")
-                        .HasMaxLength(255);
-
-                    b.Property<string>("Width");
-
-                    b.Property<string>("WovenType");
-
-                    b.Property<string>("Yarn1");
-
-                    b.Property<string>("Yarn2");
-
-                    b.Property<string>("YarnOrigin1");
-
-                    b.Property<string>("YarnOrigin2");
-
-                    b.Property<string>("YarnType1");
-
-                    b.Property<string>("YarnType2");
-
-                    b.Property<string>("_CreatedAgent")
-                        .IsRequired()
-                        .HasMaxLength(255);
-
-                    b.Property<string>("_CreatedBy")
-                        .IsRequired()
-                        .HasMaxLength(255);
-
-                    b.Property<DateTime>("_CreatedUtc");
-
-                    b.Property<string>("_DeletedAgent")
-                        .IsRequired()
-                        .HasMaxLength(255);
-
-                    b.Property<string>("_DeletedBy")
-                        .IsRequired()
-                        .HasMaxLength(255);
-
-                    b.Property<DateTime>("_DeletedUtc");
-
-                    b.Property<bool>("_IsDeleted");
-
-                    b.Property<string>("_LastModifiedAgent")
-                        .IsRequired()
-                        .HasMaxLength(255);
-
-                    b.Property<string>("_LastModifiedBy")
-                        .IsRequired()
-                        .HasMaxLength(255);
-
-                    b.Property<DateTime>("_LastModifiedUtc");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("InventoryWeavingMovements");
-                });
-
             modelBuilder.Entity("Com.Danliris.Service.Inventory.Lib.Models.MaterialDistributionNoteModel.MaterialDistributionNote", b =>
                 {
                     b.Property<int>("Id")
@@ -3284,14 +3029,6 @@ namespace Com.Danliris.Service.Inventory.Lib.Migrations
                     b.HasOne("Com.Danliris.Service.Inventory.Lib.Models.InventoryModel.InventoryDocument", "InventoryDocument")
                         .WithMany("Items")
                         .HasForeignKey("InventoryDocumentId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("Com.Danliris.Service.Inventory.Lib.Models.InventoryWeavingModel.InventoryWeavingDocumentItem", b =>
-                {
-                    b.HasOne("Com.Danliris.Service.Inventory.Lib.Models.InventoryWeavingModel.InventoryWeavingDocument", "InventoryWeavingDocument")
-                        .WithMany("Items")
-                        .HasForeignKey("InventoryWeavingDocumentId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
