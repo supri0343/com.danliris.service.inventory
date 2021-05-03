@@ -1,0 +1,23 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace Com.Danliris.Service.Inventory.Lib.ViewModels.GarmentLeftoverWarehouse.Stock
+{
+    public class GarmentLeftoverWarehouseStockMonitoringViewModel
+    {
+        public int index { get; set; }
+        public string UnitCode { get; set; }
+        public string PONo { get; set; }
+
+        public string ProductCode { get; set; }
+        public string ProductName { get; set; }
+        public string ProductRemark { get; set; }
+        public string FabricRemark { get; set; }
+        public double BeginingbalanceQty { get; set; }
+        public double QuantityReceipt { get; set; }
+        public double QuantityExpend { get; set; }
+        public double EndbalanceQty { get; set; }
+        public string UomUnit { get; set; }
+    }
+}
