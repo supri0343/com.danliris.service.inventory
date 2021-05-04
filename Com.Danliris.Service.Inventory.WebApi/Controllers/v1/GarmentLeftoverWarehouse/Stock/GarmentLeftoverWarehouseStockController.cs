@@ -133,7 +133,7 @@ namespace Com.Danliris.Service.Inventory.WebApi.Controllers.v1.GarmentLeftoverWa
             }
         }
         [HttpGet("report-acc")]
-        public IActionResult GetReportStockAcc(DateTime? dateFrom, DateTime? dateTo,int unitId, int page, int size, string Order = "{}")
+        public IActionResult GetReportStockAcc(DateTime? dateFrom, DateTime? dateTo,int unit, int page, int size, string Order = "{}")
         {
             try
             {
@@ -145,7 +145,7 @@ namespace Com.Danliris.Service.Inventory.WebApi.Controllers.v1.GarmentLeftoverWa
                     page = 1;
                     size = 25;
                 }
-                var data = Service.GetMonitoringAcc(dateFrom, dateTo,unitId, page, size, Order, offset);
+                var data = Service.GetMonitoringAcc(dateFrom, dateTo,unit, page, size, Order, offset);
 
                 return Ok(new
                 {
@@ -166,7 +166,7 @@ namespace Com.Danliris.Service.Inventory.WebApi.Controllers.v1.GarmentLeftoverWa
         }
 
         [HttpGet("download-acc")]
-        public IActionResult GetXlsStockAcc(DateTime? dateFrom, DateTime? dateTo, string receiptType)
+        public IActionResult GetXlsStockAcc(DateTime? dateFrom, DateTime? dateTo,int unit, string receiptType)
         {
 
             try
@@ -176,7 +176,7 @@ namespace Com.Danliris.Service.Inventory.WebApi.Controllers.v1.GarmentLeftoverWa
                 DateTime DateFrom = dateFrom == null ? new DateTime(1970, 1, 1) : Convert.ToDateTime(dateFrom);
                 DateTime DateTo = dateTo == null ? DateTime.Now : Convert.ToDateTime(dateTo);
 
-                var xls = Service.GenerateExcelAcc(dateFrom, dateTo, offset);
+                var xls = Service.GenerateExcelAcc(dateFrom, dateTo,unit, offset);
 
                 string filename = String.Format("Report Penerimaan Gudang Sisa - {0}.xlsx", DateTime.UtcNow.ToString("ddMMyyyy"));
 
