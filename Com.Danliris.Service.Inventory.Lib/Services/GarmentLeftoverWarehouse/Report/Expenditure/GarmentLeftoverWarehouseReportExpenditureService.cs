@@ -63,8 +63,9 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                         {
                             c.BCNo = salesNotes["bcNo"].ToString();
                             c.BCDate = DateTimeOffset.Parse(salesNotes["bcDate"].ToString());
+                            c.BCType = "BC 25";
                         }
-                    }
+                    } 
                 }
                 
             });
@@ -92,9 +93,12 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                 QueryFabric = (from a in DbContext.GarmentLeftoverWarehouseExpenditureFabrics
                                  // ExpenditureAcessoriesItem
                              join b in DbContext.GarmentLeftoverWarehouseExpenditureFabricItems on a.Id equals b.ExpenditureId
-                             join c in DbContext.GarmentLeftoverWarehouseReceiptFabricItems on b.PONo equals c.POSerialNumber
-                             //Conditions
-                             where a._IsDeleted == false
+                             //join c in DbContext.GarmentLeftoverWarehouseReceiptFabricItems on b.PONo equals c.POSerialNumber
+                             from c in DbContext.GarmentLeftoverWarehouseReceiptFabricItems
+                               .Where(o => b.PONo == o.POSerialNumber).Take(1)
+                               .DefaultIfEmpty()
+                                   //Conditions
+                               where a._IsDeleted == false
                                  && a.ExpenditureDate.AddHours(offset).Date >= DateFrom.Date
                                  && a.ExpenditureDate.AddHours(offset).Date <= DateTo.Date
                              select new GarmentLeftoverWarehouseReportExpenditureViewModel
@@ -118,7 +122,6 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                                      Unit = b.UomUnit
                                  },
                                  LocalSalesNoteNo = a.LocalSalesNoteNo,
-                                 BCType = "BC 25",
                                  _LastModifiedUtc = a._LastModifiedUtc
                              });
                 Query = QueryFabric;
@@ -128,9 +131,12 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                 QueryAcc = (from a in DbContext.GarmentLeftoverWarehouseExpenditureAccessories
                                  // ExpenditureAcessoriesItem
                              join b in DbContext.GarmentLeftoverWarehouseExpenditureAccessoriesItems on a.Id equals b.ExpenditureId
-                             join c in DbContext.GarmentLeftoverWarehouseReceiptAccessoryItems on b.PONo equals c.POSerialNumber
-                             //Conditions
-                             where a._IsDeleted == false
+                             //join c in DbContext.GarmentLeftoverWarehouseReceiptAccessoryItems on b.PONo equals c.POSerialNumber
+                                from c in DbContext.GarmentLeftoverWarehouseReceiptFabricItems
+                             .Where(o => b.PONo == o.POSerialNumber).Take(1)
+                             .DefaultIfEmpty()
+                                //Conditions
+                            where a._IsDeleted == false
                                  && a.ExpenditureDate.AddHours(offset).Date >= DateFrom.Date
                                  && a.ExpenditureDate.AddHours(offset).Date <= DateTo.Date
                              select new GarmentLeftoverWarehouseReportExpenditureViewModel
@@ -154,7 +160,6 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                                      Unit = b.UomUnit
                                  },
                                  LocalSalesNoteNo = a.LocalSalesNoteNo,
-                                 BCType = "BC 25",
                                  _LastModifiedUtc = a._LastModifiedUtc
                              });
                 Query = QueryAcc;
@@ -190,7 +195,6 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                                        Unit = b.UomUnit
                                    },
                                    LocalSalesNoteNo = a.LocalSalesNoteNo,
-                                   BCType = "BC 25",
                                    _LastModifiedUtc = a._LastModifiedUtc
                                });
                 QueryAcc = (from a in DbContext.GarmentLeftoverWarehouseExpenditureAccessories
@@ -222,7 +226,6 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                                     Unit = b.UomUnit
                                 },
                                 LocalSalesNoteNo = a.LocalSalesNoteNo,
-                                BCType = "BC 25",
                                 _LastModifiedUtc = a._LastModifiedUtc
                             });
 
@@ -231,7 +234,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
             
 
 
-            return Query;
+            return Query.Distinct();
         }
 
         private Dictionary<string, Object> GetBcFromShipping(string localSalesNoteNo)
@@ -284,7 +287,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                     index++;
                     //DateTimeOffset date = item.date ?? new DateTime(1970, 1, 1);
                     //string dateString = date == new DateTime(1970, 1, 1) ? "-" : date.ToOffset(new TimeSpan(offset, 0, 0)).ToString("dd MMM yyyy", new CultureInfo("id-ID"));
-                    result.Rows.Add(index, item.ExpenditureNo, item.ExpenditureDate.ToString("dd MMM yyyy", new CultureInfo("id-ID")), item.ExpenditureDestination, item.DescriptionOfPurpose, item.PONo, item.Product.Name, item.Product.Code, item.ProductRemark, item.Quantity, item.Uom.Unit, item.LocalSalesNoteNo, item.BCNo, item.BCType, item.BCDate.ToString("dd MMM yyyy", new CultureInfo("id-ID")));
+                    result.Rows.Add(index, item.ExpenditureNo, item.ExpenditureDate.ToString("dd MMM yyyy", new CultureInfo("id-ID")), item.ExpenditureDestination, item.DescriptionOfPurpose, item.PONo, item.Product.Name, item.Product.Code, item.ProductRemark, item.Quantity, item.Uom.Unit, item.LocalSalesNoteNo, item.BCNo, item.BCType, item.BCDate?.ToString("dd MMM yyyy", new CultureInfo("id-ID")));
                 }
             }
 
