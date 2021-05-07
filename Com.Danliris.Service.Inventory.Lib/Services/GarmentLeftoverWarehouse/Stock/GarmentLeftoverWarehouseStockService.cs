@@ -302,8 +302,10 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.S
         
         public IQueryable<GarmentLeftoverWarehouseStockMonitoringViewModel> GetReportQuery(DateTime? dateFrom, DateTime? dateTo,int UnitId, string type,int offset)
         {
+
             DateTime DateFrom = dateFrom == null ? new DateTime(1970, 1, 1) : (DateTime)dateFrom;
-            DateTime DateTo = dateTo == null ? new DateTime(1970, 1, 1) : (DateTime)dateTo;
+            DateTime DateTo = dateTo == null ? DateTime.Now : (DateTime)dateTo;
+           
             List<GarmentLeftoverWarehouseStockMonitoringViewModel> garmentLeftoverWarehouseStockMonitoringViewModel = new List<GarmentLeftoverWarehouseStockMonitoringViewModel>();
 
             if (type == "FABRIC")
@@ -317,8 +319,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.S
                                    select new GarmentLeftoverWarehouseStockMonitoringViewModel
                                    {
                                        PONo = b.POSerialNumber,
-                                       BeginingbalanceQty = a.ReceiptDate < DateFrom.Date ? b.Quantity : 0,
-                                       QuantityReceipt = a.ReceiptDate >= DateFrom.Date ? b.Quantity : 0,
+                                       BeginingbalanceQty = a.ReceiptDate.AddHours(offset) < DateFrom.Date ? b.Quantity : 0,
+                                       QuantityReceipt = a.ReceiptDate.AddHours(offset) >= DateFrom.Date ? b.Quantity : 0,
                                        QuantityExpend = 0,
                                        UomUnit = b.UomUnit,
                                        UnitCode = a.UnitFromCode,
@@ -339,9 +341,9 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.S
                                        select new GarmentLeftoverWarehouseStockMonitoringViewModel
                                        {
                                            PONo = b.PONo,
-                                           BeginingbalanceQty = a.ExpenditureDate < DateFrom.Date ? -b.Quantity : 0,
+                                           BeginingbalanceQty = a.ExpenditureDate.AddHours(offset) < DateFrom.Date ? -b.Quantity : 0,
                                            QuantityReceipt = 0,
-                                           QuantityExpend = a.ExpenditureDate >= DateFrom.Date ? b.Quantity : 0,
+                                           QuantityExpend = a.ExpenditureDate.AddHours(offset) >= DateFrom.Date ? b.Quantity : 0,
                                            UomUnit = b.UomUnit,
                                            UnitCode = b.UnitCode,
                                            ProductCode = "",
