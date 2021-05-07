@@ -397,8 +397,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.S
                                    select new GarmentLeftoverWarehouseStockMonitoringViewModel
                                    {
                                        PONo = b.POSerialNumber,
-                                       BeginingbalanceQty = a.StorageReceiveDate < DateFrom.Date ? b.Quantity : 0,
-                                       QuantityReceipt = a.StorageReceiveDate >= DateFrom.Date ? b.Quantity : 0,
+                                       BeginingbalanceQty = a.StorageReceiveDate.AddHours(offset) < DateFrom.Date ? b.Quantity : 0,
+                                       QuantityReceipt = a.StorageReceiveDate.AddHours(offset) >= DateFrom.Date ? b.Quantity : 0,
                                        QuantityExpend = 0,
                                        UomUnit = b.UomUnit,
                                        UnitCode = a.RequestUnitCode,
@@ -421,9 +421,9 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.S
                                        select new GarmentLeftoverWarehouseStockMonitoringViewModel
                                        {
                                            PONo = b.PONo,
-                                           BeginingbalanceQty = a.ExpenditureDate < DateFrom.Date ? -b.Quantity : 0,
+                                           BeginingbalanceQty = a.ExpenditureDate.AddHours(offset) < DateFrom.Date ? -b.Quantity : 0,
                                            QuantityReceipt = 0,
-                                           QuantityExpend = a.ExpenditureDate >= DateFrom.Date ? b.Quantity : 0,
+                                           QuantityExpend = a.ExpenditureDate.AddHours(offset) >= DateFrom.Date ? b.Quantity : 0,
                                            UomUnit = b.UomUnit,
                                            UnitCode =b.UnitCode ,
                                            ProductCode = "",
@@ -566,7 +566,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.S
                 }
             }
 
-            return Excel.CreateExcel(new List<KeyValuePair<DataTable, string>>() { new KeyValuePair<DataTable, string>(result, "Report Stock Gudang Sisa - FABRIC") }, true);
+            return Excel.CreateExcel(new List<KeyValuePair<DataTable, string>>() { new KeyValuePair<DataTable, string>(result, "Report Stock Gudang Sisa - ACC") }, true);
 
         }
 
