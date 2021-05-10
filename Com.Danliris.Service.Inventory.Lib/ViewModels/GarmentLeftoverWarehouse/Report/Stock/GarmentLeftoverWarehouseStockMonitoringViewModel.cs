@@ -9,7 +9,7 @@ namespace Com.Danliris.Service.Inventory.Lib.ViewModels.GarmentLeftoverWarehouse
         public int index { get; set; }
         public string UnitCode { get; set; }
         public string PONo { get; set; }
-
+        public string RONo { get; set; }
         public string ProductCode { get; set; }
         public string ProductName { get; set; }
         public string ProductRemark { get; set; }

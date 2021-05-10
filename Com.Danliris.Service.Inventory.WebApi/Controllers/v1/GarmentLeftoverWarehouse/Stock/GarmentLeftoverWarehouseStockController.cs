@@ -178,7 +178,68 @@ namespace Com.Danliris.Service.Inventory.WebApi.Controllers.v1.GarmentLeftoverWa
 
                 var xls = Service.GenerateExcelAcc(dateFrom, dateTo,unit, offset);
 
-                string filename = String.Format("Report Penerimaan Gudang Sisa - {0}.xlsx", DateTime.UtcNow.ToString("ddMMyyyy"));
+                string filename = String.Format("Report Stock Gudang Sisa - Accessories {0}.xlsx", DateTime.UtcNow.ToString("ddMMyyyy"));
+
+                xlsInBytes = xls.ToArray();
+                var file = File(xlsInBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", filename);
+                return file;
+
+            }
+            catch (Exception e)
+            {
+                Dictionary<string, object> Result =
+                    new ResultFormatter(ApiVersion, General.INTERNAL_ERROR_STATUS_CODE, e.Message)
+                    .Fail();
+                return StatusCode(General.INTERNAL_ERROR_STATUS_CODE, Result);
+            }
+        }
+        [HttpGet("report-finishedgood")]
+        public IActionResult GetReportStockFinishedGood(DateTime? dateFrom, DateTime? dateTo, int unit, int page, int size, string Order = "{}")
+        {
+            try
+            {
+
+                int offset = Convert.ToInt32(Request.Headers["x-timezone-offset"]);
+                string accept = Request.Headers["Accept"];
+                if (page == 0)
+                {
+                    page = 1;
+                    size = 25;
+                }
+                var data = Service.GetMonitoringFinishedGood(dateFrom, dateTo, unit, page, size, Order, offset);
+
+                return Ok(new
+                {
+                    apiVersion = ApiVersion,
+                    data = data.Item1,
+                    info = new { total = data.Item2 },
+                    message = General.OK_MESSAGE,
+                    statusCode = General.OK_STATUS_CODE
+                });
+            }
+            catch (Exception e)
+            {
+                Dictionary<string, object> Result =
+                    new ResultFormatter(ApiVersion, General.INTERNAL_ERROR_STATUS_CODE, e.Message)
+                    .Fail();
+                return StatusCode(General.INTERNAL_ERROR_STATUS_CODE, Result);
+            }
+        }
+
+        [HttpGet("download-finishedgood")]
+        public IActionResult GetXlsStockFinishedGood(DateTime? dateFrom, DateTime? dateTo, int unit, string receiptType)
+        {
+
+            try
+            {
+                byte[] xlsInBytes;
+                int offset = Convert.ToInt32(Request.Headers["x-timezone-offset"]);
+                DateTime DateFrom = dateFrom == null ? new DateTime(1970, 1, 1) : Convert.ToDateTime(dateFrom);
+                DateTime DateTo = dateTo == null ? DateTime.Now : Convert.ToDateTime(dateTo);
+
+                var xls = Service.GenerateExcelFinishedGood(dateFrom, dateTo, unit, offset);
+
+                string filename = String.Format("Report Stock Gudang Sisa - Barang Jadi {0}.xlsx", DateTime.UtcNow.ToString("ddMMyyyy"));
 
                 xlsInBytes = xls.ToArray();
                 var file = File(xlsInBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", filename);
