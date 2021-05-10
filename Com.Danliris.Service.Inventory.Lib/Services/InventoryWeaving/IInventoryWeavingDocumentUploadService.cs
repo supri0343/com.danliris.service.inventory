@@ -19,5 +19,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
         Task<InventoryWeavingDocument> MapToModel(InventoryWeavingDocumentViewModel data);
         //Task<InventoryWeavingMovement> MapToModelMovement(InventoryWeavingDocumentViewModel data);
         Task<InventoryWeavingDocumentViewModel> MapToViewModel(List<InventoryWeavingDocumentCsvViewModel> data, DateTimeOffset date, string From);
+        ListResult<InventoryWeavingItemViewModel> ReadInputWeaving(string bonType, DateTimeOffset? dateFrom, DateTimeOffset? dateTo, int page, int size, string order, int offset);
+
+
     }
 }
