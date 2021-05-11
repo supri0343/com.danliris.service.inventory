@@ -56,7 +56,7 @@ namespace Com.Danliris.Service.Inventory.WebApi.Controllers.v1.WeavingInventory
 
         }
         [HttpPost("upload")]
-        public async Task<IActionResult> PostCSVFileAsync(DateTimeOffset date, string source)
+        public async Task<IActionResult> PostCSVFileAsync(string source)
         // public async Task<IActionResult> PostCSVFileAsync(double source, double destination,  DateTime date)
         {
             try
@@ -85,8 +85,8 @@ namespace Com.Danliris.Service.Inventory.WebApi.Controllers.v1.WeavingInventory
 
                         List<InventoryWeavingDocumentCsvViewModel> Data = Csv.GetRecords<InventoryWeavingDocumentCsvViewModel>().ToList();
 
-                        //InventoryWeavingDocumentViewModel Data1 = await service.MapToViewModel(Data, date, from);
-                        InventoryWeavingDocumentViewModel Data1 = await service.MapToViewModel(Data, date, source);
+                        //InventoryWeavingDocumentViewModel Data1 = await service.MapToViewModel(Data, date, source);
+                        InventoryWeavingDocumentViewModel Data1 = await service.MapToViewModel(Data, source);
 
                         Tuple<bool, List<object>> Validated = service.UploadValidate(ref Data, Request.Form.ToList());
 

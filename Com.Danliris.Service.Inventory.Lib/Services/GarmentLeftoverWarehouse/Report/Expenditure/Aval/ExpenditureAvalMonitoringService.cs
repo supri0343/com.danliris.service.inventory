@@ -79,18 +79,18 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                 ExpenditureAvalMonitoringViewModel vm = new ExpenditureAvalMonitoringViewModel();
 
                 vm.AvalType = aval.AvalType;
-                vm.ProductCode = avalItem.ProductCode;
+                vm.ProductCode = aval.AvalType == "AVAL BAHAN PENOLONG" ? avalItem.ProductCode : "-";
                 vm.Quantity = avalItem.Quantity;
-                vm.ProductName = avalItem.ProductName;
+                vm.ProductName = aval.AvalType == "AVAL BAHAN PENOLONG" ? avalItem.ProductName : "-";
                 vm.ExpenditureDate = aval.ExpenditureDate;
-                vm.AvalReceiptNo = avalItem.AvalReceiptNo;
-                vm.UomUnit = avalItem.UomUnit;
+                vm.AvalReceiptNo = aval.AvalType == "AVAL BAHAN PENOLONG" ? "-" : avalItem.AvalReceiptNo;
+                vm.UomUnit = aval.AvalType== "AVAL BAHAN PENOLONG" ? avalItem.UomUnit : "KG";
                 vm.Quantity = avalItem.Quantity;
                 vm.UnitCode = avalItem.UnitCode;
                 vm.ExpenditureTo = aval.ExpenditureTo;
                 vm.ExpenditureNo = aval.AvalExpenditureNo;
                 vm.OtherDescription = aval.ExpenditureTo == "JUAL LOKAL" ? aval.BuyerName : aval.OtherDescription;
-                vm.LocalSalesNoteNo = aval.LocalSalesNoteNo;
+                vm.LocalSalesNoteNo = aval.ExpenditureTo == "JUAL LOKAL" ? aval.LocalSalesNoteNo : "-";
 
                 vm.index = i;
                 if (listData.Where(a => a.ExpenditureNo == vm.ExpenditureNo).Count() == 0)
