@@ -169,5 +169,20 @@ namespace Com.Danliris.Service.Inventory.WebApi.Controllers.v1.WeavingInventory
                 return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
             }
         }
+
+        [HttpGet("monitoring")]
+        public IActionResult GetInputWeaving(string bonType, DateTimeOffset? dateFrom, DateTimeOffset? dateTo, int page = 1, int size = 25, string order = "{}")
+        {
+            try
+            {
+                int offset = Convert.ToInt32(Request.Headers["x-timezone-offset"]);
+                var data = service.ReadInputWeaving(bonType, dateFrom, dateTo, page, size, order, offset);
+                return Ok(data);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
     }
 }
