@@ -2,32 +2,32 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using Com.Danliris.Service.Inventory.Lib.Models.GarmentLeftoverWarehouse.GarmentLeftoverWarehouseReceiptAvalModels;
-using Com.Danliris.Service.Inventory.Lib.ViewModels.GarmentLeftoverWarehouse.Report.Receipt;
+using Com.Danliris.Service.Inventory.Lib.Models.GarmentLeftoverWarehouse.ExpenditureAval;
+using Com.Danliris.Service.Inventory.Lib.ViewModels.GarmentLeftoverWarehouse.Report.Expenditure;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
 using System.Linq;
+using Newtonsoft.Json;
 using System.Data;
 using System.Globalization;
 using OfficeOpenXml;
 using OfficeOpenXml.Style;
 
-namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.Report.Receipt.Aval
+namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.Report.Expenditure.Aval
 {
-    public class ReceiptAvalMonitoringService : IReceiptAvalMonitoringService
+    public class ExpenditureAvalMonitoringService : IExpenditureAvalMonitoringService
     {
-        private const string UserAgent = "GarmentLeftoverWarehouseReceiptAvalMonitoringService";
+        private const string UserAgent = "GarmentLeftoverWarehouseExpenditureAvalMonitoringService";
 
         private InventoryDbContext DbContext;
-        private DbSet<GarmentLeftoverWarehouseReceiptAval> DbSet;
+        private DbSet<GarmentLeftoverWarehouseExpenditureAval> DbSet;
 
         private readonly IServiceProvider ServiceProvider;
         private readonly IIdentityService IdentityService;
 
-        public ReceiptAvalMonitoringService(InventoryDbContext dbContext, IServiceProvider serviceProvider)
+        public ExpenditureAvalMonitoringService(InventoryDbContext dbContext, IServiceProvider serviceProvider)
         {
             DbContext = dbContext;
-            DbSet = DbContext.Set<GarmentLeftoverWarehouseReceiptAval>();
+            DbSet = DbContext.Set<GarmentLeftoverWarehouseExpenditureAval>();
 
             ServiceProvider = serviceProvider;
             IdentityService = (IIdentityService)serviceProvider.GetService(typeof(IIdentityService));
@@ -35,31 +35,29 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
         }
 
         public int TotalCountReport { get; set; } = 0;
-        private List<ReceiptAvalMonitoringViewModel> GetMonitoringQuery(DateTime? dateFrom, DateTime? dateTo, string type, int offset, int page, int size)
+        private List<ExpenditureAvalMonitoringViewModel> GetMonitoringQuery(DateTime? dateFrom, DateTime? dateTo, string type, int offset, int page, int size)
         {
             DateTime DateFrom = dateFrom == null ? new DateTime(1970, 1, 1) : (DateTime)dateFrom;
             DateTime DateTo = dateTo == null ? DateTime.Now : (DateTime)dateTo;
             offset = 7;
 
-            List<ReceiptAvalMonitoringViewModel> listData = new List<ReceiptAvalMonitoringViewModel>();
+            List<ExpenditureAvalMonitoringViewModel> listData = new List<ExpenditureAvalMonitoringViewModel>();
 
-            var query = from a in DbContext.GarmentLeftoverWarehouseReceiptAvals
-                       //join b in DbContext.GarmentLeftoverWarehouseReceiptAvalItems on a.Id equals b.AvalReceiptId
-                       where a.AvalType == (type == null ? a.AvalType : type)
-                       && a.ReceiptDate.AddHours(offset).Date >= DateFrom.Date
-                       && a.ReceiptDate.AddHours(offset).Date <= DateTo.Date
-                       select new
-                       {
-                           avalId = a.Id,
-                          // itemId = b.Id,
-                           date = a.ReceiptDate
-                       };
+            var query = from a in DbContext.GarmentLeftoverWarehouseExpenditureAvals
+                        where a.AvalType == (type == null ? a.AvalType : type)
+                        && a.ExpenditureDate.AddHours(offset).Date >= DateFrom.Date
+                        && a.ExpenditureDate.AddHours(offset).Date <= DateTo.Date
+                        select new
+                        {
+                            avalId = a.Id,
+                            date = a.ExpenditureDate
+                        };
 
             TotalCountReport = query.Distinct().OrderByDescending(o => o.date).Count();
             var queryResult = size != 0 && page != 0 ? query.Distinct().OrderByDescending(o => o.date).Skip((page - 1) * size).Take(size).ToList() : query.Distinct().OrderByDescending(o => o.date).ToList();
 
             var join = from a in queryResult
-                       join b in DbContext.GarmentLeftoverWarehouseReceiptAvalItems on a.avalId equals b.AvalReceiptId
+                       join b in DbContext.GarmentLeftoverWarehouseExpenditureAvalItems on a.avalId equals b.AvalExpenditureId
                        select new
                        {
                            a.avalId,
@@ -68,9 +66,9 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                        };
 
             var avalIds = join.Select(s => s.avalId).Distinct().ToList();
-            var avals = DbContext.GarmentLeftoverWarehouseReceiptAvals.Where(w => avalIds.Contains(w.Id)).Select(s => new { s.Id, s.AvalReceiptNo, s.ReceiptDate, s.UnitFromCode, s.AvalType, s.TotalAval }).ToList();
+            var avals = DbContext.GarmentLeftoverWarehouseExpenditureAvals.Where(w => avalIds.Contains(w.Id)).Select(s => new { s.Id, s.AvalExpenditureNo, s.ExpenditureDate, s.AvalType, s.BuyerName, s.OtherDescription, s.ExpenditureTo,s.LocalSalesNoteNo}).ToList();
             var itemIds = join.Select(s => s.itemId).Distinct().ToList();
-            var items = DbContext.GarmentLeftoverWarehouseReceiptAvalItems.Where(w => itemIds.Contains(w.Id)).Select(s => new { s.Id, s.RONo, s.ProductCode, s.ProductName, s.Quantity, s.UomUnit, s.ProductRemark, s.AvalComponentNo }).ToList();
+            var items = DbContext.GarmentLeftoverWarehouseExpenditureAvalItems.Where(w => itemIds.Contains(w.Id)).Select(s => new { s.Id, s.ProductCode, s.ProductName, s.Quantity, s.UomUnit, s.AvalReceiptNo, s.UnitCode }).ToList();
 
             int i = ((page - 1) * size) + 1;
             foreach (var item in join)
@@ -78,46 +76,45 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                 var aval = avals.FirstOrDefault(f => f.Id.Equals(item.avalId));
                 var avalItem = items.FirstOrDefault(f => f.Id.Equals(item.itemId));
 
-                ReceiptAvalMonitoringViewModel vm = new ReceiptAvalMonitoringViewModel();
+                ExpenditureAvalMonitoringViewModel vm = new ExpenditureAvalMonitoringViewModel();
 
                 vm.AvalType = aval.AvalType;
-                vm.ProductCode = aval.AvalType == "AVAL KOMPONEN" ? "-" : avalItem.ProductCode;
+                vm.ProductCode = avalItem.ProductCode;
                 vm.Quantity = avalItem.Quantity;
-                vm.Remark = avalItem.ProductRemark;
-                vm.ProductName = aval.AvalType == "AVAL KOMPONEN" ? "KOMPONEN" : avalItem.ProductName;
-                vm.ReceiptDate = aval.ReceiptDate;
-                vm.ReceiptNoteNo = aval.AvalReceiptNo;
-                vm.Weight = aval.TotalAval;
-                vm.Id = aval.Id;
+                vm.ProductName = avalItem.ProductName;
+                vm.ExpenditureDate = aval.ExpenditureDate;
+                vm.AvalReceiptNo = avalItem.AvalReceiptNo;
                 vm.UomUnit = avalItem.UomUnit;
                 vm.Quantity = avalItem.Quantity;
-                vm.RONo = aval.AvalType != "AVAL BAHAN PENOLONG" ? avalItem.RONo : "-";
-                vm.AvalComponentNo = aval.AvalType != "AVAL KOMPONEN" ? "-" : avalItem.AvalComponentNo;
-                vm.UnitCode = aval.UnitFromCode;
-                vm.Uom = aval.AvalType != "AVAL BAHAN PENOLONG" ? "KG" : "-";
+                vm.UnitCode = avalItem.UnitCode;
+                vm.ExpenditureTo = aval.ExpenditureTo;
+                vm.ExpenditureNo = aval.AvalExpenditureNo;
+                vm.OtherDescription = aval.ExpenditureTo == "JUAL LOKAL" ? aval.BuyerName : aval.OtherDescription;
+                vm.LocalSalesNoteNo = aval.LocalSalesNoteNo;
 
                 vm.index = i;
-                if (listData.Where(a => a.Id == vm.Id).Count() == 0)
+                if (listData.Where(a => a.ExpenditureNo == vm.ExpenditureNo).Count() == 0)
                 {
                     i++;
                 }
                 listData.Add(vm);
-                
+
 
             }
 
             return listData;
         }
 
-        public Tuple<List<ReceiptAvalMonitoringViewModel>, int> GetMonitoring(DateTime? dateFrom, DateTime? dateTo, string type, int page, int size, string Order, int offset)
+        public Tuple<List<ExpenditureAvalMonitoringViewModel>, int> GetMonitoring(DateTime? dateFrom, DateTime? dateTo, string type, int page, int size, string Order, int offset)
         {
-            var Data = GetMonitoringQuery(dateFrom, dateTo,type, offset, page, size);
+            var Data = GetMonitoringQuery(dateFrom, dateTo, type, offset, page, size);
 
 
             Dictionary<string, string> OrderDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(Order);
 
             return Tuple.Create(Data, TotalCountReport);
         }
+
 
         public Tuple<MemoryStream, string> GenerateExcel(DateTime? dateFrom, DateTime? dateTo, string type, int offset)
         {
@@ -126,26 +123,25 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
             DataTable result = new DataTable();
 
             result.Columns.Add(new DataColumn() { ColumnName = "No", DataType = typeof(string) });
-            result.Columns.Add(new DataColumn() { ColumnName = "No Bon Terima", DataType = typeof(string) });
-            result.Columns.Add(new DataColumn() { ColumnName = "Tgl Bon Terima", DataType = typeof(string) });
+            result.Columns.Add(new DataColumn() { ColumnName = "No Bon Keluar", DataType = typeof(string) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Tgl Bon Keluar", DataType = typeof(string) });
             result.Columns.Add(new DataColumn() { ColumnName = "Jenis Aval", DataType = typeof(string) });
-            result.Columns.Add(new DataColumn() { ColumnName = "Berat", DataType = typeof(string) });
-            result.Columns.Add(new DataColumn() { ColumnName = "Satuan", DataType = typeof(string) });
-            result.Columns.Add(new DataColumn() { ColumnName = "Asal Barang", DataType = typeof(string) });
-            result.Columns.Add(new DataColumn() { ColumnName = "Nomor RO", DataType = typeof(string) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Tujuan", DataType = typeof(string) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Keterangan Tujuan", DataType = typeof(string) });
+            result.Columns.Add(new DataColumn() { ColumnName = "No Nota Jual Lokal", DataType = typeof(string) });
+            result.Columns.Add(new DataColumn() { ColumnName = "No Penerimaan", DataType = typeof(string) });
             result.Columns.Add(new DataColumn() { ColumnName = "Kode Barang", DataType = typeof(string) });
             result.Columns.Add(new DataColumn() { ColumnName = "Nama Barang", DataType = typeof(string) });
-            result.Columns.Add(new DataColumn() { ColumnName = "Keterangan", DataType = typeof(string) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Unit Asal", DataType = typeof(string) });
             result.Columns.Add(new DataColumn() { ColumnName = "Qty", DataType = typeof(string) });
-            result.Columns.Add(new DataColumn() { ColumnName = "Satuan Barang", DataType = typeof(string) });
-            result.Columns.Add(new DataColumn() { ColumnName = "No Aval Komponen", DataType = typeof(string) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Satuan", DataType = typeof(string) });
 
             //List<(string, Enum, Enum)> mergeCells = new List<(string, Enum, Enum)>() { };
             Dictionary<string, string> Rowcount = new Dictionary<string, string>();
             int idx = 1;
             var rCount = 0;
             if (Query.ToArray().Count() == 0)
-                result.Rows.Add("", "", "", "", "", "", "", "", "", "", "", "", "", ""); // to allow column name to be generated properly for empty data as template
+                result.Rows.Add("", "", "", "", "", "", "", "", "", "", "", "", ""); // to allow column name to be generated properly for empty data as template
             else
             {
                 //int index = 0;
@@ -153,32 +149,31 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                 foreach (var item in Query.ToList())
                 {
                     idx++;
-                    if (!Rowcount.ContainsKey(item.ReceiptNoteNo))
+                    if (!Rowcount.ContainsKey(item.ExpenditureNo))
                     {
                         rCount = 0;
                         var index = idx;
-                        Rowcount.Add(item.ReceiptNoteNo, index.ToString());
+                        Rowcount.Add(item.ExpenditureNo, index.ToString());
                     }
                     else
                     {
                         rCount += 1;
-                        Rowcount[item.ReceiptNoteNo] = Rowcount[item.ReceiptNoteNo] + "-" + rCount.ToString();
-                        var val = Rowcount[item.ReceiptNoteNo].Split("-");
+                        Rowcount[item.ExpenditureNo] = Rowcount[item.ExpenditureNo] + "-" + rCount.ToString();
+                        var val = Rowcount[item.ExpenditureNo].Split("-");
                         if ((val).Length > 0)
                         {
-                            Rowcount[item.ReceiptNoteNo] = val[0] + "-" + rCount.ToString();
+                            Rowcount[item.ExpenditureNo] = val[0] + "-" + rCount.ToString();
                         }
                     }
-                    string ReceiptDate = item.ReceiptDate == new DateTime(1970, 1, 1) ? "-" : item.ReceiptDate.ToOffset(new TimeSpan(offset, 0, 0)).ToString("dd MMMM yyyy", new CultureInfo("id-ID"));
-                    string Weight = item.Weight == 0 ? "-" : item.Weight.ToString();
+                    string ExpenditureDate = item.ExpenditureDate == new DateTime(1970, 1, 1) ? "-" : item.ExpenditureDate.ToOffset(new TimeSpan(offset, 0, 0)).ToString("dd MMMM yyyy", new CultureInfo("id-ID"));
                     
-                    result.Rows.Add(item.index, item.ReceiptNoteNo, ReceiptDate, item.AvalType, Weight, item.Uom, item.UnitCode
-                        , item.RONo, item.ProductCode, item.ProductName, item.Remark, item.Quantity, item.UomUnit, item.AvalComponentNo);
+                    result.Rows.Add(item.index, item.ExpenditureNo, ExpenditureDate, item.AvalType, item.ExpenditureTo, item.OtherDescription, item.LocalSalesNoteNo
+                        , item.AvalReceiptNo, item.ProductCode, item.ProductName, item.UnitCode, item.Quantity, item.UomUnit);
 
                 }
             }
             ExcelPackage package = new ExcelPackage();
-            var sheet = package.Workbook.Worksheets.Add("Report Penerimaan Gudang Sisa Aval");
+            var sheet = package.Workbook.Worksheets.Add("Report Pengeluaran Gudang Sisa Aval");
             sheet.Cells["A1"].LoadFromDataTable(result, true, OfficeOpenXml.Table.TableStyles.Light16);
 
 
@@ -231,9 +226,10 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
             package.SaveAs(streamExcel);
 
             //Dictionary<string, string> FilterDictionary = new Dictionary<string, string>(JsonConvert.DeserializeObject<Dictionary<string, string>>(filter), StringComparer.OrdinalIgnoreCase);
-            string fileName = string.Concat("Report Penerimaan Gudang Sisa - AVAL ", ".xlsx");
+            string fileName = string.Concat("Report Pengeluaran Gudang Sisa - AVAL ", ".xlsx");
 
             return Tuple.Create(streamExcel, fileName);
         }
+
     }
 }

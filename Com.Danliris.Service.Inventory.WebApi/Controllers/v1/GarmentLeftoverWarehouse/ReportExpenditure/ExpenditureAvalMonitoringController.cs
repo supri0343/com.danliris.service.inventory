@@ -1,5 +1,5 @@
 ﻿using Com.Danliris.Service.Inventory.Lib.Services;
-using Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.Report.Receipt.Aval;
+using Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.Report.Expenditure.Aval;
 using Com.Danliris.Service.Inventory.WebApi.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -8,22 +8,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Com.Danliris.Service.Inventory.WebApi.Controllers.v1.GarmentLeftoverWarehouse.Report
+namespace Com.Danliris.Service.Inventory.WebApi.Controllers.v1.GarmentLeftoverWarehouse.ReportExpenditure
 {
     [Produces("application/json")]
     [ApiVersion("1.0")]
-    [Route("v{version:apiVersion}/garment/leftover-warehouse-receipts/monitoring-avals")]
+    [Route("v{version:apiVersion}/garment/leftover-warehouse-expenditure/monitoring-avals")]
     [Authorize]
-    public class ReceiptAvalMonitoringController : Controller
+    public class ExpenditureAvalMonitoringController : Controller
     {
         private IIdentityService IdentityService;
         private readonly IValidateService ValidateService;
-        private readonly IReceiptAvalMonitoringService Service;
+        private readonly IExpenditureAvalMonitoringService Service;
         private readonly string ApiVersion;
-        //private static readonly string ApiVersion = "1.0";
-        //private MaterialsRequestNoteService materialsRequestNoteService { get; }
 
-        public ReceiptAvalMonitoringController(IIdentityService identityService, IValidateService validateService, IReceiptAvalMonitoringService service)
+        public ExpenditureAvalMonitoringController(IIdentityService identityService, IValidateService validateService, IExpenditureAvalMonitoringService service)
         {
             IdentityService = identityService;
             ValidateService = validateService;
@@ -47,8 +45,8 @@ namespace Com.Danliris.Service.Inventory.WebApi.Controllers.v1.GarmentLeftoverWa
             try
             {
                 VerifyUser();
-                
-                var data = Service.GetMonitoring(dateFrom, dateTo,type, page, size, Order, offset);
+
+                var data = Service.GetMonitoring(dateFrom, dateTo, type, page, size, Order, offset);
 
                 return Ok(new
                 {
@@ -56,7 +54,7 @@ namespace Com.Danliris.Service.Inventory.WebApi.Controllers.v1.GarmentLeftoverWa
                     data = data.Item1,
                     info = new { total = data.Item2 }
                 });
-                
+
             }
             catch (Exception e)
             {
@@ -81,10 +79,10 @@ namespace Com.Danliris.Service.Inventory.WebApi.Controllers.v1.GarmentLeftoverWa
 
                 var generatedExcel = Service.GenerateExcel(dateFrom, dateTo, type, offset);
 
-                string filename = String.Format("Report Penerimaan Gudang Sisa Aval- {0}.xlsx", DateTime.UtcNow.ToString("ddMMyyyy"));
+                string filename = String.Format("Report Pengeluaran Gudang Sisa Aval- {0}.xlsx", DateTime.UtcNow.ToString("ddMMyyyy"));
 
                 return File(generatedExcel.Item1.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", generatedExcel.Item2);
-                
+
 
             }
             catch (Exception e)
