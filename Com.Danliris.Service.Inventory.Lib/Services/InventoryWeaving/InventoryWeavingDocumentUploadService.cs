@@ -42,7 +42,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
         {
            // "BonNo", "Benang", "Anyaman", "Lusi", "Pakan", "Lebar", "JL", "JP", "AL", "AP", "SP", "Grade", "Piece", "Qty", "QtyPiece"
 
-            "BonNo","Benang","Anyaman","Lusi","Pakan","Lebar","JL","JP","AL","AP","SP","Grade","Piece","Qty","QtyPiece"
+            "BonNo","Tanggal","Benang","Anyaman","Lusi","Pakan","Lebar","JL","JP","AL","AP","SP","Grade","Piece","Qty","QtyPiece"
         };
 
         public ReadResponse<InventoryWeavingDocument> Read(int page, int size, string order, string keyword, string filter)
@@ -99,20 +99,21 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
             public InventoryWeavingDocumentMap()
             {
                 Map(p => p.ReferenceNo).Index(0);
-                Map(p => p.MaterialName).Index(1);
-                Map(p => p.WovenType).Index(2);
-                Map(p => p.Yarn1).Index(3);
-                Map(p => p.Yarn2).Index(4);
-                Map(p => p.Width).Index(5);
-                Map(p => p.YarnType1).Index(6);
-                Map(p => p.YarnType2).Index(7);
-                Map(p => p.YarnOrigin1).Index(8);
-                Map(p => p.YarnOrigin2).Index(9);
-                Map(p => p.ProductionOrderNo).Index(10);
-                Map(p => p.Grade).Index(11);
-                Map(p => p.Piece).Index(12).TypeConverter<StringConverter>();
-                Map(p => p.Qty).Index(13).TypeConverter<StringConverter>();
-                Map(p => p.QtyPiece).Index(14).TypeConverter<StringConverter>();
+                Map(p => p.Date).Index(1);
+                Map(p => p.MaterialName).Index(2);
+                Map(p => p.WovenType).Index(3);
+                Map(p => p.Yarn1).Index(4);
+                Map(p => p.Yarn2).Index(5);
+                Map(p => p.Width).Index(6);
+                Map(p => p.YarnType1).Index(7);
+                Map(p => p.YarnType2).Index(8);
+                Map(p => p.YarnOrigin1).Index(9);
+                Map(p => p.YarnOrigin2).Index(10);
+                Map(p => p.ProductionOrderNo).Index(11);
+                Map(p => p.Grade).Index(12);
+                Map(p => p.Piece).Index(13).TypeConverter<StringConverter>();
+                Map(p => p.Qty).Index(14).TypeConverter<StringConverter>();
+                Map(p => p.QtyPiece).Index(15).TypeConverter<StringConverter>();
 
 
             }
@@ -133,7 +134,10 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
                     ErrorMessage = string.Concat(ErrorMessage, "No Bon Tidak Boleh Kosong tidak boleh kosong, ");
                 }
 
-
+                if (productVM.Date == null)
+                {
+                    ErrorMessage = string.Concat(ErrorMessage, "No Bon Tidak Boleh Kosong tidak boleh kosong, ");
+                }
 
                 if (string.IsNullOrWhiteSpace(productVM.ProductionOrderNo))
                 {
@@ -249,6 +253,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
                     var Error = new ExpandoObject() as IDictionary<string, object>;
 
                     Error.Add("BonNo", productVM.ReferenceNo);
+                    Error.Add("Tanggal", productVM.Date);
                     Error.Add("Benang", productVM.MaterialName);
                     Error.Add("Lusi", productVM.Yarn1);
                     Error.Add("Pakan", productVM.Yarn2);
@@ -324,44 +329,60 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
         }
 
 
-        public async Task<InventoryWeavingDocumentViewModel> MapToViewModel(List<InventoryWeavingDocumentCsvViewModel> csv, DateTimeOffset date, string from)
+        //public async Task<InventoryWeavingDocumentViewModel> MapToViewModel(List<InventoryWeavingDocumentCsvViewModel> csv, DateTimeOffset date, string from)
+        public async Task<InventoryWeavingDocumentViewModel> MapToViewModel(List<InventoryWeavingDocumentCsvViewModel> csv, string from)
         {
             List<InventoryWeavingDocumentItemViewModel> DocsItems = new List<InventoryWeavingDocumentItemViewModel>();
             //var itemx = GetItem();
 
             foreach (var i in csv)
             {
-                var constructonC = i.MaterialName + "  " + i.WovenType + "  " + i.Yarn1 + "  " + i.Yarn2 + "  " + i.Width + "  "
-                                   + i.YarnType1 + "  " + i.YarnType2 + "  " + i.YarnOrigin1 + "  " + i.YarnOrigin2;
-                DocsItems.Add(new InventoryWeavingDocumentItemViewModel
-                {
-                    productOrderNo = i.ProductionOrderNo,
-                    referenceNo = i.ReferenceNo,
-                    construction = constructonC,
-                    grade = i.Grade,
-                    piece = i.Piece,
-                    materialName = i.MaterialName,
-                    wovenType = i.WovenType,
-                    width = i.Width,
-                    yarn1 = i.Yarn1,
-                    yarn2 = i.Yarn2,
-                    yarnType1 = i.YarnType1,
-                    yarnType2 = i.YarnType2,
-                    yarnOrigin1 = i.YarnOrigin1,
-                    yarnOrigin2 = i.YarnOrigin2,
-                    uomId = 35,
-                    uomUnit = "MTR",
-                    quantity = Convert.ToDouble(i.Qty),
-                    quantityPiece = Convert.ToDouble(i.QtyPiece)
 
-                });
+                var MaterialName =  i.MaterialName.Trim();
+                var WovenType = i.WovenType.Trim();
+                
+                var Yarn1 = i.Yarn1.Trim();
+                var Yarn2 = i.Yarn2.Trim();
+                var Width = i.Width.Trim();
+                var YarnType1 = i.YarnType1.Trim();
+                var YarnType2 = i.YarnType2.Trim();
+                var YarnOrigin1 = i.YarnOrigin1.Trim();
+                var YarnOrigin2 = i.YarnOrigin2.Trim();
+
+                var constructonC = MaterialName + "  " + WovenType + "  " + Yarn1 + "  " + Yarn2 + "  " + Width + "  "
+                                   + YarnType1 + "  " + YarnType2 + "  " + YarnOrigin1 + "  " + YarnOrigin2;
+
+                    DocsItems.Add(new InventoryWeavingDocumentItemViewModel
+                    {
+                        productOrderNo = i.ProductionOrderNo,
+                        referenceNo = i.ReferenceNo,
+
+                        construction = constructonC,
+                        grade = i.Grade,
+                        piece = i.Piece,
+                        materialName = MaterialName,
+                        wovenType = WovenType,
+                        width = Width,
+                        yarn1 = Yarn1,
+                        yarn2 = Yarn2,
+                        yarnType1 = YarnType1,
+                        yarnType2 = YarnType2,
+                        yarnOrigin1 = YarnOrigin1,
+                        yarnOrigin2 = YarnOrigin2,
+                        uomId = 35,
+                        uomUnit = "MTR",
+                        quantity = Convert.ToDouble(i.Qty),
+                        quantityPiece = Convert.ToDouble(i.QtyPiece)
+                       
+                    });
+                
 
             }
 
             InventoryWeavingDocumentViewModel sPKDocsViews = new InventoryWeavingDocumentViewModel
             {
-                bonNo = GenerateBon(from, date),
-                date = date,
+                bonNo = GenerateBon(from, csv.FirstOrDefault().Date),
+                date = csv.FirstOrDefault().Date,
                 bonType = from == "PRODUKSI" ? "PRODUKSI" : from == "RETUR PACKING" ? "PACKING"
                           : from == "RETUR FINISHING" ? "FINISHING" : from == "RETUR PRINTING" ? "PRINTING"
                           : from == "RECHEKING" ? "RECHEKING" : "LAIN-LAIN",
@@ -535,23 +556,6 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
                    {
                       "date", "bonNo", "construction", "grade", "piece", "quantity", "quantityPiece"
                    };
-             /*   if (dateFrom.HasValue && dateTo.HasValue && bonType == null)
-                {
-                    Query = Query.Where(s => dateFrom.Value.Date <= s.Date.ToOffset(new TimeSpan(offset, 0, 0)).Date &&
-                                s.Date.ToOffset(new TimeSpan(offset, 0, 0)).Date <= dateTo.Value.Date);
-                }
-                else if (!dateFrom.HasValue && dateTo.HasValue && bonType == null)
-                {
-                    Query = Query.Where(s => s.Date.ToOffset(new TimeSpan(offset, 0, 0)).Date <= dateTo.Value.Date);
-                }
-                else if (dateFrom.HasValue && !dateTo.HasValue && bonType == null)
-                {
-                    Query = Query.Where(s => dateFrom.Value.Date <= s.Date.ToOffset(new TimeSpan(offset, 0, 0)).Date);
-                }
-                else if (!dateFrom.HasValue && !dateTo.HasValue && bonType !=null)
-                {
-                    Query = Query.Where(s => s.BonType == bonType);
-                } */
 
             DateTimeOffset DateFrom = dateFrom == null ? new DateTime(1970, 1, 1) : (DateTimeOffset)dateFrom;
             DateTimeOffset DateTo = dateTo == null ? DateTime.Now : (DateTimeOffset)dateTo;

@@ -115,6 +115,7 @@ namespace Com.Danliris.Service.Inventory.WebApi
                 .AddTransient<IInventoryWeavingDocumentUploadService, InventoryWeavingDocumentUploadService>()
                 .AddTransient<IInventoryWeavingMovementService, InventoryWeavingMovementService>()
                 .AddTransient<IExpenditureAvalMonitoringService, ExpenditureAvalMonitoringService>()
+                .AddTransient<IInventoryWeavingDocumentOutService, InventoryWeavingDocumentOutService>()
                 .AddScoped<IIdentityService, IdentityService>()
                 .AddScoped<IValidateService, ValidateService>()
                 .AddScoped<IHttpService, HttpService>()

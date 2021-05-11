@@ -47,8 +47,6 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.Inventory
                 {
                     item.FlagForCreate(IdentityService.Username, UserAgent);
                     item.FlagForUpdate(IdentityService.Username, UserAgent);
-
-
                 }
 
                 DbSet.Add(model);
