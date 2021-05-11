@@ -311,20 +311,19 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.S
 
             if (type == "FABRIC")
             {
-                var QueryBalance = from a in (from data in DbContext.GarmentLeftoverWarehouseStocks
-                                              where data._IsDeleted == false && data.ReferenceType.ToString() == "FABRIC"
-                                         
-                                         && data.UnitId == UnitId
-                                              select new { data.UnitCode, data._CreatedUtc, data.Id })
+                var QueryBalance = from a in (from data in DbContext.GarmentLeftoverWarehouseBalanceStocks
+                                              where data._IsDeleted == false && data.TypeOfGoods.ToString() == "FABRIC"
+                                              select new { data._CreatedUtc, data.Id })
                                    join b in DbContext.GarmentLeftoverWarehouseBalanceStocksItems on a.Id equals b.BalanceStockId
+                                   where b.UnitId == UnitId
                                    select new GarmentLeftoverWarehouseStockMonitoringViewModel
                                    {
                                        PONo = b.PONo,
-                                       BeginingbalanceQty =  b.Quantity,
+                                       BeginingbalanceQty = b.Quantity,
                                        QuantityReceipt = 0,
                                        QuantityExpend = 0,
                                        UomUnit = b.UomUnit,
-                                       UnitCode = a.UnitCode,
+                                       UnitCode = b.UnitCode,
                                        ProductCode = "",
                                        ProductRemark = "",
                                        ProductName = "",
@@ -356,10 +355,11 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.S
                 var QueryExpenditure = from a in (from data in DbContext.GarmentLeftoverWarehouseExpenditureFabrics
                                                   where data._IsDeleted == false
                                              && data.ExpenditureDate.AddHours(offset).Date <= DateTo.Date
-                                           
+
                                                   select new { data.UnitExpenditureCode, data.ExpenditureDate, data.Id })
-                                       join b in (from expend in DbContext.GarmentLeftoverWarehouseExpenditureFabricItems where expend.UnitId == UnitId
-                                                  select new { expend.UomUnit,expend.PONo,expend.Quantity,expend.UnitCode,expend.ExpenditureId}) on a.Id equals b.ExpenditureId
+                                       join b in (from expend in DbContext.GarmentLeftoverWarehouseExpenditureFabricItems
+                                                  where expend.UnitId == UnitId
+                                                  select new { expend.UomUnit, expend.PONo, expend.Quantity, expend.UnitCode, expend.ExpenditureId }) on a.Id equals b.ExpenditureId
                                        select new GarmentLeftoverWarehouseStockMonitoringViewModel
                                        {
                                            PONo = b.PONo,
@@ -375,7 +375,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.S
                                            EndbalanceQty = 0,
                                            index = 0
                                        };
-                var Query = QueryReceipt.Union(QueryExpenditure);
+                var Query = QueryReceipt.Union(QueryExpenditure).Union(QueryBalance);
                 var querySum = Query.ToList()
                     .GroupBy(x => new { x.PONo, x.UnitCode, x.UomUnit, x.index }, (key, group) => new
                     {
@@ -408,15 +408,17 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.S
                     garmentLeftoverWarehouseStockMonitoringViewModel.Add(garmentLeftover);
                 }
             }
-            else if(type == "Barang Jadi")
+            else if (type == "Barang Jadi")
             {
 
-                var QueryBalance = from a in (from data in DbContext.GarmentLeftoverWarehouseStocks
-                                              where data._IsDeleted == false && data.ReferenceType.ToString() == "FINISHED_GOODS"
-                                         
-                                         && data.UnitId == UnitId
-                                              select new { data.UnitCode, data._CreatedUtc, data.Id })
+                var QueryBalance = from a in (from data in DbContext.GarmentLeftoverWarehouseBalanceStocks
+                                              where data._IsDeleted == false && data.TypeOfGoods.ToString() == "BARANG JADI"
+
+
+                                              select new { data._CreatedUtc, data.Id })
                                    join b in DbContext.GarmentLeftoverWarehouseBalanceStocksItems on a.Id equals b.BalanceStockId
+                                   where b.UnitId == UnitId
+
                                    select new GarmentLeftoverWarehouseStockMonitoringViewModel
                                    {
                                        PONo = b.PONo,
@@ -424,7 +426,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.S
                                        QuantityReceipt = 0,
                                        QuantityExpend = 0,
                                        UomUnit = b.UomUnit,
-                                       UnitCode = a.UnitCode,
+                                       UnitCode = b.UnitCode,
                                        ProductCode = "",
                                        ProductRemark = "",
                                        ProductName = "",
@@ -456,12 +458,12 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.S
                 var QueryExpenditure = from a in (from data in DbContext.GarmentLeftoverWarehouseExpenditureFinishedGoods
                                                   where data._IsDeleted == false
                                              && data.ExpenditureDate.AddHours(offset).Date <= DateTo.Date
-                                            
-                                                  select new {  data.ExpenditureDate, data.Id})
+
+                                                  select new { data.ExpenditureDate, data.Id })
                                        join b in (from expend in DbContext.GarmentLeftoverWarehouseExpenditureFinishedGoodItems
-                                                  where expend.UnitId== UnitId
-                                                  select new { expend.FinishedGoodExpenditureId,expend.UnitCode,expend.ExpenditureQuantity,expend.RONo}
-                                                  )on a.Id equals b.FinishedGoodExpenditureId
+                                                  where expend.UnitId == UnitId
+                                                  select new { expend.FinishedGoodExpenditureId, expend.UnitCode, expend.ExpenditureQuantity, expend.RONo }
+                                                  ) on a.Id equals b.FinishedGoodExpenditureId
                                        select new GarmentLeftoverWarehouseStockMonitoringViewModel
                                        {
                                            RONo = b.RONo,
@@ -469,7 +471,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.S
                                            QuantityReceipt = 0,
                                            QuantityExpend = a.ExpenditureDate.AddHours(offset) >= DateFrom.Date ? b.ExpenditureQuantity : 0,
                                            UomUnit = "PCS",
-                                           UnitCode =b.UnitCode ,
+                                           UnitCode = b.UnitCode,
                                            ProductCode = "",
                                            ProductRemark = "",
                                            ProductName = "",
@@ -477,7 +479,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.S
                                            EndbalanceQty = 0,
                                            index = 0
                                        };
-                var Query = QueryReceipt.Union(QueryExpenditure);
+                var Query = QueryReceipt.Union(QueryExpenditure).Union(QueryBalance);
                 var querySum = Query.ToList()
                     .GroupBy(x => new { x.RONo, x.UnitCode, x.UomUnit, x.index }, (key, group) => new
                     {
@@ -576,7 +578,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.S
                                            EndbalanceQty = 0,
                                            index = 0
                                        };
-                var Query = QueryReceipt.Union(QueryExpenditure);
+                var Query = QueryReceipt.Union(QueryExpenditure).Union(QueryBalance);
                 var querySum = Query.ToList()
                     .GroupBy(x => new { x.PONo, x.UnitCode, x.UomUnit, x.index }, (key, group) => new
                     {
