@@ -299,7 +299,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.S
             }
         }
 
-        
+        #region REPORT
         public IQueryable<GarmentLeftoverWarehouseStockMonitoringViewModel> GetReportQuery(DateTime? dateFrom, DateTime? dateTo,int UnitId, string type,int offset)
         {
 
@@ -809,6 +809,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.S
             });
             return Tuple.Create(Data, TotalData);
         }
+        #endregion
     }
 
 }

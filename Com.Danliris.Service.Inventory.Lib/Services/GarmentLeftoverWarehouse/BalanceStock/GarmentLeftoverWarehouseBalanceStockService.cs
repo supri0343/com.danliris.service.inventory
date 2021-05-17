@@ -242,7 +242,11 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.B
                 PONo = item.PONo,
                 UomId = item.UomId,
                 UomUnit = item.UomUnit,
-                Quantity = item.Quantity
+                Quantity = item.Quantity,
+                RONo= item.RONo,
+                LeftoverComodityCode=item.LeftoverComodityCode,
+                LeftoverComodityId=item.LeftoverComodityId,
+                LeftoverComodityName=item.LeftoverComodityName
             };
 
             return stock;
