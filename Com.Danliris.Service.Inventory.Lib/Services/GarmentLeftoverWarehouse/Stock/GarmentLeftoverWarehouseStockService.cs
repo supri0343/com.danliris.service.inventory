@@ -421,7 +421,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.S
 
                                    select new GarmentLeftoverWarehouseStockMonitoringViewModel
                                    {
-                                       PONo = b.PONo,
+                                       RO = b.RONo,
                                        BeginingbalanceQty = b.Quantity,
                                        QuantityReceipt = 0,
                                        QuantityExpend = 0,
@@ -442,7 +442,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.S
                                    join b in DbContext.GarmentLeftoverWarehouseReceiptFinishedGoodItems on a.Id equals b.FinishedGoodReceiptId
                                    select new GarmentLeftoverWarehouseStockMonitoringViewModel
                                    {
-                                       RONo = b.RONo,
+                                       RO = b.RONo,
                                        BeginingbalanceQty = a.ReceiptDate.AddHours(offset) < DateFrom.Date ? b.Quantity : 0,
                                        QuantityReceipt = a.ReceiptDate.AddHours(offset) >= DateFrom.Date ? b.Quantity : 0,
                                        QuantityExpend = 0,
@@ -466,7 +466,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.S
                                                   ) on a.Id equals b.FinishedGoodExpenditureId
                                        select new GarmentLeftoverWarehouseStockMonitoringViewModel
                                        {
-                                           RONo = b.RONo,
+                                           RO = b.RONo,
                                            BeginingbalanceQty = a.ExpenditureDate.AddHours(offset) < DateFrom.Date ? -b.ExpenditureQuantity : 0,
                                            QuantityReceipt = 0,
                                            QuantityExpend = a.ExpenditureDate.AddHours(offset) >= DateFrom.Date ? b.ExpenditureQuantity : 0,
@@ -481,9 +481,9 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.S
                                        };
                 var Query = QueryReceipt.Union(QueryExpenditure).Union(QueryBalance);
                 var querySum = Query.ToList()
-                    .GroupBy(x => new { x.RONo, x.UnitCode, x.UomUnit, x.index }, (key, group) => new
+                    .GroupBy(x => new { x.RO, x.UnitCode, x.UomUnit, x.index }, (key, group) => new
                     {
-                        rono = key.RONo,
+                        rono = key.RO,
                         begining = group.Sum(s => s.BeginingbalanceQty),
                         expend = group.Sum(s => s.QuantityExpend),
                         receipt = group.Sum(s => s.QuantityReceipt),
@@ -497,7 +497,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.S
                 {
                     GarmentLeftoverWarehouseStockMonitoringViewModel garmentLeftover = new GarmentLeftoverWarehouseStockMonitoringViewModel
                     {
-                        RONo = data.rono,
+                        RO = data.rono,
                         BeginingbalanceQty = data.begining,
                         QuantityReceipt = data.receipt,
                         QuantityExpend = data.expend,
@@ -772,7 +772,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.S
                     index++;
                     //DateTimeOffset date = item.date ?? new DateTime(1970, 1, 1);
                     //string dateString = date == new DateTime(1970, 1, 1) ? "-" : date.ToOffset(new TimeSpan(offset, 0, 0)).ToString("dd MMM yyyy", new CultureInfo("id-ID"));
-                    result.Rows.Add(index, item.UnitCode, item.RONo, item.ProductRemark, item.BeginingbalanceQty, item.QuantityReceipt, item.QuantityExpend, item.EndbalanceQty, item.UomUnit);
+                    result.Rows.Add(index, item.UnitCode, item.RO, item.ProductRemark, item.BeginingbalanceQty, item.QuantityReceipt, item.QuantityExpend, item.EndbalanceQty, item.UomUnit);
                 }
             }
 
