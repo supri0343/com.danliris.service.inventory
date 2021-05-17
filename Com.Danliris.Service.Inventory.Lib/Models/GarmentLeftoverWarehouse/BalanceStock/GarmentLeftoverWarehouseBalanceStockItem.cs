@@ -21,6 +21,9 @@ namespace Com.Danliris.Service.Inventory.Lib.Models.GarmentLeftoverWarehouse.Bal
         public string ProductName { get; set; }
         public string ProductRemark { get; set; }
 
+        public string Yarn { get; set; }
+        public string Width { get; set; }
+
         public string Composition { get; set; }
         public string Construction { get; set; }
         public int Quantity { get; set; }

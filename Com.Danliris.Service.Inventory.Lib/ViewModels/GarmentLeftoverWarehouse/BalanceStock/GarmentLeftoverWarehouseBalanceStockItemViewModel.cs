@@ -22,5 +22,8 @@ namespace Com.Danliris.Service.Inventory.Lib.ViewModels.GarmentLeftoverWarehouse
         public UomViewModel Uom { get; set; }
 
         public LeftoverComodityViewModel LeftoverComodity { get; set; }
+
+        public string Yarn { get; set; }
+        public string Width { get; set; }
     }
 }
