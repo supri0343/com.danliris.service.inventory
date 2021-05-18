@@ -150,5 +150,31 @@ namespace Com.Danliris.Service.Inventory.WebApi.Controllers.v1.WeavingInventory
             }
         }
 
+        [HttpGet("download")]
+        public IActionResult DownloadTemplate( DateTime dateFrom, DateTime dateTo, [FromHeader(Name = "x-timezone-offset")] string timezone, string bonType)
+        {
+            try
+            {
+                byte[] csvInBytes;
+                int clientTimeZoneOffset = Convert.ToInt32(timezone);
+                var csv = Service.DownloadCSVOut( dateFrom, dateTo, clientTimeZoneOffset, bonType);
+
+                //string fileName = "Chart of Account Template.csv";
+                string fileName = "Export CSV To area" + bonType + " From Date " + dateFrom.ToString("MM/dd/yyyy") + " - " + dateTo.ToString("MM/dd/yyyy")+".csv";
+
+                csvInBytes = csv.ToArray();
+
+                var file = File(csvInBytes, "text/csv", fileName);
+                return file;
+            }
+            catch (Exception e)
+            {
+                Dictionary<string, object> Result =
+                  new ResultFormatter(ApiVersion, General.INTERNAL_ERROR_STATUS_CODE, e.Message)
+                  .Fail();
+                return StatusCode(General.INTERNAL_ERROR_STATUS_CODE, Result);
+            }
+        }
+
     }
 }
