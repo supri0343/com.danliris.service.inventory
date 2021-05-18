@@ -3,11 +3,13 @@ using Com.Danliris.Service.Inventory.Lib.Models.InventoryWeavingModel;
 using Com.Danliris.Service.Inventory.Lib.ViewModels.InventoryWeavingViewModel;
 using Com.Moonlay.Models;
 using Com.Moonlay.NetCore.Lib;
+using CsvHelper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -533,6 +535,87 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
                 }).ToList()
             };
             return vm;
+        }
+       
+
+        public MemoryStream DownloadCSVOut( DateTime dateFrom, DateTime dateTo, int offset, string bonType)
+        {
+            var data = GetQuery(dateFrom, dateTo, offset, bonType);
+            
+            using (MemoryStream stream = new MemoryStream())
+            {
+                using (var streamWriter = new StreamWriter(stream))
+                {
+
+                    using (var csvWriter = new CsvWriter(streamWriter))
+                    {
+                        //foreach (var item in CsvHeader)
+                        //{
+                        //    csvWriter.WriteField(item);
+                        //}
+                        //csvWriter.NextRecord();
+
+                        //InventoryWeavingDocumentCsvOutViewModel result = new InventoryWeavingDocumentCsvOutViewModel();
+
+
+                       
+                       
+                        csvWriter.WriteRecords(data);
+                        
+                        
+                        
+                    }
+                }
+                return stream;
+            }
+        }
+
+        public List<string> CsvHeader { get; } = new List<string>()
+        {
+           // "BonNo", "Benang", "Anyaman", "Lusi", "Pakan", "Lebar", "JL", "JP", "AL", "AP", "SP", "Grade", "Piece", "Qty", "QtyPiece"
+
+            "BonNo","Tanggal","Benang","Anyaman","Lusi","Pakan","Lebar","JL","JP","AL","AP","Grade","Piece","Qty","QtyPiece"
+        };
+
+        public IQueryable<InventoryWeavingDocumentCsvOutViewModel> GetQuery(DateTime? dateFrom, DateTime? dateTo, int offset, string bonType)
+        {
+            //int offset = 7;
+            DateTimeOffset DateFrom = dateFrom == null ? new DateTime(1970, 1, 1) : (DateTimeOffset)dateFrom;
+            DateTimeOffset DateTo = dateTo == null ? DateTime.Now : (DateTimeOffset)dateTo;
+            var query = (from a in DbSetDoc 
+                        join b in DbSetItem on a.Id equals b.InventoryWeavingDocumentId
+                        where a._IsDeleted == false
+                            && b._IsDeleted == false
+                            && a.BonType == (string.IsNullOrWhiteSpace(bonType) ? a.BonType : bonType)
+                            && a.Type == "OUT"
+                              && a.Date.ToOffset(new TimeSpan(offset, 0, 0)).Date >= DateFrom.Date
+                             && a.Date.ToOffset(new TimeSpan(offset, 0, 0)).Date <= DateTo.Date
+                        orderby a.Date, a._CreatedUtc ascending
+                        select new InventoryWeavingDocumentCsvOutViewModel
+                        {
+                            BonNo = a.BonNo,
+                            Tanggal = a.Date.ToString("MM/dd/yyyy"),
+                            //Construction = b.Construction,
+                            Benang = b.MaterialName.Trim(),
+                            Anyaman = b.WovenType.Trim(),
+                            
+                            Lusi = b.Yarn1.Trim(),
+                            Pakan = b.Yarn2.Trim(),
+                            Lebar = b.Width.Trim(),
+                            JP = b.YarnType1.Trim(),
+                            JL = b.YarnType2.Trim(),
+                            
+                            AL = b.YarnOrigin1.Trim(),
+                            AP = b.YarnOrigin2.Trim(),
+                            Grade = b.Grade.Trim(),
+                            Piece = b.Piece,
+                            Qty = b.Quantity,
+                            QtyPiece = b.QuantityPiece,
+
+                        });
+
+            return query;
+
         }
     }
 }
