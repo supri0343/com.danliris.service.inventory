@@ -81,6 +81,12 @@ namespace Com.Danliris.Service.Inventory.Lib.ViewModels.GarmentLeftoverWarehouse
                         errorCount++;
                     }
 
+                    if (item.Product == null)
+                    {
+                        errorItem["Product"] = "Produk tidak boleh kosong";
+                        errorCount++;
+                    }
+
                     if (item.PONo == null)
                     {
                         errorItem["PONo"] = "PONo tidak boleh kosong";

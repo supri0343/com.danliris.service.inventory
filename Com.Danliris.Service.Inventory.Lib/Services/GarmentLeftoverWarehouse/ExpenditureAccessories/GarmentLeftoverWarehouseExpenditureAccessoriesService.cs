@@ -80,6 +80,13 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.E
                     modelItem.UomUnit = viewModelItem.Uom.Unit;
                 }
 
+                if (viewModelItem.Product != null)
+                {
+                    modelItem.ProductId = long.Parse(viewModelItem.Product.Id);
+                    modelItem.ProductCode = viewModelItem.Product.Code;
+                    modelItem.ProductName = viewModelItem.Product.Name;
+                }
+
                 model.Items.Add(modelItem);
             }
 
@@ -124,6 +131,13 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.E
                     {
                         Id = modelItem.UomId.ToString(),
                         Unit = modelItem.UomUnit
+                    };
+
+                    viewModelItem.Product = new ProductViewModel
+                    {
+                        Id = modelItem.ProductId.ToString(),
+                        Code = modelItem.ProductCode,
+                        Name = modelItem.ProductName
                     };
 
                     viewModel.Items.Add(viewModelItem);
@@ -366,7 +380,10 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.E
                 PONo = item.PONo,
                 UomId = item.UomId,
                 UomUnit = item.UomUnit,
-                Quantity = item.Quantity
+                Quantity = item.Quantity,
+                ProductCode = item.ProductCode,
+                ProductId = item.ProductId,
+                ProductName = item.ProductName
             };
 
             return stock;
