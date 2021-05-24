@@ -243,7 +243,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.E
                 {
                     modelItem.ProductId = long.Parse(viewModelItem.Product.Id);
                     modelItem.ProductName = viewModelItem.Product.Name;
-                    modelItem.ProductCode = viewModelItem.Product.Name;
+                    modelItem.ProductCode = viewModelItem.Product.Code;
                 }
 
                 if (viewModelItem.Uom != null)

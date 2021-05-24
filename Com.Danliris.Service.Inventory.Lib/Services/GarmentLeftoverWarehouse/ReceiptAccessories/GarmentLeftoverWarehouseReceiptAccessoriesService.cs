@@ -71,7 +71,10 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                             PONo = item.POSerialNumber,
                             UomId = item.UomUnitId,
                             UomUnit = item.UomUnit,
-                            Quantity = item.Quantity
+                            Quantity = item.Quantity,
+                            ProductCode=item.ProductCode,
+                            ProductId=item.ProductId,
+                            ProductName=item.ProductName
                         };
                         await StockService.StockIn(stock, model.InvoiceNoReceive, model.Id, item.Id);
                     }
@@ -118,7 +121,10 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                             PONo = item.POSerialNumber,
                             UomId = item.UomUnitId,
                             UomUnit = item.UomUnit,
-                            Quantity = item.Quantity
+                            Quantity = item.Quantity,
+                            ProductCode = item.ProductCode,
+                            ProductId = item.ProductId,
+                            ProductName = item.ProductName
                         };
                         await StockService.StockOut(stock, model.InvoiceNoReceive, model.Id, item.Id);
                     }

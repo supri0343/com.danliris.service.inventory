@@ -4,14 +4,16 @@ using Com.Danliris.Service.Inventory.Lib;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Com.Danliris.Service.Inventory.Lib.Migrations
 {
     [DbContext(typeof(InventoryDbContext))]
-    partial class InventoryDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210517084247_update_GarmentLeftoverWarehouseBalanceStockItems_Remove_StockId")]
+    partial class update_GarmentLeftoverWarehouseBalanceStockItems_Remove_StockId
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -774,14 +776,6 @@ namespace Com.Danliris.Service.Inventory.Lib.Migrations
 
                     b.Property<string>("PONo")
                         .HasMaxLength(25);
-
-                    b.Property<string>("ProductCode")
-                        .HasMaxLength(50);
-
-                    b.Property<long>("ProductId");
-
-                    b.Property<string>("ProductName")
-                        .HasMaxLength(100);
 
                     b.Property<double>("Quantity");
 

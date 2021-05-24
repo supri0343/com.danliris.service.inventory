@@ -105,7 +105,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.B
                 {
                     modelItem.ProductId = long.Parse(viewModelItem.Product.Id);
                     modelItem.ProductName = viewModelItem.Product.Name;
-                    modelItem.ProductCode = viewModelItem.Product.Name;
+                    modelItem.ProductCode = viewModelItem.Product.Code;
                 }
 
                 if (viewModelItem.Uom != null)
@@ -242,7 +242,14 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.B
                 PONo = item.PONo,
                 UomId = item.UomId,
                 UomUnit = item.UomUnit,
-                Quantity = item.Quantity
+                Quantity = item.Quantity,
+                RONo= item.RONo,
+                LeftoverComodityCode=item.LeftoverComodityCode,
+                LeftoverComodityId=item.LeftoverComodityId,
+                LeftoverComodityName=item.LeftoverComodityName,
+                ProductCode = item.ProductCode,
+                ProductId = item.ProductId,
+                ProductName = item.ProductName
             };
 
             return stock;

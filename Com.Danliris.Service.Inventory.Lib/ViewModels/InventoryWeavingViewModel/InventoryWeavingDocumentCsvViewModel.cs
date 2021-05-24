@@ -8,6 +8,7 @@ namespace Com.Danliris.Service.Inventory.Lib.ViewModels.InventoryWeavingViewMode
     public class InventoryWeavingDocumentCsvViewModel: BasicViewModel
     {
         public string ReferenceNo { get; set; }
+        public DateTime Date { get; set; }
         public string MaterialName { get; set; }
         public string WovenType { get; set; }
         public string Width { get; set; }
@@ -22,6 +23,7 @@ namespace Com.Danliris.Service.Inventory.Lib.ViewModels.InventoryWeavingViewMode
         public dynamic Piece { get; set; }
         public dynamic Qty { get; set; }
         public dynamic QtyPiece { get; set; }
+        public string Construction { get; set; }
 
 
 

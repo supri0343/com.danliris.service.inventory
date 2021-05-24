@@ -23,6 +23,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Configs.GarmentLeftoverWarehouse.Ba
             builder.Property(p => p.ProductRemark).HasMaxLength(3000);
             builder.Property(p => p.Composition).HasMaxLength(255);
             builder.Property(p => p.Construction).HasMaxLength(255);
+            builder.Property(p => p.Yarn).HasMaxLength(500);
+            builder.Property(p => p.Width).HasMaxLength(500);
         }
     }
 }
