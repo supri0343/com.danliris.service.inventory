@@ -270,7 +270,9 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
                         },
                         ProductRemark = "Remark",
                         FabricRemark = "FabricRemark",
+                        Composition = "Composition",
                         Quantity = 1,
+                        BasicPrice = 1,
                         Uom = new UomViewModel
                         {
                             Id = "1",
