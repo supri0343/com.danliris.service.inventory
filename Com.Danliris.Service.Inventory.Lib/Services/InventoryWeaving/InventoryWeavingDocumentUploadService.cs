@@ -61,7 +61,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
                 "Id", "date", "bonNo", "bonType",  "storageCode", "storageId", "storageName", "type", "_LastModifiedUtc"
             };
 
-            Query = Query
+            Query = Query.Where( s => s.Type == "IN")
                 .Select(s => new InventoryWeavingDocument
                 {
                     Id = s.Id,
@@ -338,7 +338,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
             foreach (var i in csv)
             {
 
-                var MaterialName =  i.MaterialName.Trim();
+                //var MaterialName =  i.MaterialName.TrimEnd().Replace(" ", String.Empty);
+                var MaterialName = i.MaterialName.Trim();
                 var WovenType = i.WovenType.Trim();
                 
                 var Yarn1 = i.Yarn1.Trim();
@@ -588,6 +589,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
 
             return new ListResult<InventoryWeavingItemViewModel>(data.ToList(), page, size, data.Count());
             
-           } 
-    }   
+           }
+
+        }   
 }
