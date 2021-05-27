@@ -69,7 +69,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
             var fabricIds = queryResult.Select(s => s.fabricId).Distinct().ToList();
             var fabrics = DbContext.GarmentLeftoverWarehouseReceiptFabrics.Where(w => fabricIds.Contains(w.Id)).Select(s => new { s.Id, s.ReceiptNoteNo, s.ReceiptDate, s.UnitFromCode, s.UENNo }).ToList();
             var itemIds = queryResult.Select(s => s.itemId).Distinct().ToList();
-            var items = DbContext.GarmentLeftoverWarehouseReceiptFabricItems.Where(w => itemIds.Contains(w.Id)).Select(s => new { s.Id, s.POSerialNumber, s.ProductCode, s.ProductName, s.Quantity, s.UomUnit, s.ProductRemark, s.FabricRemark }).ToList();
+            var items = DbContext.GarmentLeftoverWarehouseReceiptFabricItems.Where(w => itemIds.Contains(w.Id)).Select(s => new { s.Id, s.POSerialNumber, s.ProductCode, s.ProductName, s.Quantity, s.UomUnit, s.ProductRemark, s.FabricRemark, s.Composition }).ToList();
 
             int i = ((page - 1) * size) + 1;
             foreach (var item in queryResult)
@@ -90,6 +90,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                 vm.index = i;
                 vm.UENNo = fabric.UENNo;
                 vm.FabricRemark = fabricItem.FabricRemark;
+                vm.Composition = fabricItem.Composition;
 
                 listData.Add(vm);
                 i++;

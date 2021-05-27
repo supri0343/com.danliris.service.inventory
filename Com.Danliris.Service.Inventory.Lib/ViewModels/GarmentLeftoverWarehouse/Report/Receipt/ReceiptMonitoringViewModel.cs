@@ -18,6 +18,7 @@ namespace Com.Danliris.Service.Inventory.Lib.ViewModels.GarmentLeftoverWarehouse
         public string ProductRemark { get; set; }
         public double Quantity { get; set; }
         public UomViewModel Uom { get; set; }
+        public string Composition { get; set; }
 
         public List<string> CustomsNo { get; set; }
         public List<string> CustomsType { get; set; }
