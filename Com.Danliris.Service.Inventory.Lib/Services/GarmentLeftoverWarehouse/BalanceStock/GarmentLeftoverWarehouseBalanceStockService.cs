@@ -224,7 +224,9 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.B
 
         private GarmentLeftoverWarehouseStock GenerateStock(string typeOfGoods, GarmentLeftoverWarehouseBalanceStockItem item)
         {
+            GarmentLeftoverWarehouseStock stock = new GarmentLeftoverWarehouseStock();
             var referenceType = GarmentLeftoverWarehouseStockReferenceTypeEnum.FABRIC;
+
             if (typeOfGoods == "ACCESSORIES")
             {
                 referenceType = GarmentLeftoverWarehouseStockReferenceTypeEnum.ACCESSORIES;
@@ -233,24 +235,43 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.B
                 referenceType = GarmentLeftoverWarehouseStockReferenceTypeEnum.FINISHED_GOOD;
             }
 
-            GarmentLeftoverWarehouseStock stock = new GarmentLeftoverWarehouseStock
+            if(typeOfGoods!="BARANG JADI")
             {
-                ReferenceType = referenceType,
-                UnitId = item.UnitId,
-                UnitCode = item.UnitCode,
-                UnitName = item.UnitName,
-                PONo = item.PONo,
-                UomId = item.UomId,
-                UomUnit = item.UomUnit,
-                Quantity = item.Quantity,
-                RONo= item.RONo,
-                LeftoverComodityCode=item.LeftoverComodityCode,
-                LeftoverComodityId=item.LeftoverComodityId,
-                LeftoverComodityName=item.LeftoverComodityName,
-                ProductCode = item.ProductCode,
-                ProductId = item.ProductId,
-                ProductName = item.ProductName
-            };
+                stock = new GarmentLeftoverWarehouseStock
+                {
+                    ReferenceType = referenceType,
+                    UnitId = item.UnitId,
+                    UnitCode = item.UnitCode,
+                    UnitName = item.UnitName,
+                    PONo = item.PONo,
+                    UomId = item.UomId,
+                    UomUnit = item.UomUnit,
+                    Quantity = item.Quantity,
+                    RONo = item.RONo,
+                    LeftoverComodityCode = item.LeftoverComodityCode,
+                    LeftoverComodityId = item.LeftoverComodityId,
+                    LeftoverComodityName = item.LeftoverComodityName,
+                    ProductCode = item.ProductCode,
+                    ProductId = item.ProductId,
+                    ProductName = item.ProductName
+                };
+            }
+            else
+            {
+                stock = new GarmentLeftoverWarehouseStock
+                {
+                    ReferenceType = referenceType,
+                    UnitId = item.UnitId,
+                    UnitCode = item.UnitCode,
+                    UnitName = item.UnitName,
+                    PONo = item.PONo,
+                    Quantity = item.Quantity,
+                    RONo = item.RONo,
+                    LeftoverComodityCode = item.LeftoverComodityCode,
+                    LeftoverComodityId = item.LeftoverComodityId,
+                    LeftoverComodityName = item.LeftoverComodityName
+                };
+            }
 
             return stock;
         }

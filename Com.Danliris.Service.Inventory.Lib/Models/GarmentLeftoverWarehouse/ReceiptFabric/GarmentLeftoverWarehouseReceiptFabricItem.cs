@@ -16,6 +16,9 @@ namespace Com.Danliris.Service.Inventory.Lib.Models.GarmentLeftoverWarehouse.Gar
         public string ProductName { get; set; }
         public string ProductRemark { get; set; }
         public string FabricRemark { get; set; }
+        public string Composition { get; set; }
+
+        public double BasicPrice { get; set; }
 
         public double Quantity { get; set; }
 
