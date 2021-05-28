@@ -23,6 +23,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.S
         Tuple<List<GarmentLeftoverWarehouseStockMonitoringViewModel>, int> GetMonitoringAcc(DateTime? dateFrom, DateTime? dateTo, int unitId, int page, int size, string order, int offset);
         MemoryStream GenerateExcelFinishedGood(DateTime? dateFrom, DateTime? dateTo, int unitId, int offset);
         Tuple<List<GarmentLeftoverWarehouseStockMonitoringViewModel>, int> GetMonitoringFinishedGood(DateTime? dateFrom, DateTime? dateTo, int unitId, int page, int size, string order, int offset);
-         
+        Tuple<List<GarmentLeftoverWarehouseStockMonitoringViewModel>, int> GetMonitoringAval(DateTime? dateFrom, DateTime? dateTo, int unitId, int page, int size, string order, int offset, string typeAval);
+
     }
 }

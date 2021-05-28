@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Com.Danliris.Service.Inventory.Lib.Enums;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -19,5 +20,6 @@ namespace Com.Danliris.Service.Inventory.Lib.ViewModels.GarmentLeftoverWarehouse
         public double QuantityExpend { get; set; }
         public double EndbalanceQty { get; set; }
         public string UomUnit { get; set; }
+        public string ReferenceType { get; set; }
     }
 }
