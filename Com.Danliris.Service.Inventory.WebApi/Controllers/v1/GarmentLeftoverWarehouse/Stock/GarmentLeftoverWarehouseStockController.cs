@@ -254,5 +254,38 @@ namespace Com.Danliris.Service.Inventory.WebApi.Controllers.v1.GarmentLeftoverWa
                 return StatusCode(General.INTERNAL_ERROR_STATUS_CODE, Result);
             }
         }
+
+        [HttpGet("report-aval")]
+        public IActionResult GetReportStockAval (DateTime? dateFrom, DateTime? dateTo, int unit, string typeAval, int page, int size, string Order = "{}")
+        {
+            try
+            {
+
+                int offset = Convert.ToInt32(Request.Headers["x-timezone-offset"]);
+                string accept = Request.Headers["Accept"];
+                if (page == 0)
+                {
+                    page = 1;
+                    size = 25;
+                }
+                var data = Service.GetMonitoringAval(dateFrom, dateTo, unit, page, size, Order, offset, typeAval);
+
+                return Ok(new
+                {
+                    apiVersion = ApiVersion,
+                    data = data.Item1,
+                    info = new { total = data.Item2 },
+                    message = General.OK_MESSAGE,
+                    statusCode = General.OK_STATUS_CODE
+                });
+            }
+            catch (Exception e)
+            {
+                Dictionary<string, object> Result =
+                    new ResultFormatter(ApiVersion, General.INTERNAL_ERROR_STATUS_CODE, e.Message)
+                    .Fail();
+                return StatusCode(General.INTERNAL_ERROR_STATUS_CODE, Result);
+            }
+        }
     }
 }

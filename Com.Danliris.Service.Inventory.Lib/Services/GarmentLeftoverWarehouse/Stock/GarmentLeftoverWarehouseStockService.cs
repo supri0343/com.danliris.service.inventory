@@ -300,12 +300,12 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.S
         }
 
         #region REPORT
-        public IQueryable<GarmentLeftoverWarehouseStockMonitoringViewModel> GetReportQuery(DateTime? dateFrom, DateTime? dateTo,int UnitId, string type,int offset)
+        public IQueryable<GarmentLeftoverWarehouseStockMonitoringViewModel> GetReportQuery(DateTime? dateFrom, DateTime? dateTo, int UnitId, string type, int offset, string typeAval = "")
         {
 
             DateTimeOffset DateFrom = dateFrom == null ? new DateTime(1970, 1, 1) : (DateTimeOffset)dateFrom;
             DateTimeOffset DateTo = dateTo == null ? DateTime.Now : (DateTimeOffset)dateTo;
-            
+
 
             List<GarmentLeftoverWarehouseStockMonitoringViewModel> garmentLeftoverWarehouseStockMonitoringViewModel = new List<GarmentLeftoverWarehouseStockMonitoringViewModel>();
 
@@ -508,7 +508,72 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.S
                     };
                     garmentLeftoverWarehouseStockMonitoringViewModel.Add(garmentLeftover);
                 }
-            }else
+            } else if (type == "AVAL")
+            {
+                 
+                var QueryReceipt = from a in (from data in DbContext.GarmentLeftoverWarehouseReceiptAvals
+                                              where data._IsDeleted == false
+                                         && data.ReceiptDate.AddHours(offset).Date <= DateTo.Date
+                                         && data.UnitFromId == UnitId
+                                              select new { data.UnitFromCode, data.ReceiptDate, data.Id })
+                                   join b in DbContext.GarmentLeftoverWarehouseReceiptAvalItems on a.Id equals b.AvalReceiptId
+                                   select new GarmentLeftoverWarehouseStockMonitoringViewModel
+                                   {
+                                       BeginingbalanceQty = a.ReceiptDate.AddHours(offset).Date < DateFrom.Date ? b.Quantity : 0,
+                                       QuantityReceipt = a.ReceiptDate.AddHours(offset).Date >= DateFrom.Date ? b.Quantity : 0,
+                                       QuantityExpend = 0,
+                                       UomUnit = b.UomUnit,
+                                       UnitCode = a.UnitFromCode,
+                                       index = 0
+                                   };
+                var QueryExpenditure = from a in (from data in DbContext.GarmentLeftoverWarehouseExpenditureAvals
+                                                  where data._IsDeleted == false
+                                             && data.ExpenditureDate.AddHours(offset).Date <= DateTo.Date
+
+                                                  select new { data.ExpenditureDate, data.Id })
+                                       join b in (from expend in DbContext.GarmentLeftoverWarehouseExpenditureAvalItems
+                                                  where expend.UnitId == UnitId
+                                                  select new { expend.UomUnit, expend.Quantity, expend.UnitCode, expend.AvalExpenditureId }) on a.Id equals b.AvalExpenditureId
+                                       select new GarmentLeftoverWarehouseStockMonitoringViewModel
+                                       {
+                                           BeginingbalanceQty = a.ExpenditureDate.AddHours(offset).Date < DateFrom.Date ? -b.Quantity : 0,
+                                           QuantityReceipt = 0,
+                                           QuantityExpend = a.ExpenditureDate.AddHours(offset).Date >= DateFrom.Date ? b.Quantity : 0,
+                                           UomUnit = b.UomUnit,
+                                           index = 0,
+                                           UnitCode = b.UnitCode
+                                       };
+                var Query = QueryReceipt.Union(QueryExpenditure);
+                var querySum = Query.ToList()
+                    .GroupBy(x => new {x.UnitCode, x.UomUnit, x.index, x.ProductCode, x.ProductName, x.ReferenceType }, (key, group) => new
+                    {
+                        begining = group.Sum(s => s.BeginingbalanceQty),
+                        expend = group.Sum(s => s.QuantityExpend),
+                        receipt = group.Sum(s => s.QuantityReceipt),
+                        uomunit = key.UomUnit,
+                        unit = key.UnitCode,
+                        index = key.index
+                    });
+
+
+                foreach (var data in querySum)
+                {
+                    GarmentLeftoverWarehouseStockMonitoringViewModel garmentLeftover = new GarmentLeftoverWarehouseStockMonitoringViewModel
+                    {
+                        BeginingbalanceQty = data.begining,
+                        QuantityReceipt = data.receipt,
+                        QuantityExpend = data.expend,
+                        UnitCode = data.unit,
+                        UomUnit = data.uomunit,
+                        ProductCode = (from aa in DbContext.GarmentLeftoverWarehouseStocks where aa.ReferenceType = typeAval && aa.UnitId == UnitId select aa.ProductCode).FirstOrDefault(),
+                        ProductName = (from aa in DbContext.GarmentLeftoverWarehouseStocks where aa.UnitId == UnitId select aa.ProductName).FirstOrDefault(),
+                        EndbalanceQty = data.begining + data.receipt - data.expend,
+                        ReferenceType = typeAval
+                    };
+                    garmentLeftoverWarehouseStockMonitoringViewModel.Add(garmentLeftover);
+                }
+            }
+            else
             {
 
 
@@ -783,6 +848,36 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.S
         public Tuple<List<GarmentLeftoverWarehouseStockMonitoringViewModel>, int> GetMonitoringFinishedGood(DateTime? dateFrom, DateTime? dateTo, int unitId, int page, int size, string order, int offset)
         {
             var Query = GetReportQuery(dateFrom, dateTo, unitId, "Barang Jadi", offset);
+
+            Dictionary<string, string> OrderDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(order);
+            if (OrderDictionary.Count.Equals(0))
+            {
+                Query = Query.OrderByDescending(b => b.PONo);
+            }
+            else
+            {
+                string Key = OrderDictionary.Keys.First();
+                string OrderType = OrderDictionary[Key];
+                Query = Query.OrderBy(string.Concat(Key, " ", OrderType));
+            }
+
+            Pageable<GarmentLeftoverWarehouseStockMonitoringViewModel> pageable = new Pageable<GarmentLeftoverWarehouseStockMonitoringViewModel>(Query, page - 1, size);
+            List<GarmentLeftoverWarehouseStockMonitoringViewModel> Data = pageable.Data.ToList<GarmentLeftoverWarehouseStockMonitoringViewModel>();
+
+            int TotalData = pageable.TotalCount;
+            int index = 0;
+            Data.ForEach(c =>
+            {
+                index += 1;
+                c.index = index;
+
+            });
+            return Tuple.Create(Data, TotalData);
+        }
+
+        public Tuple<List<GarmentLeftoverWarehouseStockMonitoringViewModel>, int> GetMonitoringAval(DateTime? dateFrom, DateTime? dateTo, int unitId, int page, int size, string order, int offset, string typeAval)
+        {
+            var Query = GetReportQuery(dateFrom, dateTo, unitId, "AVAL", offset, typeAval);
 
             Dictionary<string, string> OrderDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(order);
             if (OrderDictionary.Count.Equals(0))
