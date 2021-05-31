@@ -287,5 +287,31 @@ namespace Com.Danliris.Service.Inventory.WebApi.Controllers.v1.GarmentLeftoverWa
                 return StatusCode(General.INTERNAL_ERROR_STATUS_CODE, Result);
             }
         }
+
+        [HttpGet("download-avals")]
+        public IActionResult GetXlsStockAval(DateTime? dateFrom, DateTime? dateTo, int unit, string typeAval)
+        {
+
+            try
+            {
+                byte[] xlsInBytes;
+                int offset = Convert.ToInt32(Request.Headers["x-timezone-offset"]);
+                var xls = Service.GenerateExcelAval(dateFrom, dateTo, unit, offset, typeAval);
+
+                string filename = String.Format("Report Stock Gudang Sisa - Aval {0}.xlsx", DateTime.UtcNow.ToString("ddMMyyyy"));
+
+                xlsInBytes = xls.ToArray();
+                var file = File(xlsInBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", filename);
+                return file;
+
+            }
+            catch (Exception e)
+            {
+                Dictionary<string, object> Result =
+                    new ResultFormatter(ApiVersion, General.INTERNAL_ERROR_STATUS_CODE, e.Message)
+                    .Fail();
+                return StatusCode(General.INTERNAL_ERROR_STATUS_CODE, Result);
+            }
+        }
     }
 }

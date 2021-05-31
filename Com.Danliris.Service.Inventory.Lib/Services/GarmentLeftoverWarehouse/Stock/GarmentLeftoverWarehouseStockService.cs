@@ -510,12 +510,15 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.S
                 }
             } else if (type == "AVAL")
             {
-                 
+                var AvalType = typeAval == "AVAL FABRIC" ? GarmentLeftoverWarehouseStockReferenceTypeEnum.AVAL_FABRIC : typeAval == "AVAL KOMPONEN" ? GarmentLeftoverWarehouseStockReferenceTypeEnum.COMPONENT : GarmentLeftoverWarehouseStockReferenceTypeEnum.AVAL_BAHAN_PENOLONG;
+
                 var QueryReceipt = from a in (from data in DbContext.GarmentLeftoverWarehouseReceiptAvals
-                                              where data._IsDeleted == false
-                                         && data.ReceiptDate.AddHours(offset).Date <= DateTo.Date
-                                         && data.UnitFromId == UnitId
-                                              select new { data.UnitFromCode, data.ReceiptDate, data.Id })
+                                              where
+                                        // data.ReceiptDate.AddHours(offset).Date >= DateFrom.Date
+                                          data.ReceiptDate.AddHours(offset).Date <= DateTo.Date
+                                         && data.UnitFromId == (UnitId == 0 ? data.UnitFromId : UnitId)
+                                         && data.AvalType== typeAval
+                                              select new { data.UnitFromCode, data.ReceiptDate, data.Id, data.AvalType })
                                    join b in DbContext.GarmentLeftoverWarehouseReceiptAvalItems on a.Id equals b.AvalReceiptId
                                    select new GarmentLeftoverWarehouseStockMonitoringViewModel
                                    {
@@ -524,16 +527,18 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.S
                                        QuantityExpend = 0,
                                        UomUnit = b.UomUnit,
                                        UnitCode = a.UnitFromCode,
-                                       index = 0
+                                       index = 0,
+                                       ProductCode= typeAval == "AVAL BAHAN PENOLONG" ? b.ProductCode : null,
+                                       ReferenceType=a.AvalType
                                    };
                 var QueryExpenditure = from a in (from data in DbContext.GarmentLeftoverWarehouseExpenditureAvals
-                                                  where data._IsDeleted == false
-                                             && data.ExpenditureDate.AddHours(offset).Date <= DateTo.Date
-
-                                                  select new { data.ExpenditureDate, data.Id })
+                                                  where //data.ExpenditureDate.AddHours(offset).Date >= DateFrom.Date
+                                             data.ExpenditureDate.AddHours(offset).Date <= DateTo.Date
+                                             && data.AvalType == typeAval
+                                                  select new { data.ExpenditureDate, data.Id, data.AvalType })
                                        join b in (from expend in DbContext.GarmentLeftoverWarehouseExpenditureAvalItems
-                                                  where expend.UnitId == UnitId
-                                                  select new { expend.UomUnit, expend.Quantity, expend.UnitCode, expend.AvalExpenditureId }) on a.Id equals b.AvalExpenditureId
+                                                  where expend.UnitId == (UnitId == 0 ? expend.UnitId : UnitId)
+                                                  select new { expend.UomUnit, expend.Quantity, expend.UnitCode, expend.AvalExpenditureId, expend.ProductCode }) on a.Id equals b.AvalExpenditureId
                                        select new GarmentLeftoverWarehouseStockMonitoringViewModel
                                        {
                                            BeginingbalanceQty = a.ExpenditureDate.AddHours(offset).Date < DateFrom.Date ? -b.Quantity : 0,
@@ -541,20 +546,22 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.S
                                            QuantityExpend = a.ExpenditureDate.AddHours(offset).Date >= DateFrom.Date ? b.Quantity : 0,
                                            UomUnit = b.UomUnit,
                                            index = 0,
-                                           UnitCode = b.UnitCode
+                                           UnitCode = b.UnitCode,
+                                           ProductCode= typeAval == "AVAL BAHAN PENOLONG" ? b.ProductCode : null,
+                                           ReferenceType=a.AvalType
                                        };
                 var Query = QueryReceipt.Union(QueryExpenditure);
                 var querySum = Query.ToList()
-                    .GroupBy(x => new {x.UnitCode, x.UomUnit, x.index, x.ProductCode, x.ProductName, x.ReferenceType }, (key, group) => new
+                    .GroupBy(x => new {x.UnitCode, x.UomUnit, x.index, x.ProductCode, x.ReferenceType }, (key, group) => new
                     {
                         begining = group.Sum(s => s.BeginingbalanceQty),
                         expend = group.Sum(s => s.QuantityExpend),
                         receipt = group.Sum(s => s.QuantityReceipt),
                         uomunit = key.UomUnit,
                         unit = key.UnitCode,
+                        productCode=key.ProductCode,
                         index = key.index
                     });
-
 
                 foreach (var data in querySum)
                 {
@@ -565,8 +572,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.S
                         QuantityExpend = data.expend,
                         UnitCode = data.unit,
                         UomUnit = data.uomunit,
-                        ProductCode = (from aa in DbContext.GarmentLeftoverWarehouseStocks where aa.ReferenceType = typeAval && aa.UnitId == UnitId select aa.ProductCode).FirstOrDefault(),
-                        ProductName = (from aa in DbContext.GarmentLeftoverWarehouseStocks where aa.UnitId == UnitId select aa.ProductName).FirstOrDefault(),
+                        ProductCode = typeAval=="AVAL BAHAN PENOLONG" ?(from aa in DbContext.GarmentLeftoverWarehouseStocks where aa.ReferenceType== AvalType && aa.UnitId == (UnitId == 0 ? aa.UnitId : UnitId) && aa.UomUnit== data.uomunit && aa.ProductCode==data.productCode select aa.ProductCode).FirstOrDefault() : "-",
+                        ProductName = typeAval == "AVAL BAHAN PENOLONG" ? (from aa in DbContext.GarmentLeftoverWarehouseStocks where aa.ReferenceType == AvalType && aa.UnitId == (UnitId == 0 ? aa.UnitId : UnitId) && aa.UomUnit == data.uomunit && aa.ProductCode == data.productCode select aa.ProductName).FirstOrDefault() : "-",
                         EndbalanceQty = data.begining + data.receipt - data.expend,
                         ReferenceType = typeAval
                     };
@@ -810,7 +817,9 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.S
             });
             return Tuple.Create(Data, TotalData);
         }
-         
+
+        
+
 
         public MemoryStream GenerateExcelFinishedGood(DateTime? dateFrom, DateTime? dateTo, int unitId, int offset)
         {
@@ -903,6 +912,40 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.S
 
             });
             return Tuple.Create(Data, TotalData);
+        }
+
+        public MemoryStream GenerateExcelAval(DateTime? dateFrom, DateTime? dateTo, int unitId, int offset, string typeAval)
+        {
+            var Query = GetReportQuery(dateFrom, dateTo, unitId, "AVAL", offset, typeAval);
+            Query = Query.OrderByDescending(b => b.PONo);
+            DataTable result = new DataTable();
+
+            result.Columns.Add(new DataColumn() { ColumnName = "No", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Unit", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Jenis Aval", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Kode barang", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Nama Barang", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Saldo Awal", DataType = typeof(double) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Penerimaan", DataType = typeof(double) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Pengeluaran", DataType = typeof(double) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Saldo Akhir", DataType = typeof(double) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Satuan", DataType = typeof(String) });
+            if (Query.ToArray().Count() == 0)
+                result.Rows.Add("", "", "", "", "", 0, 0, 0, 0, 0); // to allow column name to be generated properly for empty data as template
+            else
+            {
+                int index = 0;
+                foreach (var item in Query)
+                {
+                    index++;
+                    //DateTimeOffset date = item.date ?? new DateTime(1970, 1, 1);
+                    //string dateString = date == new DateTime(1970, 1, 1) ? "-" : date.ToOffset(new TimeSpan(offset, 0, 0)).ToString("dd MMM yyyy", new CultureInfo("id-ID"));
+                    result.Rows.Add(index, item.UnitCode, typeAval, item.ProductCode, item.ProductName, item.BeginingbalanceQty, item.QuantityReceipt, item.QuantityExpend, item.EndbalanceQty, item.UomUnit);
+                }
+            }
+
+            return Excel.CreateExcel(new List<KeyValuePair<DataTable, string>>() { new KeyValuePair<DataTable, string>(result, "Report Stock Gudang Sisa - FABRIC") }, true);
+
         }
         #endregion
     }
