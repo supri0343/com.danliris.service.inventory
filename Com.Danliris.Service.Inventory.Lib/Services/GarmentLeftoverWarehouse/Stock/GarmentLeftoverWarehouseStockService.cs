@@ -388,7 +388,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.S
                         index = key.index
                     }).OrderBy(s => s.pono);
 
-
+                var fabricType = GarmentLeftoverWarehouseStockReferenceTypeEnum.FABRIC;
                 foreach (var data in querySum)
                 {
                     GarmentLeftoverWarehouseStockMonitoringViewModel garmentLeftover = new GarmentLeftoverWarehouseStockMonitoringViewModel
@@ -399,8 +399,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.S
                         QuantityExpend = data.expend,
                         UnitCode = data.unit,
                         UomUnit = data.uomunit,
-                        ProductCode = (from aa in DbContext.GarmentLeftoverWarehouseReceiptFabricItems where aa.POSerialNumber == data.pono select aa.ProductCode).FirstOrDefault(),
-                        ProductName = (from aa in DbContext.GarmentLeftoverWarehouseReceiptFabricItems where aa.POSerialNumber == data.pono select aa.ProductName).FirstOrDefault(),
+                        ProductCode = (from aa in DbContext.GarmentLeftoverWarehouseStocks where aa.ReferenceType == fabricType && aa.PONo == data.pono && aa.UomUnit == data.uomunit && aa.UnitCode==data.unit select aa.ProductCode).FirstOrDefault(),
+                        ProductName = (from aa in DbContext.GarmentLeftoverWarehouseStocks where aa.ReferenceType == fabricType && aa.PONo == data.pono && aa.UomUnit == data.uomunit && aa.UnitCode == data.unit select aa.ProductName).FirstOrDefault(),
                         ProductRemark = (from aa in DbContext.GarmentLeftoverWarehouseReceiptFabricItems where aa.POSerialNumber == data.pono select aa.ProductRemark).FirstOrDefault(),
                         FabricRemark = (from aa in DbContext.GarmentLeftoverWarehouseReceiptFabricItems where aa.POSerialNumber == data.pono select aa.FabricRemark).FirstOrDefault(),
                         EndbalanceQty = data.begining + data.receipt - data.expend
@@ -511,14 +511,15 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.S
             } else if (type == "AVAL")
             {
                 var AvalType = typeAval == "AVAL FABRIC" ? GarmentLeftoverWarehouseStockReferenceTypeEnum.AVAL_FABRIC : typeAval == "AVAL KOMPONEN" ? GarmentLeftoverWarehouseStockReferenceTypeEnum.COMPONENT : GarmentLeftoverWarehouseStockReferenceTypeEnum.AVAL_BAHAN_PENOLONG;
-
-                var QueryReceipt = from a in (from data in DbContext.GarmentLeftoverWarehouseReceiptAvals
-                                              where
-                                        // data.ReceiptDate.AddHours(offset).Date >= DateFrom.Date
-                                          data.ReceiptDate.AddHours(offset).Date <= DateTo.Date
-                                         && data.UnitFromId == (UnitId == 0 ? data.UnitFromId : UnitId)
-                                         && data.AvalType== typeAval
-                                              select new { data.UnitFromCode, data.ReceiptDate, data.Id, data.AvalType })
+                var queryReceiptHeader = from data in DbContext.GarmentLeftoverWarehouseReceiptAvals
+                                         where data.ReceiptDate.AddHours(offset).Date <= DateTo.Date
+                                        && data.UnitFromId == (UnitId == 0 ? data.UnitFromId : UnitId)
+                                        && data.AvalType == typeAval
+                                        select new { data.UnitFromCode, data.ReceiptDate, data.Id, data.AvalType, data.TotalAval };
+                IQueryable<GarmentLeftoverWarehouseStockMonitoringViewModel> QueryReceipt = Enumerable.Empty<GarmentLeftoverWarehouseStockMonitoringViewModel>().AsQueryable();
+                if(typeAval == "AVAL BAHAN PENOLONG")
+                {
+                    QueryReceipt = from a in (queryReceiptHeader)
                                    join b in DbContext.GarmentLeftoverWarehouseReceiptAvalItems on a.Id equals b.AvalReceiptId
                                    select new GarmentLeftoverWarehouseStockMonitoringViewModel
                                    {
@@ -528,13 +529,28 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.S
                                        UomUnit = b.UomUnit,
                                        UnitCode = a.UnitFromCode,
                                        index = 0,
-                                       ProductCode= typeAval == "AVAL BAHAN PENOLONG" ? b.ProductCode : null,
-                                       ReferenceType=a.AvalType
+                                       ProductCode = b.ProductCode,
+                                       ReferenceType = a.AvalType
                                    };
+                }
+                else
+                {
+                    QueryReceipt = from a in (queryReceiptHeader)
+                                   select new GarmentLeftoverWarehouseStockMonitoringViewModel
+                                   {
+                                       BeginingbalanceQty = a.ReceiptDate.AddHours(offset).Date < DateFrom.Date ? a.TotalAval : 0,
+                                       QuantityReceipt = a.ReceiptDate.AddHours(offset).Date >= DateFrom.Date ? a.TotalAval : 0,
+                                       QuantityExpend = 0,
+                                       UomUnit = "KG",
+                                       UnitCode = a.UnitFromCode,
+                                       index = 0,
+                                       ProductCode = null,
+                                       ReferenceType = a.AvalType
+                                   };
+                }
                 var QueryExpenditure = from a in (from data in DbContext.GarmentLeftoverWarehouseExpenditureAvals
-                                                  where //data.ExpenditureDate.AddHours(offset).Date >= DateFrom.Date
-                                             data.ExpenditureDate.AddHours(offset).Date <= DateTo.Date
-                                             && data.AvalType == typeAval
+                                                  where data.ExpenditureDate.AddHours(offset).Date <= DateTo.Date
+                                                    && data.AvalType == typeAval
                                                   select new { data.ExpenditureDate, data.Id, data.AvalType })
                                        join b in (from expend in DbContext.GarmentLeftoverWarehouseExpenditureAvalItems
                                                   where expend.UnitId == (UnitId == 0 ? expend.UnitId : UnitId)
@@ -544,7 +560,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.S
                                            BeginingbalanceQty = a.ExpenditureDate.AddHours(offset).Date < DateFrom.Date ? -b.Quantity : 0,
                                            QuantityReceipt = 0,
                                            QuantityExpend = a.ExpenditureDate.AddHours(offset).Date >= DateFrom.Date ? b.Quantity : 0,
-                                           UomUnit = b.UomUnit,
+                                           UomUnit = typeAval == "AVAL BAHAN PENOLONG" ? b.UomUnit : "KG",
                                            index = 0,
                                            UnitCode = b.UnitCode,
                                            ProductCode= typeAval == "AVAL BAHAN PENOLONG" ? b.ProductCode : null,
@@ -663,7 +679,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.S
                         index = key.index
                     }).OrderBy(s => s.pono);
 
-
+                var accType = GarmentLeftoverWarehouseStockReferenceTypeEnum.ACCESSORIES;
                 foreach (var data in querySum)
                 {
                     GarmentLeftoverWarehouseStockMonitoringViewModel garmentLeftover = new GarmentLeftoverWarehouseStockMonitoringViewModel
@@ -674,8 +690,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.S
                         QuantityExpend = data.expend,
                         UnitCode = data.unit,
                         UomUnit = data.uomunit,
-                        ProductCode = (from aa in DbContext.GarmentLeftoverWarehouseReceiptAccessoryItems where aa.POSerialNumber == data.pono select aa.ProductCode).FirstOrDefault(),
-                        ProductName = (from aa in DbContext.GarmentLeftoverWarehouseReceiptAccessoryItems where aa.POSerialNumber == data.pono select aa.ProductName).FirstOrDefault(),
+                        ProductCode = (from aa in DbContext.GarmentLeftoverWarehouseStocks where aa.ReferenceType == accType && aa.PONo == data.pono && aa.UomUnit == data.uomunit && aa.UnitCode == data.unit select aa.ProductCode).FirstOrDefault(),
+                        ProductName = (from aa in DbContext.GarmentLeftoverWarehouseStocks where aa.ReferenceType == accType && aa.PONo == data.pono && aa.UomUnit == data.uomunit && aa.UnitCode == data.unit select aa.ProductName).FirstOrDefault(),
                         ProductRemark = (from aa in DbContext.GarmentLeftoverWarehouseReceiptAccessoryItems where aa.POSerialNumber == data.pono select aa.ProductRemark).FirstOrDefault(),
                         FabricRemark = (from aa in DbContext.GarmentLeftoverWarehouseReceiptAccessoryItems where aa.POSerialNumber == data.pono select aa.Remark).FirstOrDefault(),
                         EndbalanceQty = data.begining + data.receipt - data.expend
