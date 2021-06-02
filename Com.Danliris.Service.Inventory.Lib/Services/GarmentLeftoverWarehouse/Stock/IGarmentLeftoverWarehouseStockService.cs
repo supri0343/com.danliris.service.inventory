@@ -17,13 +17,5 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.S
         Task<int> StockIn(GarmentLeftoverWarehouseStock stock, string StockReferenceNo, int StockReferenceId, int StockReferenceItemId);
         Task<int> StockOut(GarmentLeftoverWarehouseStock stock, string StockReferenceNo, int StockReferenceId, int StockReferenceItemId);
 
-        MemoryStream GenerateExcelFabric(DateTime? dateFrom, DateTime? dateTo, int unitId,int offset);
-        Tuple<List<GarmentLeftoverWarehouseStockMonitoringViewModel>, int> GetMonitoringFabric(DateTime? dateFrom, DateTime? dateTo, int unitId,int page, int size, string order, int offset);
-        MemoryStream GenerateExcelAcc(DateTime? dateFrom, DateTime? dateTo,int unitId, int offset);
-        Tuple<List<GarmentLeftoverWarehouseStockMonitoringViewModel>, int> GetMonitoringAcc(DateTime? dateFrom, DateTime? dateTo, int unitId, int page, int size, string order, int offset);
-        MemoryStream GenerateExcelFinishedGood(DateTime? dateFrom, DateTime? dateTo, int unitId, int offset);
-        Tuple<List<GarmentLeftoverWarehouseStockMonitoringViewModel>, int> GetMonitoringFinishedGood(DateTime? dateFrom, DateTime? dateTo, int unitId, int page, int size, string order, int offset);
-        Tuple<List<GarmentLeftoverWarehouseStockMonitoringViewModel>, int> GetMonitoringAval(DateTime? dateFrom, DateTime? dateTo, int unitId, int page, int size, string order, int offset, string typeAval);
-        MemoryStream GenerateExcelAval(DateTime? dateFrom, DateTime? dateTo, int unitId, int offset, string typeAval);
     }
 }
