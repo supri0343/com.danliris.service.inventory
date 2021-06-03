@@ -176,5 +176,57 @@ namespace Com.Danliris.Service.Inventory.WebApi.Controllers.v1.WeavingInventory
             }
         }
 
+
+        [HttpGet("report")]
+        public IActionResult GetReport(string destination, DateTime? dateFrom, DateTime? dateTo,  int page = 1, int size = 25, string Order = "{}")
+        {
+            try
+            {
+                VerifyUser();
+
+                int offset = Convert.ToInt32(Request.Headers["x-timezone-offset"]);
+                string accept = Request.Headers["Accept"];
+
+                var data = Service.GetReport(destination, dateFrom, dateTo, page, size, Order, offset);
+
+                return Ok(new
+                {
+                    apiVersion = ApiVersion,
+                    data = data.Item1,
+                    info = new { total = data.Item2 },
+                    message = General.OK_MESSAGE,
+                    statusCode = General.OK_STATUS_CODE
+                });
+            }
+            catch (Exception e)
+            {
+                Dictionary<string, object> Result =
+                    new ResultFormatter(ApiVersion, General.INTERNAL_ERROR_STATUS_CODE, e.Message)
+                    .Fail();
+                return StatusCode(General.INTERNAL_ERROR_STATUS_CODE, Result);
+            }
+        }
+
+        [HttpGet("report/download")]
+        public IActionResult GetExcelAll([FromHeader(Name = "x-timezone-offset")] string timezone, string destination, DateTimeOffset? dateFrom, DateTimeOffset? dateTo)
+        {
+            try
+            {
+                //VerifyUser();
+                byte[] xlsInBytes;
+                int clientTimeZoneOffset = Convert.ToInt32(timezone);
+                var Result = Service.GenerateExcelReceiptReport(destination, dateFrom, dateTo, clientTimeZoneOffset);
+                string filename = "Monitoring Penerimaan Gudang Weaving.xlsx";
+
+                xlsInBytes = Result.ToArray();
+                var file = File(xlsInBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", filename);
+                return file;
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
     }
 }
