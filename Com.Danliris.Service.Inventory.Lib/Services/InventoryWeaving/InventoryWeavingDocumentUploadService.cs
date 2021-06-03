@@ -14,6 +14,9 @@ using Com.Moonlay.Models;
 using Com.Danliris.Service.Inventory.Lib.Helpers;
 using Newtonsoft.Json;
 using Com.Moonlay.NetCore.Lib;
+using System.IO;
+using System.Data;
+using System.Globalization;
 
 namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
 {
@@ -42,7 +45,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
         {
            // "BonNo", "Benang", "Anyaman", "Lusi", "Pakan", "Lebar", "JL", "JP", "AL", "AP", "SP", "Grade", "Piece", "Qty", "QtyPiece"
 
-            "BonNo","Benang","Anyaman","Lusi","Pakan","Lebar","JL","JP","AL","AP","SP","Grade","Piece","Qty","QtyPiece"
+            "BonNo","Tanggal","Benang","Anyaman","Lusi","Pakan","Lebar","JL","JP","AL","AP","SP","Grade","Piece","Qty","QtyPiece"
         };
 
         public ReadResponse<InventoryWeavingDocument> Read(int page, int size, string order, string keyword, string filter)
@@ -61,11 +64,11 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
                 "Id", "date", "bonNo", "bonType",  "storageCode", "storageId", "storageName", "type", "_LastModifiedUtc"
             };
 
-            Query = Query
+            Query = Query.Where(s => s.Type == "IN")
                 .Select(s => new InventoryWeavingDocument
                 {
                     Id = s.Id,
-                  
+
                     Date = s.Date,
                     BonNo = s.BonNo,
                     BonType = s.BonType,
@@ -74,7 +77,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
                     StorageName = s.StorageName,
                     Type = s.Type,
                     _LastModifiedUtc = s._LastModifiedUtc,
-                
+
                 });
 
 
@@ -99,22 +102,23 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
             public InventoryWeavingDocumentMap()
             {
                 Map(p => p.ReferenceNo).Index(0);
-                Map(p => p.MaterialName).Index(1);
-                Map(p => p.WovenType).Index(2);
-                Map(p => p.Yarn1).Index(3);
-                Map(p => p.Yarn2).Index(4);
-                Map(p => p.Width).Index(5);
-                Map(p => p.YarnType1).Index(6);
-                Map(p => p.YarnType2).Index(7);
-                Map(p => p.YarnOrigin1).Index(8);
-                Map(p => p.YarnOrigin2).Index(9);
-                Map(p => p.ProductionOrderNo).Index(10);
-                Map(p => p.Grade).Index(11);
-                Map(p => p.Piece).Index(12).TypeConverter<StringConverter>();
-                Map(p => p.Qty).Index(13).TypeConverter<StringConverter>();
-                Map(p => p.QtyPiece).Index(14).TypeConverter<StringConverter>();
+                Map(p => p.Date).Index(1);
+                Map(p => p.MaterialName).Index(2);
+                Map(p => p.WovenType).Index(3);
+                Map(p => p.Yarn1).Index(4);
+                Map(p => p.Yarn2).Index(5);
+                Map(p => p.Width).Index(6);
+                Map(p => p.YarnType1).Index(7);
+                Map(p => p.YarnType2).Index(8);
+                Map(p => p.YarnOrigin1).Index(9);
+                Map(p => p.YarnOrigin2).Index(10);
+                Map(p => p.ProductionOrderNo).Index(11);
+                Map(p => p.Grade).Index(12);
+                Map(p => p.Piece).Index(13).TypeConverter<StringConverter>();
+                Map(p => p.Qty).Index(14).TypeConverter<StringConverter>();
+                Map(p => p.QtyPiece).Index(15).TypeConverter<StringConverter>();
 
-             
+
             }
         }
 
@@ -133,7 +137,10 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
                     ErrorMessage = string.Concat(ErrorMessage, "No Bon Tidak Boleh Kosong tidak boleh kosong, ");
                 }
 
-                
+                if (productVM.Date == null)
+                {
+                    ErrorMessage = string.Concat(ErrorMessage, "No Bon Tidak Boleh Kosong tidak boleh kosong, ");
+                }
 
                 if (string.IsNullOrWhiteSpace(productVM.ProductionOrderNo))
                 {
@@ -215,7 +222,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
                 }
 
 
-               
+
 
                 double QtyPiece = 0;
                 if (string.IsNullOrWhiteSpace(productVM.QtyPiece))
@@ -230,7 +237,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
                 {
                     ErrorMessage = string.Concat(ErrorMessage, "Quantity Piece harus lebih besar dari 0, ");
                 }
-  
+
 
                 if (string.IsNullOrEmpty(ErrorMessage))
                 {
@@ -249,6 +256,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
                     var Error = new ExpandoObject() as IDictionary<string, object>;
 
                     Error.Add("BonNo", productVM.ReferenceNo);
+                    Error.Add("Tanggal", productVM.Date);
                     Error.Add("Benang", productVM.MaterialName);
                     Error.Add("Lusi", productVM.Yarn1);
                     Error.Add("Pakan", productVM.Yarn2);
@@ -275,7 +283,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
 
         public async Task UploadData(InventoryWeavingDocument data, string username)
         {
-           
+
             IInventoryWeavingMovementService movement = ServiceProvider.GetService<IInventoryWeavingMovementService>();
             foreach (var i in data.Items)
             {
@@ -285,8 +293,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
             MoonlayEntityExtension.FlagForCreate(data, username, USER_AGENT);
             MoonlayEntityExtension.FlagForUpdate(data, username, USER_AGENT);
             DbSet.Add(data);
-            
-             var result = await DbContext.SaveChangesAsync();
+
+            var result = await DbContext.SaveChangesAsync();
             foreach (var item in data.Items)
             {
                 InventoryWeavingMovement movementModel = new InventoryWeavingMovement
@@ -313,64 +321,81 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
                     ProductRemark = item.ProductRemark,
                     Type = data.Type,
                     InventoryWeavingDocumentId = data.Id,
-                    InventoryWeavingDocumentItemId = item.Id       
+                    InventoryWeavingDocumentItemId = item.Id
                     //await BulkInsert(data, username);
                 };
                 MoonlayEntityExtension.FlagForCreate(movementModel, username, USER_AGENT);
                 MoonlayEntityExtension.FlagForUpdate(movementModel, username, USER_AGENT);
                 DbSet2.Add(movementModel);
-             }
+            }
             var result2 = await DbContext.SaveChangesAsync();
         }
 
 
-        public async Task<InventoryWeavingDocumentViewModel> MapToViewModel(List<InventoryWeavingDocumentCsvViewModel> csv,  DateTimeOffset date, string from)
+        //public async Task<InventoryWeavingDocumentViewModel> MapToViewModel(List<InventoryWeavingDocumentCsvViewModel> csv, DateTimeOffset date, string from)
+        public async Task<InventoryWeavingDocumentViewModel> MapToViewModel(List<InventoryWeavingDocumentCsvViewModel> csv, string from)
         {
             List<InventoryWeavingDocumentItemViewModel> DocsItems = new List<InventoryWeavingDocumentItemViewModel>();
             //var itemx = GetItem();
 
             foreach (var i in csv)
             {
-                var constructonC = i.MaterialName + "  " + i.WovenType + "  " + i.Yarn1 + "  " + i.Yarn2 + "  " + i.Width + "  "
-                                   + i.YarnType1 + "  " + i.YarnType2 + "  " + i.YarnOrigin1 + "  " + i.YarnOrigin2;
-                    DocsItems.Add(new InventoryWeavingDocumentItemViewModel
-                    {
-                        productOrderNo = i.ProductionOrderNo,
-                        referenceNo = i.ReferenceNo,
-                        construction = constructonC,
-                        grade = i.Grade,
-                        piece = i.Piece,
-                        materialName = i.MaterialName,
-                        wovenType = i.WovenType,
-                        width = i.Width,
-                        yarn1 = i.Yarn1,
-                        yarn2 = i.Yarn2,
-                        yarnType1 = i.YarnType1,
-                        yarnType2 = i.YarnType2,
-                        yarnOrigin1 = i.YarnOrigin1,
-                        yarnOrigin2 = i.YarnOrigin2,
-                        uomId = 35,
-                        uomUnit = "MTR",
-                        quantity = Convert.ToDouble(i.Qty),
-                        quantityPiece = Convert.ToDouble(i.QtyPiece)
-                       
-                    });
-                
+
+                //var MaterialName =  i.MaterialName.TrimEnd().Replace(" ", String.Empty);
+                var MaterialName = i.MaterialName.Trim();
+                var WovenType = i.WovenType.Trim();
+
+                var Yarn1 = i.Yarn1.Trim();
+                var Yarn2 = i.Yarn2.Trim();
+                var Width = i.Width.Trim();
+                var YarnType1 = i.YarnType1.Trim();
+                var YarnType2 = i.YarnType2.Trim();
+                var YarnOrigin1 = i.YarnOrigin1.Trim();
+                var YarnOrigin2 = i.YarnOrigin2.Trim();
+
+                var constructonC = MaterialName + "  " + WovenType + "  " + Yarn1 + "  " + Yarn2 + "  " + Width + "  "
+                                   + YarnType1 + "  " + YarnType2 + "  " + YarnOrigin1 + "  " + YarnOrigin2;
+
+                DocsItems.Add(new InventoryWeavingDocumentItemViewModel
+                {
+                    productOrderNo = i.ProductionOrderNo,
+                    referenceNo = i.ReferenceNo,
+
+                    construction = constructonC,
+                    grade = i.Grade,
+                    piece = i.Piece,
+                    materialName = MaterialName,
+                    wovenType = WovenType,
+                    width = Width,
+                    yarn1 = Yarn1,
+                    yarn2 = Yarn2,
+                    yarnType1 = YarnType1,
+                    yarnType2 = YarnType2,
+                    yarnOrigin1 = YarnOrigin1,
+                    yarnOrigin2 = YarnOrigin2,
+                    uomId = 35,
+                    uomUnit = "MTR",
+                    quantity = Convert.ToDouble(i.Qty),
+                    quantityPiece = Convert.ToDouble(i.QtyPiece)
+
+                });
+
+
             }
 
             InventoryWeavingDocumentViewModel sPKDocsViews = new InventoryWeavingDocumentViewModel
             {
-                bonNo =GenerateBon( from, date),
-                date = date,
+                bonNo = GenerateBon(from, csv.FirstOrDefault().Date),
+                date = csv.FirstOrDefault().Date,
                 bonType = from == "PRODUKSI" ? "PRODUKSI" : from == "RETUR PACKING" ? "PACKING"
                           : from == "RETUR FINISHING" ? "FINISHING" : from == "RETUR PRINTING" ? "PRINTING"
-                          : from == "RECHEKING" ? "RECHEKING": "LAIN-LAIN",
+                          : from == "RECHEKING" ? "RECHEKING" : "LAIN-LAIN",
                 storageId = 105,
                 storageCode = "DNWDX2GZ",
                 storageName = "WEAVING 2 (EX. WEAVING 3) / WEAVING",
                 remark = "",
                 type = "IN",
-            
+
                 items = DocsItems
             };
 
@@ -378,7 +403,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
         }
 
 
-        public async Task<InventoryWeavingDocument>MapToModel(InventoryWeavingDocumentViewModel data)
+        public async Task<InventoryWeavingDocument> MapToModel(InventoryWeavingDocumentViewModel data)
         {
 
             InventoryWeavingDocument model = new InventoryWeavingDocument
@@ -426,29 +451,30 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
                 }).ToList()
             };
             return model;
-            
+
         }
 
         private string GenerateBon(string from, DateTimeOffset date)
         {
-            
-            
-            var type = from == "PRODUKSI" ? "PR" : from == "RETUR PACKING" ? "PC" : from == "RETUR FINISHING" ? "RF" 
-                      :from == "RETUR PRINTING" ? "RP" : from == "RECHEKING" ? "RC" :"LL";
 
-            var totalData = DbSet.Count(s => s.BonNo.Substring(0,2) == type && s._CreatedUtc.Year == date.Date.Year) + 1;
+
+            var type = from == "PRODUKSI" ? "PR" : from == "RETUR PACKING" ? "PC" : from == "RETUR FINISHING" ? "RF"
+                      : from == "RETUR PRINTING" ? "RP" : from == "RECHEKING" ? "RC" : "LL";
+
+            var totalData = DbSet.Count(s => s.BonNo.Substring(0, 2) == type && s._CreatedUtc.Year == date.Date.Year) + 1;
 
             if (totalData == 0)
             {
                 return string.Format("{0}.{1}.{2}", type, date.ToString("yy"), "0001");
 
             }
-            else {
+            else
+            {
                 return string.Format("{0}.{1}.{2}", type, date.ToString("yy"), totalData.ToString().PadLeft(4, '0'));
             }
         }
 
-        private  InventoryWeavingDocumentDetailViewModel MapToViewModelById( InventoryWeavingDocument model)
+        private InventoryWeavingDocumentDetailViewModel MapToViewModelById(InventoryWeavingDocument model)
         {
             var vm = new InventoryWeavingDocumentDetailViewModel()
             {
@@ -514,8 +540,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
         {
             var data = this.DbSet.Where(d => d.Id.Equals(id) && d._IsDeleted.Equals(false))
                  .Include(p => p.Items).FirstOrDefault();
-                  
-            
+
+
             if (data == null)
                 return null;
 
@@ -525,5 +551,141 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
             return DocsItems;
         }
 
-    }
+        public ListResult<InventoryWeavingItemViewModel> ReadInputWeaving(string bonType, DateTimeOffset? dateFrom, DateTimeOffset? dateTo, int page, int size, string order, int offset)
+        {
+
+            IQueryable<InventoryWeavingDocument> Query = this.DbSet;
+
+            List<string> SelectedFields = new List<string>()
+                   {
+                      "date", "bonNo", "construction", "grade", "piece", "quantity", "quantityPiece"
+                   };
+
+            //DateTimeOffset DateFrom = dateFrom == null ? new DateTime(1970, 1, 1) : (DateTimeOffset)dateFrom;
+            //DateTimeOffset DateTo = dateTo == null ? DateTime.Now : (DateTimeOffset)dateTo;
+
+            var query = GetDataMonitoring(bonType, dateFrom, dateTo, offset);
+
+            //var query = (from a in DbContext.InventoryWeavingDocuments
+            //             join b in DbContext.InventoryWeavingDocumentItems on a.Id equals b.InventoryWeavingDocumentId
+            //             where a._IsDeleted == false
+            //                && b._IsDeleted == false
+            //                && a.BonType == (string.IsNullOrWhiteSpace(bonType) ? a.BonType : bonType)
+            //                && a.Type == "IN"
+            //                  && a.Date.AddHours(offset).Date >= DateFrom.Date
+            //                 && a.Date.AddHours(offset).Date <= DateTo.Date
+            //             orderby a.Date, a._CreatedUtc ascending
+            //             select new InventoryWeavingItemViewModel
+            //             {
+            //                 Date = a.Date,
+            //                 BonNo = a.BonNo,
+            //                 Construction = b.Construction,
+            //                 Grade = b.Grade,
+            //                 Piece = b.Piece,
+            //                 Quantity = b.Quantity,
+            //                 QuantityPiece = b.QuantityPiece
+            //             });
+            
+            var data = query.Skip((page - 1) * size).Take(size);
+
+            Dictionary<string, string> OrderDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(order);
+            Query = QueryHelper<InventoryWeavingDocument>.Order(Query, OrderDictionary);
+
+
+            return new ListResult<InventoryWeavingItemViewModel>(data.ToList(), page, size, data.Count());
+
+        }
+
+        public IQueryable<InventoryWeavingItemViewModel>GetDataMonitoring(string bonType, DateTimeOffset? dateFrom, DateTimeOffset? dateTo, int offset)
+        {
+            DateTimeOffset DateFrom = dateFrom == null ? new DateTime(1970, 1, 1) : (DateTimeOffset)dateFrom;
+            DateTimeOffset DateTo = dateTo == null ? DateTime.Now : (DateTimeOffset)dateTo;
+
+            var query = (from a in DbContext.InventoryWeavingDocuments
+                         join b in DbContext.InventoryWeavingDocumentItems on a.Id equals b.InventoryWeavingDocumentId
+                         where a._IsDeleted == false
+                            && b._IsDeleted == false
+                            && a.BonType == (string.IsNullOrWhiteSpace(bonType) ? a.BonType : bonType)
+                            && a.Type == "IN"
+                              && a.Date.AddHours(offset).Date >= DateFrom.Date
+                             && a.Date.AddHours(offset).Date <= DateTo.Date
+                         orderby a.Date, a._CreatedUtc ascending
+                         select new InventoryWeavingItemViewModel
+                         {
+                             Date = a.Date,
+                             BonNo = a.BonNo,
+                             Construction = b.Construction,
+                             Grade = b.Grade,
+                             Piece = b.Piece,
+                             Quantity = b.Quantity,
+                             QuantityPiece = b.QuantityPiece
+                         })
+                         ;
+            return query;
+        }
+
+        public MemoryStream GenerateExcel(string bonType, DateTimeOffset? dateFrom, DateTimeOffset? dateTo, int offSet)
+        {
+            var query = GetDataMonitoring(bonType, dateFrom, dateTo, offSet);
+            //var query = _repository.ReadAll()
+            //    .Where(s => s.Area == INSPECTIONMATERIAL && s.DyeingPrintingAreaInputProductionOrders.Any(d => !d.HasOutputDocument));
+            //var query = _repository.ReadAll().Where(s => s.Area == DyeingPrintingArea.INSPECTIONMATERIAL);
+            //if (dateFrom.HasValue && dateTo.HasValue)
+            //{
+            //    query = query.Where(s => dateFrom.Value.Date <= s.Date.ToOffset(new TimeSpan(offSet, 0, 0)).Date &&
+            //                s.Date.ToOffset(new TimeSpan(offSet, 0, 0)).Date <= dateTo.Value.Date);
+            //}
+            //else if (!dateFrom.HasValue && dateTo.HasValue)
+            //{
+            //    query = query.Where(s => s.Date.ToOffset(new TimeSpan(offSet, 0, 0)).Date <= dateTo.Value.Date);
+            //}
+            //else if (dateFrom.HasValue && !dateTo.HasValue)
+            //{
+            //    query = query.Where(s => dateFrom.Value.Date <= s.Date.ToOffset(new TimeSpan(offSet, 0, 0)).Date);
+            //}
+
+
+
+
+            //query = query.OrderBy(s => s.BonNo);
+
+            DataTable dt = new DataTable();
+            dt.Columns.Add(new DataColumn() { ColumnName = "Tanggal ", DataType = typeof(string) });
+            dt.Columns.Add(new DataColumn() { ColumnName = "No Bon", DataType = typeof(string) });
+            dt.Columns.Add(new DataColumn() { ColumnName = "Construction", DataType = typeof(string) });
+            dt.Columns.Add(new DataColumn() { ColumnName = "Grade", DataType = typeof(string) });
+            dt.Columns.Add(new DataColumn() { ColumnName = "Piece", DataType = typeof(string) });
+            dt.Columns.Add(new DataColumn() { ColumnName = "Quantity", DataType = typeof(string) });
+            dt.Columns.Add(new DataColumn() { ColumnName = "Quantity Piece", DataType = typeof(string) });
+
+
+            if (query.Count() == 0)
+            {
+                dt.Rows.Add("", "", "", "", "", "", "");
+            }
+            else
+            {
+                foreach (var model in query)
+                {
+                    string date = model.Date == null ? "-" : model.Date.ToOffset(new TimeSpan(offSet, 0, 0)).ToString("dd MMM yyyy", new CultureInfo("id-ID"));
+                    //var dateIn = model.Date.Equals(DateTimeOffset.MinValue) ? "" : model.Date.ToOffset(new TimeSpan(offSet, 0, 0)).Date.ToString("d");
+
+                    dt.Rows.Add(date, model.BonNo, model.Construction, model.Grade, model.Piece, model.Quantity.ToString("N2", CultureInfo.InvariantCulture),
+                        model.QuantityPiece.ToString("N2", CultureInfo.InvariantCulture));
+
+                    //foreach (var item in model.DyeingPrintingAreaInputProductionOrders.Where(d => !d.HasOutputDocument).OrderBy(s => s.ProductionOrderNo))
+                    //foreach (var item in model.DyeingPrintingAreaInputProductionOrders.OrderBy(s => s.ProductionOrderNo))
+                    //{
+                    //    var dateIn = item.DateIn.Equals(DateTimeOffset.MinValue) ? "" : item.DateIn.ToOffset(new TimeSpan(offSet, 0, 0)).Date.ToString("d");
+
+                    //    dt.Rows.Add(model.BonNo, item.ProductionOrderNo, dateIn, item.ProductionOrderOrderQuantity.ToString("N2", CultureInfo.InvariantCulture),
+                    //        item.CartNo, item.Construction, item.Unit, item.Buyer, item.Color, item.Motif, item.UomUnit, item.InputQuantity.ToString("N2", CultureInfo.InvariantCulture));
+                    //}
+                }
+            }
+
+            return Excel.CreateExcel(new List<KeyValuePair<DataTable, string>>() { new KeyValuePair<DataTable, string>(dt, "Territory") }, true);
+        }
+
+    }   
 }

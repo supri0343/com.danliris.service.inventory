@@ -23,6 +23,9 @@ namespace Com.Danliris.Service.Inventory.Lib.ViewModels.InventoryWeavingViewMode
         public string UomUnit { get; set; }
         public double Quantity { get; set; }
         public double QuantityPiece { get; set; }
+        public double Qty { get; set; }
+        public double QtyPiece { get; set; }
         public string ProductRemark { get; set; }
+        public bool IsSave { get; set; }
     }
 }

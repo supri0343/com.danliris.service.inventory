@@ -22,7 +22,11 @@ namespace Com.Danliris.Service.Inventory.Lib.ViewModels.GarmentLeftoverWarehouse
         public string LocalSalesNoteNo { get; set; }
         public string BCNo { get; set; }
         public string BCType { get; set; }
-        public DateTimeOffset BCDate { get; set; }
+        public DateTimeOffset? BCDate { get; set; }
+        public double QtyKG { get; set; }
+        public string Composition { get; set; }
+        public string Const { get; set; }
+
 
     }
 }

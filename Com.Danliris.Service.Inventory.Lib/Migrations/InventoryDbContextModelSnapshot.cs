@@ -633,6 +633,12 @@ namespace Com.Danliris.Service.Inventory.Lib.Migrations
                     b.Property<string>("UomUnit")
                         .HasMaxLength(100);
 
+                    b.Property<string>("Width")
+                        .HasMaxLength(500);
+
+                    b.Property<string>("Yarn")
+                        .HasMaxLength(500);
+
                     b.Property<string>("_CreatedAgent")
                         .IsRequired()
                         .HasMaxLength(255);
@@ -768,6 +774,14 @@ namespace Com.Danliris.Service.Inventory.Lib.Migrations
 
                     b.Property<string>("PONo")
                         .HasMaxLength(25);
+
+                    b.Property<string>("ProductCode")
+                        .HasMaxLength(50);
+
+                    b.Property<long>("ProductId");
+
+                    b.Property<string>("ProductName")
+                        .HasMaxLength(100);
 
                     b.Property<double>("Quantity");
 
@@ -1018,6 +1032,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Migrations
 
                     b.Property<string>("LocalSalesNoteNo")
                         .HasMaxLength(50);
+
+                    b.Property<double>("QtyKG");
 
                     b.Property<string>("Remark")
                         .HasMaxLength(3000);
@@ -1534,6 +1550,11 @@ namespace Com.Danliris.Service.Inventory.Lib.Migrations
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<bool>("Active");
+
+                    b.Property<double>("BasicPrice");
+
+                    b.Property<string>("Composition")
+                        .HasMaxLength(3000);
 
                     b.Property<string>("FabricRemark")
                         .HasMaxLength(3000);

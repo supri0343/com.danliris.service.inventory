@@ -40,7 +40,9 @@ using Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.Repor
 using Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.BalanceStock;
 
 using Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving;
-
+using Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.Report.Receipt.Aval;
+using Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.Report.Expenditure.Aval;
+using Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.Report.Stock;
 
 namespace Com.Danliris.Service.Inventory.WebApi
 {
@@ -109,9 +111,13 @@ namespace Com.Danliris.Service.Inventory.WebApi
                 .AddTransient<IGarmentLeftoverWarehouseReceiptAccessoriesService, GarmentLeftoverWarehouseReceiptAccessoriesService>()
                 .AddTransient<IGarmentLeftoverWarehouseBalanceStockService, GarmentLeftoverWarehouseBalanceStockService>()
                 .AddTransient<IReceiptMonitoringService, ReceiptMonitoringService>()
+                .AddTransient<IReceiptAvalMonitoringService, ReceiptAvalMonitoringService>()
                 .AddTransient<IGarmentLeftoverWarehouseReportExpenditureService, GarmentLeftoverWarehouseReportExpenditureService>()
+                .AddTransient<IGarmentLeftoverWarehouseStockReportService, GarmentLeftoverWarehouseStockReportService>()
                 .AddTransient<IInventoryWeavingDocumentUploadService, InventoryWeavingDocumentUploadService>()
                 .AddTransient<IInventoryWeavingMovementService, InventoryWeavingMovementService>()
+                .AddTransient<IExpenditureAvalMonitoringService, ExpenditureAvalMonitoringService>()
+                .AddTransient<IInventoryWeavingDocumentOutService, InventoryWeavingDocumentOutService>()
                 .AddScoped<IIdentityService, IdentityService>()
                 .AddScoped<IValidateService, ValidateService>()
                 .AddScoped<IHttpService, HttpService>()

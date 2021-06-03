@@ -447,11 +447,11 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
             DateTime DateFrom = dateFrom == null ? new DateTime(1970, 1, 1) : (DateTime)dateFrom;
             DateTime DateTo = dateTo == null ? new DateTime(1970, 1, 1) : (DateTime)dateTo;
             int index = 0;
-            var Query = from a in (from data in DbContext.GarmentLeftoverWarehouseReceiptFinishedGoods
-                                   where data._IsDeleted == false
-                                   && data.ReceiptDate.AddHours(offset).Date >= DateFrom.Date
-                                   && data.ReceiptDate.AddHours(offset).Date <= DateTo.Date
-                                   select new { data.FinishedGoodReceiptNo, data.ReceiptDate, data.UnitFromCode, data.Id })
+            var qA = from data in DbContext.GarmentLeftoverWarehouseReceiptFinishedGoods
+                     where data.ReceiptDate.AddHours(offset).Date >= DateFrom.Date
+                     && data.ReceiptDate.AddHours(offset).Date <= DateTo.Date
+                     select new { data.FinishedGoodReceiptNo, data.ReceiptDate, data.UnitFromCode, data.Id };
+            var Query = from a in qA
                         join b in DbContext.GarmentLeftoverWarehouseReceiptFinishedGoodItems on a.Id equals b.FinishedGoodReceiptId
                         select new ReceiptFinishedGoodMonitoringViewModel
                         {
