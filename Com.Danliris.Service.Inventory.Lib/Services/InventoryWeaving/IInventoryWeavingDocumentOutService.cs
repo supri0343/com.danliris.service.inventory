@@ -18,5 +18,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
         Task<InventoryWeavingDocument> MapToModel(InventoryWeavingDocumentOutViewModel data);
         Task Create(InventoryWeavingDocument model);
         MemoryStream DownloadCSVOut( DateTime dateFrom, DateTime dateTo, int clientTimeZoneOffset, string bonType);
+        Tuple<List<InventoryWeavingOutReportViewModel>, int> GetReport(string bonType, DateTime? dateFrom, DateTime? dateTo, int page, int size, string Order, int offset);
+        MemoryStream GenerateExcelReceiptReport(string bonType, DateTimeOffset? dateFrom, DateTimeOffset? dateTo, int offset);
+
     }
 }
