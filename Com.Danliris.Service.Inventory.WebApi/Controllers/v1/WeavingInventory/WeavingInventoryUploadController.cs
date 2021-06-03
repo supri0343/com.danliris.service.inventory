@@ -184,5 +184,26 @@ namespace Com.Danliris.Service.Inventory.WebApi.Controllers.v1.WeavingInventory
                 return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
             }
         }
+
+        [HttpGet("xls")]
+        public IActionResult GetExcelAll([FromHeader(Name = "x-timezone-offset")] string timezone, string from, DateTimeOffset? dateFrom,  DateTimeOffset? dateTo)
+        {
+            try
+            {
+                //VerifyUser();
+                byte[] xlsInBytes;
+                int clientTimeZoneOffset = Convert.ToInt32(timezone);
+                var Result = service.GenerateExcel(from, dateFrom, dateTo, clientTimeZoneOffset);
+                string filename = "Monitoring Penerimaan Gudang Weaving.xlsx";
+
+                xlsInBytes = Result.ToArray();
+                var file = File(xlsInBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", filename);
+                return file;
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
     }
 }
