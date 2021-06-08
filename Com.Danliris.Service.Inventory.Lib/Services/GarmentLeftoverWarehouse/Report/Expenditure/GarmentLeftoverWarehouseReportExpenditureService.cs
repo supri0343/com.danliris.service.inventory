@@ -143,7 +143,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                                  // ExpenditureAcessoriesItem
                              join b in DbContext.GarmentLeftoverWarehouseExpenditureAccessoriesItems on a.Id equals b.ExpenditureId
                              //join c in DbContext.GarmentLeftoverWarehouseReceiptAccessoryItems on b.PONo equals c.POSerialNumber
-                                from c in DbContext.GarmentLeftoverWarehouseReceiptFabricItems
+                                from c in DbContext.GarmentLeftoverWarehouseReceiptAccessoryItems
                              .Where(o => b.PONo == o.POSerialNumber).Take(1)
                              .DefaultIfEmpty()
                                 //Conditions
