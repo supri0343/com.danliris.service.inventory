@@ -37,7 +37,7 @@ namespace Com.Danliris.Service.Inventory.WebApi.Controllers.v1.GarmentLeftoverWa
 
                 return new FileStreamResult(stream, "application/pdf")
                 {
-                    FileDownloadName = $"Bon Keluar Fabric Gudang Sisa {viewModel.ExpenditureNo}.pdf"
+                    FileDownloadName = $"Bon Keluar Accessories Gudang Sisa {viewModel.ExpenditureNo}.pdf"
                 };
             }
             catch (Exception e)
