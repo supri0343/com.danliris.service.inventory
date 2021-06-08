@@ -1,6 +1,7 @@
 ﻿using Com.Danliris.Service.Inventory.Lib.Enums;
 using Com.Danliris.Service.Inventory.Lib.Helpers;
 using Com.Danliris.Service.Inventory.Lib.Models.GarmentLeftoverWarehouse.ExpenditureAccessories;
+using Com.Danliris.Service.Inventory.Lib.Models.GarmentLeftoverWarehouse.ReceiptAccessories;
 using Com.Danliris.Service.Inventory.Lib.Models.GarmentLeftoverWarehouse.Stock;
 using Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.Stock;
 using Com.Danliris.Service.Inventory.Lib.ViewModels;
@@ -387,6 +388,20 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.E
             };
 
             return stock;
+        }
+
+        public List<GarmentLeftoverWarehouseReceiptAccessoryItem> getProductForPDF(GarmentLeftoverWarehouseExpenditureAccessories model)
+        {
+            List<GarmentLeftoverWarehouseReceiptAccessoryItem> garmentProducts = new List<GarmentLeftoverWarehouseReceiptAccessoryItem>();
+            foreach (var item in model.Items)
+            {
+                var stock = DbContext.GarmentLeftoverWarehouseReceiptAccessoryItems.Where(a => a.POSerialNumber == item.PONo).FirstOrDefault();
+                if (stock != null)
+                {
+                    garmentProducts.Add(stock);
+                }
+            }
+            return garmentProducts;
         }
     }
 }
