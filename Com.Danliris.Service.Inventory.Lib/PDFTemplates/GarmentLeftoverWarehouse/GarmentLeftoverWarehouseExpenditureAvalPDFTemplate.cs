@@ -140,7 +140,7 @@ namespace Com.Danliris.Service.Inventory.Lib.PDFTemplates.GarmentLeftoverWarehou
                     bodyTable.AddCell(bodyTableCellLeftBorder);
                     bodyTableCellRightBorder.Phrase = new Phrase(item.Quantity.ToString(), normal_font);
                     bodyTable.AddCell(bodyTableCellRightBorder);
-                    bodyTableCellLeftBorder.Phrase = new Phrase("KG", normal_font);
+                    bodyTableCellLeftBorder.Phrase = new Phrase(item.Uom.Unit, normal_font);
                     bodyTable.AddCell(bodyTableCellLeftBorder);
 
                     totalQuantity += item.Quantity;

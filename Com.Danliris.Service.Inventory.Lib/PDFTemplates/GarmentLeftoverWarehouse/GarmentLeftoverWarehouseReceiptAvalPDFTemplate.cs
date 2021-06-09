@@ -48,10 +48,10 @@ namespace Com.Danliris.Service.Inventory.Lib.PDFTemplates.GarmentLeftoverWarehou
             avalType.Alignment = Element.ALIGN_CENTER;
             document.Add(avalType);
 
-            PdfPTable tableHeader = new PdfPTable(3);
-            tableHeader.WidthPercentage = 40;
+            PdfPTable tableHeader = new PdfPTable(6);
+            tableHeader.WidthPercentage = 100;
             tableHeader.HorizontalAlignment = Element.ALIGN_LEFT;
-            tableHeader.SetWidths(new float[] { 2f, 0.1f, 3f });
+            tableHeader.SetWidths(new float[] { 2f, 0.1f, 5f, 2f, 0.1f, 4f });
 
             PdfPCell cellHeaderContentLeft = new PdfPCell() { Border = Rectangle.NO_BORDER };
             cellHeaderContentLeft.Phrase = new Phrase("NO", bold_font);
@@ -59,6 +59,13 @@ namespace Com.Danliris.Service.Inventory.Lib.PDFTemplates.GarmentLeftoverWarehou
             cellHeaderContentLeft.Phrase = new Phrase(":", bold_font);
             tableHeader.AddCell(cellHeaderContentLeft);
             cellHeaderContentLeft.Phrase = new Phrase(viewModel.AvalReceiptNo, bold_font);
+            tableHeader.AddCell(cellHeaderContentLeft);
+
+            cellHeaderContentLeft.Phrase = new Phrase("Terima dari", normal_font);
+            tableHeader.AddCell(cellHeaderContentLeft);
+            cellHeaderContentLeft.Phrase = new Phrase(":", normal_font);
+            tableHeader.AddCell(cellHeaderContentLeft);
+            cellHeaderContentLeft.Phrase = new Phrase(viewModel.UnitFrom.Name, normal_font);
             tableHeader.AddCell(cellHeaderContentLeft);
 
             cellHeaderContentLeft.Phrase = new Phrase("Tanggal", normal_font);
@@ -73,19 +80,6 @@ namespace Com.Danliris.Service.Inventory.Lib.PDFTemplates.GarmentLeftoverWarehou
             cellHeaderContentLeft.Phrase = new Phrase("", bold_font);
             tableHeader.AddCell(cellHeaderContentLeft);
             cellHeaderContentLeft.Phrase = new Phrase("", bold_font);
-            tableHeader.AddCell(cellHeaderContentLeft);
-            cellHeaderContentLeft.Phrase = new Phrase("", bold_font);
-            tableHeader.AddCell(cellHeaderContentLeft);
-            cellHeaderContentLeft.Phrase = new Phrase("", bold_font);
-            tableHeader.AddCell(cellHeaderContentLeft);
-            cellHeaderContentLeft.Phrase = new Phrase("", bold_font);
-            tableHeader.AddCell(cellHeaderContentLeft);
-
-            cellHeaderContentLeft.Phrase = new Phrase("Terima dari", normal_font);
-            tableHeader.AddCell(cellHeaderContentLeft);
-            cellHeaderContentLeft.Phrase = new Phrase(":", normal_font);
-            tableHeader.AddCell(cellHeaderContentLeft);
-            cellHeaderContentLeft.Phrase = new Phrase(viewModel.UnitFrom.Name, normal_font);
             tableHeader.AddCell(cellHeaderContentLeft);
 
             tableHeader.SpacingAfter = 15f;
@@ -130,7 +124,7 @@ namespace Com.Danliris.Service.Inventory.Lib.PDFTemplates.GarmentLeftoverWarehou
                     bodyTable.AddCell(bodyTableCellLeftBorder);
                     bodyTableCellRightBorder.Phrase = new Phrase(item.Quantity.ToString(), normal_font);
                     bodyTable.AddCell(bodyTableCellRightBorder);
-                    bodyTableCellLeftBorder.Phrase = new Phrase("KG", normal_font);
+                    bodyTableCellLeftBorder.Phrase = new Phrase(item.Uom.Unit, normal_font);
                     bodyTable.AddCell(bodyTableCellLeftBorder);
 
                     totalQuantity += item.Quantity;
