@@ -27,7 +27,7 @@ namespace Com.Danliris.Service.Inventory.Lib.PDFTemplates.GarmentLeftoverWarehou
             Document document = new Document(PageSize.A5.Rotate(), MARGIN, MARGIN, MARGIN, 70);
             MemoryStream stream = new MemoryStream();
             PdfWriter writer = PdfWriter.GetInstance(document, stream);
-            string signee = viewModel.ExpenditureDestination == "JUAL LOKAL" ? viewModel.Buyer.Name : viewModel.ExpenditureDestination == "UNIT" ? viewModel.UnitExpenditure.Name : "";
+            string signee = viewModel.ExpenditureDestination == "JUAL LOKAL" ? viewModel.Buyer.Name : viewModel.ExpenditureDestination == "UNIT" ? viewModel.UnitExpenditure.Name : viewModel.ExpenditureDestination == "SAMPLE" ? "Bagian Sample" : "";
             writer.PageEvent = new GarmentLeftoverWarehouseExpenditureSignPDFTemplatePageEvent(signee);
 
             document.Open();

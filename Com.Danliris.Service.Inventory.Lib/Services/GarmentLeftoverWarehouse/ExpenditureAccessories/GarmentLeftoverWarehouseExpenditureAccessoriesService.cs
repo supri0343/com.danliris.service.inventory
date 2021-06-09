@@ -395,10 +395,23 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.E
             List<GarmentLeftoverWarehouseReceiptAccessoryItem> garmentProducts = new List<GarmentLeftoverWarehouseReceiptAccessoryItem>();
             foreach (var item in model.Items)
             {
-                var stock = DbContext.GarmentLeftoverWarehouseReceiptAccessoryItems.Where(a => a.POSerialNumber == item.PONo).FirstOrDefault();
+                var stock = DbContext.GarmentLeftoverWarehouseReceiptAccessoryItems.Where(a => a.POSerialNumber==item.PONo && a.ProductId == item.ProductId).FirstOrDefault();
                 if (stock != null)
                 {
                     garmentProducts.Add(stock);
+                }
+                else
+                {
+                    var balance= DbContext.GarmentLeftoverWarehouseBalanceStocksItems.Where(a => a.PONo == item.PONo && a.ProductId==item.ProductId).FirstOrDefault();
+                    if (balance != null)
+                    {
+                        GarmentLeftoverWarehouseReceiptAccessoryItem garmentLeftoverWarehouseReceiptAccessoryItem = new GarmentLeftoverWarehouseReceiptAccessoryItem
+                        {
+                            ProductRemark = balance.ProductRemark,
+                            ProductId = balance.ProductId
+                        };
+                        garmentProducts.Add(garmentLeftoverWarehouseReceiptAccessoryItem);
+                    }
                 }
             }
             return garmentProducts;
