@@ -27,7 +27,7 @@ namespace Com.Danliris.Service.Inventory.Lib.PDFTemplates.GarmentLeftoverWarehou
             Document document = new Document(PageSize.A5.Rotate(), MARGIN, MARGIN, MARGIN, 70);
             MemoryStream stream = new MemoryStream();
             PdfWriter writer = PdfWriter.GetInstance(document, stream);
-            string signee = viewModel.ExpenditureDestination == "JUAL LOKAL" ? viewModel.Buyer.Name : viewModel.ExpenditureDestination == "UNIT" ? viewModel.UnitExpenditure.Name : "";
+            string signee = viewModel.ExpenditureDestination == "JUAL LOKAL" ? viewModel.Buyer.Name : viewModel.ExpenditureDestination == "UNIT" ? viewModel.UnitExpenditure.Name : viewModel.ExpenditureDestination == "SAMPLE" ? "Bagian Sample" : "";
             writer.PageEvent = new GarmentLeftoverWarehouseExpenditureSignPDFTemplatePageEvent(signee);
 
             document.Open();
@@ -145,7 +145,7 @@ namespace Com.Danliris.Service.Inventory.Lib.PDFTemplates.GarmentLeftoverWarehou
             foreach (var item in viewModel.Items)
             {
                 index++;
-                var Product = items.Where(a => a.POSerialNumber == item.PONo).FirstOrDefault();
+                var Product = items.Where(a => a.ProductId.ToString() == item.Product.Id).FirstOrDefault();
                 bodyTableCellLeftBorder.Phrase = new Phrase(index.ToString(), normal_font);
                 bodyTable.AddCell(bodyTableCellLeftBorder);
                 bodyTableCellLeftBorder.Phrase = new Phrase(item.Product.Code, normal_font);
