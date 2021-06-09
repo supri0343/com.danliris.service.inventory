@@ -44,10 +44,10 @@ namespace Com.Danliris.Service.Inventory.Lib.PDFTemplates.GarmentLeftoverWarehou
             #endregion
 
             #region HEADER
-            PdfPTable tableHeader = new PdfPTable(3);
-            tableHeader.WidthPercentage = 40;
+            PdfPTable tableHeader = new PdfPTable(6);
+            tableHeader.WidthPercentage = 100;
             tableHeader.HorizontalAlignment = Element.ALIGN_LEFT;
-            tableHeader.SetWidths(new float[] { 2f, 0.1f, 3f });
+            tableHeader.SetWidths(new float[] { 2f, 0.1f, 5f, 2f, 0.1f, 4f });
 
             PdfPCell cellHeaderContentLeft = new PdfPCell() { Border = Rectangle.NO_BORDER };
             cellHeaderContentLeft.Phrase = new Phrase("NO", bold_font);
@@ -55,6 +55,13 @@ namespace Com.Danliris.Service.Inventory.Lib.PDFTemplates.GarmentLeftoverWarehou
             cellHeaderContentLeft.Phrase = new Phrase(":", bold_font);
             tableHeader.AddCell(cellHeaderContentLeft);
             cellHeaderContentLeft.Phrase = new Phrase(viewModel.FinishedGoodReceiptNo, bold_font);
+            tableHeader.AddCell(cellHeaderContentLeft);
+
+            cellHeaderContentLeft.Phrase = new Phrase("Terima dari", normal_font);
+            tableHeader.AddCell(cellHeaderContentLeft);
+            cellHeaderContentLeft.Phrase = new Phrase(":", normal_font);
+            tableHeader.AddCell(cellHeaderContentLeft);
+            cellHeaderContentLeft.Phrase = new Phrase(viewModel.UnitFrom.Name, normal_font);
             tableHeader.AddCell(cellHeaderContentLeft);
 
             cellHeaderContentLeft.Phrase = new Phrase("Tanggal", normal_font);
@@ -70,26 +77,7 @@ namespace Com.Danliris.Service.Inventory.Lib.PDFTemplates.GarmentLeftoverWarehou
             tableHeader.AddCell(cellHeaderContentLeft);
             cellHeaderContentLeft.Phrase = new Phrase("", bold_font);
             tableHeader.AddCell(cellHeaderContentLeft);
-            cellHeaderContentLeft.Phrase = new Phrase("", bold_font);
-            tableHeader.AddCell(cellHeaderContentLeft);
-            cellHeaderContentLeft.Phrase = new Phrase("", bold_font);
-            tableHeader.AddCell(cellHeaderContentLeft);
-            cellHeaderContentLeft.Phrase = new Phrase("", bold_font);
-            tableHeader.AddCell(cellHeaderContentLeft);
 
-            cellHeaderContentLeft.Phrase = new Phrase("Terima dari", normal_font);
-            tableHeader.AddCell(cellHeaderContentLeft);
-            cellHeaderContentLeft.Phrase = new Phrase(":", normal_font);
-            tableHeader.AddCell(cellHeaderContentLeft);
-            cellHeaderContentLeft.Phrase = new Phrase(viewModel.UnitFrom.Name, normal_font);
-            tableHeader.AddCell(cellHeaderContentLeft);
-
-            //cellHeaderContentLeft.Phrase = new Phrase("Dasar terima", normal_font);
-            //tableHeader.AddCell(cellHeaderContentLeft);
-            //cellHeaderContentLeft.Phrase = new Phrase(":", normal_font);
-            //tableHeader.AddCell(cellHeaderContentLeft);
-            //cellHeaderContentLeft.Phrase = new Phrase(viewModel., normal_font);
-            //tableHeader.AddCell(cellHeaderContentLeft);
 
 
             tableHeader.SpacingAfter = 15f;
