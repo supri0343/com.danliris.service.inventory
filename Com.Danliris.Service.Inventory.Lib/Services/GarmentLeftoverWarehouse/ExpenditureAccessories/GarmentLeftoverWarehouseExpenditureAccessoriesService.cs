@@ -1,6 +1,7 @@
 ﻿using Com.Danliris.Service.Inventory.Lib.Enums;
 using Com.Danliris.Service.Inventory.Lib.Helpers;
 using Com.Danliris.Service.Inventory.Lib.Models.GarmentLeftoverWarehouse.ExpenditureAccessories;
+using Com.Danliris.Service.Inventory.Lib.Models.GarmentLeftoverWarehouse.ReceiptAccessories;
 using Com.Danliris.Service.Inventory.Lib.Models.GarmentLeftoverWarehouse.Stock;
 using Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.Stock;
 using Com.Danliris.Service.Inventory.Lib.ViewModels;
@@ -80,6 +81,13 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.E
                     modelItem.UomUnit = viewModelItem.Uom.Unit;
                 }
 
+                if (viewModelItem.Product != null)
+                {
+                    modelItem.ProductId = long.Parse(viewModelItem.Product.Id);
+                    modelItem.ProductCode = viewModelItem.Product.Code;
+                    modelItem.ProductName = viewModelItem.Product.Name;
+                }
+
                 model.Items.Add(modelItem);
             }
 
@@ -124,6 +132,13 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.E
                     {
                         Id = modelItem.UomId.ToString(),
                         Unit = modelItem.UomUnit
+                    };
+
+                    viewModelItem.Product = new ProductViewModel
+                    {
+                        Id = modelItem.ProductId.ToString(),
+                        Code = modelItem.ProductCode,
+                        Name = modelItem.ProductName
                     };
 
                     viewModel.Items.Add(viewModelItem);
@@ -366,10 +381,40 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.E
                 PONo = item.PONo,
                 UomId = item.UomId,
                 UomUnit = item.UomUnit,
-                Quantity = item.Quantity
+                Quantity = item.Quantity,
+                ProductCode = item.ProductCode,
+                ProductId = item.ProductId,
+                ProductName = item.ProductName
             };
 
             return stock;
+        }
+
+        public List<GarmentLeftoverWarehouseReceiptAccessoryItem> getProductForPDF(GarmentLeftoverWarehouseExpenditureAccessories model)
+        {
+            List<GarmentLeftoverWarehouseReceiptAccessoryItem> garmentProducts = new List<GarmentLeftoverWarehouseReceiptAccessoryItem>();
+            foreach (var item in model.Items)
+            {
+                var stock = DbContext.GarmentLeftoverWarehouseReceiptAccessoryItems.Where(a => a.POSerialNumber==item.PONo && a.ProductId == item.ProductId).FirstOrDefault();
+                if (stock != null)
+                {
+                    garmentProducts.Add(stock);
+                }
+                else
+                {
+                    var balance= DbContext.GarmentLeftoverWarehouseBalanceStocksItems.Where(a => a.PONo == item.PONo && a.ProductId==item.ProductId).FirstOrDefault();
+                    if (balance != null)
+                    {
+                        GarmentLeftoverWarehouseReceiptAccessoryItem garmentLeftoverWarehouseReceiptAccessoryItem = new GarmentLeftoverWarehouseReceiptAccessoryItem
+                        {
+                            ProductRemark = balance.ProductRemark,
+                            ProductId = balance.ProductId
+                        };
+                        garmentProducts.Add(garmentLeftoverWarehouseReceiptAccessoryItem);
+                    }
+                }
+            }
+            return garmentProducts;
         }
     }
 }

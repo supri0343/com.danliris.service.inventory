@@ -4,14 +4,16 @@ using Com.Danliris.Service.Inventory.Lib;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Com.Danliris.Service.Inventory.Lib.Migrations
 {
     [DbContext(typeof(InventoryDbContext))]
-    partial class InventoryDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210525041630_AddField_BasicPrice_GarmentLeftoverWarehouseReceiptFabricItem")]
+    partial class AddField_BasicPrice_GarmentLeftoverWarehouseReceiptFabricItem
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1032,8 +1034,6 @@ namespace Com.Danliris.Service.Inventory.Lib.Migrations
 
                     b.Property<string>("LocalSalesNoteNo")
                         .HasMaxLength(50);
-
-                    b.Property<double>("QtyKG");
 
                     b.Property<string>("Remark")
                         .HasMaxLength(3000);

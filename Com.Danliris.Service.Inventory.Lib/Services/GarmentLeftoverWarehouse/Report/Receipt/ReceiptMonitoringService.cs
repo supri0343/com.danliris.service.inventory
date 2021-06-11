@@ -69,7 +69,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
             var fabricIds = queryResult.Select(s => s.fabricId).Distinct().ToList();
             var fabrics = DbContext.GarmentLeftoverWarehouseReceiptFabrics.Where(w => fabricIds.Contains(w.Id)).Select(s => new { s.Id, s.ReceiptNoteNo, s.ReceiptDate, s.UnitFromCode, s.UENNo }).ToList();
             var itemIds = queryResult.Select(s => s.itemId).Distinct().ToList();
-            var items = DbContext.GarmentLeftoverWarehouseReceiptFabricItems.Where(w => itemIds.Contains(w.Id)).Select(s => new { s.Id, s.POSerialNumber, s.ProductCode, s.ProductName, s.Quantity, s.UomUnit, s.ProductRemark, s.FabricRemark }).ToList();
+            var items = DbContext.GarmentLeftoverWarehouseReceiptFabricItems.Where(w => itemIds.Contains(w.Id)).Select(s => new { s.Id, s.POSerialNumber, s.ProductCode, s.ProductName, s.Quantity, s.UomUnit, s.ProductRemark, s.FabricRemark, s.Composition }).ToList();
 
             int i = ((page - 1) * size) + 1;
             foreach (var item in queryResult)
@@ -90,6 +90,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                 vm.index = i;
                 vm.UENNo = fabric.UENNo;
                 vm.FabricRemark = fabricItem.FabricRemark;
+                vm.Composition = fabricItem.Composition;
 
                 listData.Add(vm);
                 i++;
@@ -149,7 +150,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
             result.Columns.Add(new DataColumn() { ColumnName = "Nomor PO", DataType = typeof(String) });
             result.Columns.Add(new DataColumn() { ColumnName = "Nama Barang", DataType = typeof(String) });
             result.Columns.Add(new DataColumn() { ColumnName = "Kode Barang", DataType = typeof(String) });
-            result.Columns.Add(new DataColumn() { ColumnName = "Keterangan Barang", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Komposisi", DataType = typeof(String) });
             result.Columns.Add(new DataColumn() { ColumnName = "Konstruksi", DataType = typeof(String) });
             result.Columns.Add(new DataColumn() { ColumnName = "Qty", DataType = typeof(double) });
             result.Columns.Add(new DataColumn() { ColumnName = "Satuan", DataType = typeof(String) });
@@ -193,7 +194,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                         date += z.ToString("dd MMM yyyy", new CultureInfo("id-ID"));
                     }
                     result.Rows.Add(index, item.ReceiptNoteNo, item.ReceiptDate.ToString("dd MMM yyyy", new CultureInfo("id-ID")),
-                        item.UENNo, item.UnitFrom.Code, item.POSerialNumber, item.Product.Name, item.Product.Code, item.ProductRemark, item.FabricRemark, item.Quantity,
+                        item.UENNo, item.UnitFrom.Code, item.POSerialNumber, item.Product.Name, item.Product.Code, item.Composition, item.FabricRemark, item.Quantity,
                         item.Uom.Unit, no, type, date);
                 }
             }
