@@ -22,6 +22,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
         public readonly IServiceProvider ServiceProvider;
         public InventoryDbContext DbContext;
         private readonly string GarmentShippingLocalCoverLetterUri;
+        private readonly string GarmentCoreProductUri;
 
         public GarmentLeftoverWarehouseReportExpenditureService(IServiceProvider serviceProvider, InventoryDbContext dbContext)
         {
@@ -29,6 +30,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
             ServiceProvider = serviceProvider;
             IdentityService = serviceProvider.GetService<IIdentityService>();
             GarmentShippingLocalCoverLetterUri = APIEndpoint.PackingInventory + "garment-shipping/local-cover-letters";
+            GarmentCoreProductUri = APIEndpoint.Core + "master/garmentProducts";
         }
 
         public Tuple<List<GarmentLeftoverWarehouseReportExpenditureViewModel>, int> GetReport(DateTime? dateFrom, DateTime? dateTo, string receiptType, int page, int size, string Order, int offset)
@@ -50,13 +52,11 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
             Pageable<GarmentLeftoverWarehouseReportExpenditureViewModel> pageable = new Pageable<GarmentLeftoverWarehouseReportExpenditureViewModel>(Query, page - 1, size);
             List<GarmentLeftoverWarehouseReportExpenditureViewModel> Data = pageable.Data.ToList<GarmentLeftoverWarehouseReportExpenditureViewModel>();
 
-            //var localSalesNoteNo = Data.Where(t => t.LocalSalesNoteNo != null).Select(o => o.LocalSalesNoteNo).Distinct();
-
-
             Data.ForEach(c => {
                 if(!String.IsNullOrEmpty(c.LocalSalesNoteNo))
                 {
                     var salesNotes = GetBcFromShipping(c.LocalSalesNoteNo);
+                    
                     if(salesNotes != null)
                     {
                         if (salesNotes["noteNo"].ToString() == c.LocalSalesNoteNo)
@@ -67,14 +67,15 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                         }
                     } 
                 }
-                
+                var garmentProduct = GetProductFromCore(c.Product.Id);
+                if (garmentProduct != null)
+                {
+                    c.Composition = garmentProduct["Composition"].ToString();
+                    c.Const = receiptType == "ACCESSORIES" ? "-" : garmentProduct["Const"].ToString() + "; " + garmentProduct["Yarn"].ToString() + "; " + garmentProduct["Width"].ToString();
+                }
             });
 
-        
-
             int TotalData = pageable.TotalCount;
-
-
 
             return Tuple.Create(Data, TotalData);
         }
@@ -91,51 +92,45 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
             if (receiptType == "FABRIC")
             {
                 QueryFabric = (from a in DbContext.GarmentLeftoverWarehouseExpenditureFabrics
-                                 // ExpenditureAcessoriesItem
-                             join b in DbContext.GarmentLeftoverWarehouseExpenditureFabricItems on a.Id equals b.ExpenditureId
-                             //join c in DbContext.GarmentLeftoverWarehouseReceiptFabricItems on b.PONo equals c.POSerialNumber
-                             from c in DbContext.GarmentLeftoverWarehouseReceiptFabricItems
-                               .Where(o => b.PONo == o.POSerialNumber).Take(1)
-                               .DefaultIfEmpty()
-                                   //Conditions
+                               join b in DbContext.GarmentLeftoverWarehouseExpenditureFabricItems on a.Id equals b.ExpenditureId
+                               from c in DbContext.GarmentLeftoverWarehouseStocks
+                                .Where(o => b.PONo == o.PONo).Take(1)
+                                .DefaultIfEmpty()
                                where a._IsDeleted == false
                                  && a.ExpenditureDate.AddHours(offset).Date >= DateFrom.Date
                                  && a.ExpenditureDate.AddHours(offset).Date <= DateTo.Date
-                             select new GarmentLeftoverWarehouseReportExpenditureViewModel
-                             {
-                                 ExpenditureNo = a.ExpenditureNo,
-                                 ExpenditureDate = a.ExpenditureDate,
-                                 ExpenditureDestination = a.ExpenditureDestination,
-                                 DescriptionOfPurpose = a.ExpenditureDestination == "JUAL LOKAL" ? a.BuyerName : a.ExpenditureDestination == "UNIT" ? a.UnitExpenditureCode : a.ExpenditureDestination == "LAIN-LAIN" ? a.EtcRemark : "SAMPLE",
-                                 PONo = b.PONo,
-                                 Product = new ProductViewModel
-                                 {
-                                     Id = Convert.ToString(c.ProductId),
-                                     Code = c.ProductCode,
-                                     Name = c.ProductName,
-                                 },
-                                 ProductRemark = c.ProductRemark,
-                                 Quantity = b.Quantity,
-                                 Uom = new UomViewModel
-                                 {
-                                     Id = Convert.ToString(b.UomId),
-                                     Unit = b.UomUnit
-                                 },
-                                 LocalSalesNoteNo = a.LocalSalesNoteNo,
-                                 _LastModifiedUtc = a._LastModifiedUtc
-                             });
+                               select new GarmentLeftoverWarehouseReportExpenditureViewModel
+                                {
+                                     ExpenditureNo = a.ExpenditureNo,
+                                     ExpenditureDate = a.ExpenditureDate,
+                                     ExpenditureDestination = a.ExpenditureDestination,
+                                     DescriptionOfPurpose = a.ExpenditureDestination == "JUAL LOKAL" ? a.BuyerName : a.ExpenditureDestination == "UNIT" ? a.UnitExpenditureCode : a.ExpenditureDestination == "LAIN-LAIN" ? a.EtcRemark : "SAMPLE",
+                                     PONo = b.PONo,
+                                     Product = new ProductViewModel
+                                     {
+                                         Id = Convert.ToString(c.ProductId),
+                                         Code = c.ProductCode,
+                                         Name = c.ProductName,
+                                     },
+                                     Quantity = b.Quantity,
+                                     Uom = new UomViewModel
+                                     {
+                                         Id = Convert.ToString(b.UomId),
+                                         Unit = b.UomUnit
+                                     },
+                                     QtyKG = a.QtyKG,
+                                     LocalSalesNoteNo = a.LocalSalesNoteNo,
+                                     _LastModifiedUtc = a._LastModifiedUtc
+                                });
                 Query = QueryFabric;
             } 
             if(receiptType == "ACCESSORIES")
             {
                 QueryAcc = (from a in DbContext.GarmentLeftoverWarehouseExpenditureAccessories
-                                 // ExpenditureAcessoriesItem
-                             join b in DbContext.GarmentLeftoverWarehouseExpenditureAccessoriesItems on a.Id equals b.ExpenditureId
-                             //join c in DbContext.GarmentLeftoverWarehouseReceiptAccessoryItems on b.PONo equals c.POSerialNumber
-                                from c in DbContext.GarmentLeftoverWarehouseReceiptFabricItems
+                            join b in DbContext.GarmentLeftoverWarehouseExpenditureAccessoriesItems on a.Id equals b.ExpenditureId
+                            from c in DbContext.GarmentLeftoverWarehouseReceiptAccessoryItems
                              .Where(o => b.PONo == o.POSerialNumber).Take(1)
                              .DefaultIfEmpty()
-                                //Conditions
                             where a._IsDeleted == false
                                  && a.ExpenditureDate.AddHours(offset).Date >= DateFrom.Date
                                  && a.ExpenditureDate.AddHours(offset).Date <= DateTo.Date
@@ -148,11 +143,11 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                                  PONo = b.PONo,
                                  Product = new ProductViewModel
                                  {
-                                     Id = Convert.ToString(c.ProductId),
-                                     Code = c.ProductCode,
-                                     Name = c.ProductName,
+                                     Id = c!=null ? Convert.ToString(c.ProductId) : DbContext.GarmentLeftoverWarehouseBalanceStocksItems.Where(aa => aa.PONo == b.PONo).Select(aa => aa.ProductId.ToString()).FirstOrDefault(),
+                                     Code = c != null ? c.ProductCode : DbContext.GarmentLeftoverWarehouseBalanceStocksItems.Where(aa => aa.PONo == b.PONo).Select(aa => aa.ProductCode).FirstOrDefault(),
+                                     Name = c != null ? c.ProductName : DbContext.GarmentLeftoverWarehouseBalanceStocksItems.Where(aa => aa.PONo == b.PONo).Select(aa => aa.ProductName).FirstOrDefault(),
                                  },
-                                 ProductRemark = c.ProductRemark,
+                                 ProductRemark = c.ProductRemark!= null ? c.ProductRemark : DbContext.GarmentLeftoverWarehouseBalanceStocksItems.Where(aa=> aa.PONo == b.PONo).Select(aa=>aa.ProductRemark).FirstOrDefault(),
                                  Quantity = b.Quantity,
                                  Uom = new UomViewModel
                                  {
@@ -167,10 +162,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
             if (string.IsNullOrEmpty(receiptType))
             {
                 QueryFabric = (from a in DbContext.GarmentLeftoverWarehouseExpenditureFabrics
-                                   // ExpenditureAcessoriesItem
                                join b in DbContext.GarmentLeftoverWarehouseExpenditureFabricItems on a.Id equals b.ExpenditureId
                                join c in DbContext.GarmentLeftoverWarehouseReceiptFabricItems on b.PONo equals c.POSerialNumber
-                               //Conditions
                                where a._IsDeleted == false
                                    && a.ExpenditureDate.AddHours(offset).Date >= DateFrom.Date
                                    && a.ExpenditureDate.AddHours(offset).Date <= DateTo.Date
@@ -198,10 +191,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                                    _LastModifiedUtc = a._LastModifiedUtc
                                });
                 QueryAcc = (from a in DbContext.GarmentLeftoverWarehouseExpenditureAccessories
-                                // ExpenditureAcessoriesItem
                             join b in DbContext.GarmentLeftoverWarehouseExpenditureAccessoriesItems on a.Id equals b.ExpenditureId
                             join c in DbContext.GarmentLeftoverWarehouseReceiptAccessoryItems on b.PONo equals c.POSerialNumber
-                            //Conditions
                             where a._IsDeleted == false
                                 && a.ExpenditureDate.AddHours(offset).Date >= DateFrom.Date
                                 && a.ExpenditureDate.AddHours(offset).Date <= DateTo.Date
@@ -255,6 +246,23 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
             }
             return null;
         }
+        
+        private Dictionary<string, Object> GetProductFromCore(string productId)
+        {
+            var httpService = (IHttpService)ServiceProvider.GetService(typeof(IHttpService));
+            var responseGarmentProduct = httpService.GetAsync($"{GarmentCoreProductUri}/" + productId).Result.Content.ReadAsStringAsync();
+
+            Dictionary<string, object> resultGarmentProduct = JsonConvert.DeserializeObject<Dictionary<string, object>>(responseGarmentProduct.Result);
+            var jsonLocalCoverLetter = resultGarmentProduct.Single(p => p.Key.Equals("data")).Value;
+            var a = JsonConvert.DeserializeObject<Dictionary<string, object>>(jsonLocalCoverLetter.ToString());
+            //if (a.Count > 0)
+            //{
+                Dictionary<string, object> dataLocalCoverLetter = JsonConvert.DeserializeObject<Dictionary<string, object>>(jsonLocalCoverLetter.ToString());
+                return dataLocalCoverLetter;
+            //}
+           // return null;
+
+        }
 
         public MemoryStream GenerateExcel(DateTime? dateFrom, DateTime? dateTo, string receiptType, int offset)
         {
@@ -267,10 +275,12 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
             result.Columns.Add(new DataColumn() { ColumnName = "Tanggal Bon", DataType = typeof(String) });
             result.Columns.Add(new DataColumn() { ColumnName = "Tujuan", DataType = typeof(String) });
             result.Columns.Add(new DataColumn() { ColumnName = "Keterangan Tujuan", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Jumlah Keluar (KG)", DataType = typeof(double) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Komposisi", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Konstruksi", DataType = typeof(String) });
             result.Columns.Add(new DataColumn() { ColumnName = "Nomor PO", DataType = typeof(String) });
             result.Columns.Add(new DataColumn() { ColumnName = "Nama Barang", DataType = typeof(String) });
             result.Columns.Add(new DataColumn() { ColumnName = "Kode Barang", DataType = typeof(String) });
-            result.Columns.Add(new DataColumn() { ColumnName = "Keterangan Barang", DataType = typeof(String) });
             result.Columns.Add(new DataColumn() { ColumnName = "Qty", DataType = typeof(double) });
             result.Columns.Add(new DataColumn() { ColumnName = "Satuan", DataType = typeof(String) });
             result.Columns.Add(new DataColumn() { ColumnName = "No Nota Penjualan", DataType = typeof(String) });
@@ -278,16 +288,37 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
             result.Columns.Add(new DataColumn() { ColumnName = "Tipe Bc", DataType = typeof(String) });
             result.Columns.Add(new DataColumn() { ColumnName = "Tanggal Bc", DataType = typeof(String) });
             if (Query.ToArray().Count() == 0)
-                result.Rows.Add("", "", "", "", "", "", "", "", "", 0, "", "", 0, "",""); // to allow column name to be generated properly for empty data as template
+                result.Rows.Add("", "", "", "", "",0, "", "", "", "", "", 0, "", "", 0, "",""); // to allow column name to be generated properly for empty data as template
             else
             {
                 int index = 0;
                 foreach (var item in Query)
                 {
                     index++;
-                    //DateTimeOffset date = item.date ?? new DateTime(1970, 1, 1);
-                    //string dateString = date == new DateTime(1970, 1, 1) ? "-" : date.ToOffset(new TimeSpan(offset, 0, 0)).ToString("dd MMM yyyy", new CultureInfo("id-ID"));
-                    result.Rows.Add(index, item.ExpenditureNo, item.ExpenditureDate.ToString("dd MMM yyyy", new CultureInfo("id-ID")), item.ExpenditureDestination, item.DescriptionOfPurpose, item.PONo, item.Product.Name, item.Product.Code, item.ProductRemark, item.Quantity, item.Uom.Unit, item.LocalSalesNoteNo, item.BCNo, item.BCType, item.BCDate?.ToString("dd MMM yyyy", new CultureInfo("id-ID")));
+                    var garmentProduct = GetProductFromCore(item.Product.Id);
+                    if (garmentProduct != null)
+                    {
+                        item.Composition = garmentProduct["Composition"].ToString();
+                        item.Const = receiptType == "ACCESSORIES" ? "-" : garmentProduct["Const"].ToString() + "; " + garmentProduct["Yarn"].ToString() + "; " + garmentProduct["Width"].ToString();
+                    }
+                    result.Rows.Add(
+                        index, 
+                        item.ExpenditureNo, 
+                        item.ExpenditureDate.ToString("dd MMM yyyy", new CultureInfo("id-ID")), 
+                        item.ExpenditureDestination, 
+                        item.DescriptionOfPurpose, 
+                        item.QtyKG,
+                        item.Composition,
+                        item.Const,
+                        item.PONo, 
+                        item.Product.Name, 
+                        item.Product.Code, 
+                        item.Quantity, 
+                        item.Uom.Unit, 
+                        item.LocalSalesNoteNo, 
+                        item.BCNo, 
+                        item.BCType, 
+                        item.BCDate?.ToString("dd MMM yyyy", new CultureInfo("id-ID")));
                 }
             }
 

@@ -20,6 +20,7 @@ namespace Com.Danliris.Service.Inventory.Lib.ViewModels.GarmentLeftoverWarehouse
         public string Remark { get; set; }
         public string LocalSalesNoteNo { get; set; }
         public int LocalSalesNoteId { get; set; }
+        public double QtyKG { get; set; }
 
         public List<GarmentLeftoverWarehouseExpenditureFabricItemViewModel> Items { get; set; }
 
@@ -59,6 +60,11 @@ namespace Com.Danliris.Service.Inventory.Lib.ViewModels.GarmentLeftoverWarehouse
                 if (ExpenditureDestination == "LAIN-LAIN" && string.IsNullOrWhiteSpace(EtcRemark))
                 {
                     yield return new ValidationResult("Keterangan Lain-lain tidak boleh kosong", new List<string> { "EtcRemark" });
+                }
+
+                if(QtyKG <= 0)
+                {
+                    yield return new ValidationResult("Jumlah Keluar Tidak Boleh Kosong", new List<string> { "QtyKG" });
                 }
             }
 

@@ -4,6 +4,7 @@ using Com.Danliris.Service.Inventory.Lib.ViewModels.InventoryWeavingViewModel;
 using Microsoft.Extensions.Primitives;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -21,6 +22,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
        // Task<InventoryWeavingDocumentViewModel> MapToViewModel(List<InventoryWeavingDocumentCsvViewModel> data, DateTimeOffset date, string From);
         Task<InventoryWeavingDocumentViewModel> MapToViewModel(List<InventoryWeavingDocumentCsvViewModel> data, string From);
         ListResult<InventoryWeavingItemViewModel> ReadInputWeaving(string bonType, DateTimeOffset? dateFrom, DateTimeOffset? dateTo, int page, int size, string order, int offset);
+
+        MemoryStream GenerateExcel(string from, DateTimeOffset? dateFrom, DateTimeOffset? dateTo, int offSet);
 
 
     }

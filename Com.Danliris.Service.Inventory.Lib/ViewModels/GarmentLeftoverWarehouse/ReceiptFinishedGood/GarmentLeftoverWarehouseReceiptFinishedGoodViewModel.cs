@@ -74,17 +74,17 @@ namespace Com.Danliris.Service.Inventory.Lib.ViewModels.GarmentLeftoverWarehouse
                         errorItem["ExpenditureGoodNo"] = "No Bon Pengeluaran tidak boleh kosong";
                         errorCount++;
                     }
-                    if (item.Size == null)
-                    {
-                        errorItem["Size"] = "Produk tidak boleh kosong";
-                        errorCount++;
-                    }
+                    //if (item.Size == null)
+                    //{
+                    //    errorItem["Size"] = "Produk tidak boleh kosong";
+                    //    errorCount++;
+                    //}
 
-                    if (item.Uom == null)
-                    {
-                        errorItem["Uom"] = "Satuan tidak boleh kosong";
-                        errorCount++;
-                    }
+                    //if (item.Uom == null)
+                    //{
+                    //    errorItem["Uom"] = "Satuan tidak boleh kosong";
+                    //    errorCount++;
+                    //}
 
                     if (item.LeftoverComodity == null)
                     {
