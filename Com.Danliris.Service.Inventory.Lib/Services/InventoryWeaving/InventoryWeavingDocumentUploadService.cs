@@ -558,7 +558,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
 
             List<string> SelectedFields = new List<string>()
                    {
-                      "date", "bonNo", "construction", "grade", "piece", "quantity", "quantityPiece"
+                      "date", "bonNo", "referenceNo", "construction", "grade", "piece", "quantity", "quantityPiece"
                    };
 
             //DateTimeOffset DateFrom = dateFrom == null ? new DateTime(1970, 1, 1) : (DateTimeOffset)dateFrom;
@@ -614,6 +614,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
                          {
                              Date = a.Date,
                              BonNo = a.BonNo,
+                             ReferenceNo = b.ReferenceNo,
                              Construction = b.Construction,
                              Grade = b.Grade,
                              Piece = b.Piece,
@@ -652,6 +653,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
             DataTable dt = new DataTable();
             dt.Columns.Add(new DataColumn() { ColumnName = "Tanggal ", DataType = typeof(string) });
             dt.Columns.Add(new DataColumn() { ColumnName = "No Bon", DataType = typeof(string) });
+            dt.Columns.Add(new DataColumn() { ColumnName = "Nota", DataType = typeof(string) });
             dt.Columns.Add(new DataColumn() { ColumnName = "Construction", DataType = typeof(string) });
             dt.Columns.Add(new DataColumn() { ColumnName = "Grade", DataType = typeof(string) });
             dt.Columns.Add(new DataColumn() { ColumnName = "Piece", DataType = typeof(string) });
@@ -661,7 +663,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
 
             if (query.Count() == 0)
             {
-                dt.Rows.Add("", "", "", "", "", "", "");
+                dt.Rows.Add("", "", "", "", "", "", "", "");
             }
             else
             {
@@ -670,7 +672,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
                     string date = model.Date == null ? "-" : model.Date.ToOffset(new TimeSpan(offSet, 0, 0)).ToString("dd MMM yyyy", new CultureInfo("id-ID"));
                     //var dateIn = model.Date.Equals(DateTimeOffset.MinValue) ? "" : model.Date.ToOffset(new TimeSpan(offSet, 0, 0)).Date.ToString("d");
 
-                    dt.Rows.Add(date, model.BonNo, model.Construction, model.Grade, model.Piece, model.Quantity.ToString("N2", CultureInfo.InvariantCulture),
+                    dt.Rows.Add(date, model.BonNo, model.ReferenceNo, model.Construction, model.Grade, model.Piece, model.Quantity.ToString("N2", CultureInfo.InvariantCulture),
                         model.QuantityPiece.ToString("N2", CultureInfo.InvariantCulture));
 
                     //foreach (var item in model.DyeingPrintingAreaInputProductionOrders.Where(d => !d.HasOutputDocument).OrderBy(s => s.ProductionOrderNo))
