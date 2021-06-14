@@ -320,11 +320,150 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
                              s.FirstOrDefault(d => d.Type == "OUT") == null ? s.FirstOrDefault(d => d.Type == "IN").QtyPiece:0
                 //Quantity = item.FirstOrDefault().QtyOut== null ? item.FirstOrDefault().QtyIn : item.FirstOrDefault().QtyIn - item.FirstOrDefault().QtyOut
             }).Where(x => x.Qty > 0 && x.QtyPiece > 0).ToList();
-
-
-           
-
+            
             return result.AsQueryable(); 
         }
-     }
+
+
+
+        //RINCIAN PEMASUKAN
+        public Tuple<List<InventoryWeavingInOutViewModel>, int> ReadReportRecap(string bonType, DateTime? dateFrom, DateTime? dateTo, int page, int size, string Order, int offset)
+        {
+            var Query2 = GetReport(bonType, dateFrom, dateTo, offset);
+
+            var Query3 = Query2.Take(50);
+
+
+            Pageable<InventoryWeavingInOutViewModel> pageable = new Pageable<InventoryWeavingInOutViewModel>(Query2, page - 1, size);
+            List<InventoryWeavingInOutViewModel> data = pageable.Data.ToList<InventoryWeavingInOutViewModel>();
+            int totalData = pageable.TotalCount;
+
+            return Tuple.Create(data, totalData);
+        }
+
+        public MemoryStream GenerateExcelRecap(string bonType,  DateTime? dateFrom, DateTime? dateTo, int offset)
+        {
+
+            var Query = GetReport(bonType, dateFrom, dateTo, offset);
+            //query = query.OrderByDescending(b => b._LastModifiedUtc);
+            DataTable dt = new DataTable();
+            dt.Columns.Add(new DataColumn() { ColumnName = "No", DataType = typeof(String) });
+            dt.Columns.Add(new DataColumn() { ColumnName = "Konstruksi", DataType = typeof(String) });
+            dt.Columns.Add(new DataColumn() { ColumnName = "Kg", DataType = typeof(String) });
+            dt.Columns.Add(new DataColumn() { ColumnName = "Ball", DataType = typeof(String) });
+            dt.Columns.Add(new DataColumn() { ColumnName = "Piece", DataType = typeof(double) });
+            dt.Columns.Add(new DataColumn() { ColumnName = "Meter", DataType = typeof(double) });
+            dt.Columns.Add(new DataColumn() { ColumnName = "Ket", DataType = typeof(String) });
+            if (Query.ToArray().Count() == 0)
+                dt.Rows.Add("", "", "", "", 0, 0, ""); // to allow column name to be generated properly for empty data as template
+            else
+            {
+                int index = 0;
+                foreach (var item in Query)
+                {
+                    index++;
+                    dt.Rows.Add(index, item.Construction, "", "", item.QtyPiece, item.Qty);
+                }
+            }
+
+            return Excel.CreateExcel(new List<KeyValuePair<DataTable, string>>() { new KeyValuePair<DataTable, string>(dt, "Inventory Weaving") }, true);
+        }
+
+        public List<InventoryWeavingInOutViewModel> GetReport(string bonType, DateTime? dateFrom, DateTime? dateTo, int offset)
+        {
+
+            IQueryable<InventoryWeavingMovement> Query = this.DbSetMovement;
+
+            DateTime DateFrom = dateFrom == null ? new DateTime(1970, 1, 1) : (DateTime)dateFrom;
+            DateTime DateTo = dateTo == null ? DateTime.Now : (DateTime)dateTo;
+
+            var result = (from a in DbContext.InventoryWeavingDocuments
+                          join b in DbContext.InventoryWeavingMovements on a.Id equals b.InventoryWeavingDocumentId
+                          where a._IsDeleted == false
+                             && b._IsDeleted == false
+                             && a.BonType == (string.IsNullOrWhiteSpace(bonType) ? a.BonType : bonType)
+                               && a.Date.AddHours(offset).Date >= DateFrom.Date
+                              && a.Date.AddHours(offset).Date <= DateTo.Date
+                          orderby a.Date, a._CreatedUtc ascending
+                          select new InventoryWeavingInOutViewModel
+                          {
+                              Construction = b.Construction,
+                              Type = b.Type,
+                              MaterialName = b.MaterialName,
+                              WovenType = b.WovenType,
+                              Yarn1 = b.Yarn1,
+                              Yarn2 = b.Yarn2,
+                              YarnOrigin1 = b.YarnOrigin1,
+                              YarnOrigin2 = b.YarnOrigin2,
+                              YarnType1 = b.YarnType1,
+                              YarnType2 = b.YarnType2,
+                              Qty = b.Quantity,
+                              QtyPiece = b.QuantityPiece
+
+
+                          });
+
+            var data1 = result.GroupBy(s => new
+            {
+                s.Grade,
+
+                s.Type,
+                s.MaterialName,
+                s.WovenType,
+                s.Width,
+                s.Yarn1,
+                s.Yarn2,
+                s.YarnOrigin1,
+                s.YarnOrigin2,
+                s.YarnType1,
+                s.YarnType2
+            }).Select(s => new InventoryWeavingInOutViewModel()
+            {
+                Construction = s.FirstOrDefault().Construction,
+                Grade = s.Key.Grade,
+
+                Type = s.Key.Type,
+                Qty = s.Sum(d => d.Qty),
+                QtyPiece = s.Sum(d => d.QtyPiece),
+                MaterialName = s.Key.MaterialName,
+                WovenType = s.Key.WovenType,
+                Width = s.Key.Width,
+                Yarn1 = s.Key.Yarn1,
+                Yarn2 = s.Key.Yarn2,
+                YarnOrigin1 = s.Key.YarnOrigin1,
+                YarnOrigin2 = s.Key.YarnOrigin2,
+                YarnType1 = s.Key.YarnType1,
+                YarnType2 = s.Key.YarnType2
+
+
+
+            });
+                         
+                        var data = data1.GroupBy(s => new
+                         {
+                             s.Grade,
+                             s.MaterialName,
+                             s.WovenType,
+                             s.Width,
+                             s.Yarn1,
+                             s.Yarn2,
+                             s.YarnOrigin1,
+                             s.YarnOrigin2,
+                             s.YarnType1,
+                             s.YarnType2
+                         }).Select(s => new InventoryWeavingInOutViewModel()
+                         {
+
+                             Construction = s.FirstOrDefault().Construction,
+                             Qty = s.FirstOrDefault(d => d.Type == "OUT") != null ? s.FirstOrDefault(d => d.Type == "IN").Qty - s.FirstOrDefault(d => d.Type == "OUT").Qty :
+                                          s.FirstOrDefault(d => d.Type == "OUT") == null ? s.FirstOrDefault(d => d.Type == "IN").Qty : 0,
+                             QtyPiece = s.FirstOrDefault(d => d.Type == "OUT") != null ? s.FirstOrDefault(d => d.Type == "IN").QtyPiece - s.FirstOrDefault(d => d.Type == "OUT").QtyPiece :
+                                             s.FirstOrDefault(d => d.Type == "OUT") == null ? s.FirstOrDefault(d => d.Type == "IN").QtyPiece : 0
+                         }).Where(x => x.Qty > 0 && x.QtyPiece > 0).ToList();
+                        
+            return data.ToList();
+            
+
+        } 
+    }
 }

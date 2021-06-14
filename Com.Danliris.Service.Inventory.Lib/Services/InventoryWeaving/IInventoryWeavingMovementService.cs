@@ -17,5 +17,9 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
         Tuple<List<InventoryWeavingInOutViewModel>, int> ReadReportGrade(string grade, DateTime? dateTo, int page, int size, string Order, int offset);
        // List<InventoryWeavingItemDetailViewModel> GetGrade(string grade, DateTimeOffset? dateTo, int offset);
         MemoryStream GenerateExcel(string grade, DateTime? dateTo, int offset);
+
+        Tuple<List<InventoryWeavingInOutViewModel>, int> ReadReportRecap(string bonType, DateTime? dateFrom, DateTime? dateTo, int page, int size, string Order, int offset);
+        MemoryStream GenerateExcelRecap(string bonType, DateTime? dateFrom, DateTime? dateTo, int offset);
     }
 }
+
