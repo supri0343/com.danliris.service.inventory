@@ -195,7 +195,7 @@ namespace Com.Danliris.Service.Inventory.Lib.PDFTemplates.GarmentLeftoverWarehou
                     bodyTableCellLeftBorder.Phrase = new Phrase("KG", normal_font);
                     bodyTable.AddCell(bodyTableCellLeftBorder);
 
-                    totalQuantity += item.Quantity;
+                    totalQuantity += item.ActualQuantity;
                 }
                 bodyTableCellRightBorder.Phrase = new Phrase("TOTAL", bold_font);
                 bodyTableCellRightBorder.Colspan = 3;
@@ -247,7 +247,7 @@ namespace Com.Danliris.Service.Inventory.Lib.PDFTemplates.GarmentLeftoverWarehou
                     bodyTableCellLeftBorder.Phrase = new Phrase("KG", normal_font);
                     bodyTable.AddCell(bodyTableCellLeftBorder);
 
-                    totalQuantity += item.Quantity;
+                    totalQuantity += item.ActualQuantity;
                 }
                 bodyTableCellRightBorder.Phrase = new Phrase("TOTAL", bold_font);
                 bodyTableCellRightBorder.Colspan = 3;
