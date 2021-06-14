@@ -492,6 +492,33 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                 c.index = index;
 
             });
+
+            if (page == ((TotalData / size) + 1 ) && TotalData != 0)
+            {
+                var BeginingbalanceQtyTotal = Query.Sum(x => x.BeginingbalanceQty);
+                var QuantityReceiptTotal = Query.Sum(x => x.QuantityReceipt);
+                var QuantityExpendTotal = Query.Sum(x => x.QuantityExpend);
+                var EndbalanceQtyTotal = Query.Sum(x => x.EndbalanceQty);
+
+
+                Data.Add(new GarmentLeftoverWarehouseStockMonitoringViewModel
+                {
+                    index = 0,
+                    BeginingbalanceQty = BeginingbalanceQtyTotal,
+                    EndbalanceQty = EndbalanceQtyTotal,
+                    FabricRemark = "",
+                    PONo = "TOTAL",
+                    ProductCode = "",
+                    ProductName = "",
+                    ProductRemark = "",
+                    QuantityExpend = QuantityExpendTotal,
+                    QuantityReceipt = QuantityReceiptTotal,
+                    ReferenceType = "",
+                    RO = "",
+                    UnitCode = "",
+                    UomUnit = ""
+                });
+            }
             return Tuple.Create(Data, TotalData);
         }
 
@@ -499,6 +526,12 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
         {
             var Query = GetReportQuery(dateFrom, dateTo, unitId, "FABRIC", offset);
             Query = Query.OrderByDescending(b => b.PONo);
+
+            var BeginingbalanceQtyTotal = Query.Sum(x => x.BeginingbalanceQty);
+            var QuantityReceiptTotal = Query.Sum(x => x.QuantityReceipt);
+            var QuantityExpendTotal = Query.Sum(x => x.QuantityExpend);
+            var EndbalanceQtyTotal = Query.Sum(x => x.EndbalanceQty);
+
             DataTable result = new DataTable();
 
             result.Columns.Add(new DataColumn() { ColumnName = "No", DataType = typeof(String) });
@@ -525,6 +558,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                     //string dateString = date == new DateTime(1970, 1, 1) ? "-" : date.ToOffset(new TimeSpan(offset, 0, 0)).ToString("dd MMM yyyy", new CultureInfo("id-ID"));
                     result.Rows.Add(index, item.UnitCode, item.PONo, item.ProductCode, item.ProductName, item.ProductRemark, item.FabricRemark, item.BeginingbalanceQty, item.QuantityReceipt, item.QuantityExpend, item.EndbalanceQty, item.UomUnit);
                 }
+
+                result.Rows.Add("", "", "T O T A L......", "", "", "", "", BeginingbalanceQtyTotal, QuantityReceiptTotal, QuantityExpendTotal, EndbalanceQtyTotal, "");
             }
 
             return Excel.CreateExcel(new List<KeyValuePair<DataTable, string>>() { new KeyValuePair<DataTable, string>(result, "Report Stock Gudang Sisa - FABRIC") }, true);
@@ -535,6 +570,12 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
         {
             var Query = GetReportQuery(dateFrom, dateTo, unitId, "ACC", offset);
             Query = Query.OrderByDescending(b => b.PONo);
+
+            var BeginingbalanceQtyTotal = Query.Sum(x => x.BeginingbalanceQty);
+            var QuantityReceiptTotal = Query.Sum(x => x.QuantityReceipt);
+            var QuantityExpendTotal = Query.Sum(x => x.QuantityExpend);
+            var EndbalanceQtyTotal = Query.Sum(x => x.EndbalanceQty);
+
             DataTable result = new DataTable();
 
             result.Columns.Add(new DataColumn() { ColumnName = "No", DataType = typeof(String) });
@@ -560,6 +601,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                     //string dateString = date == new DateTime(1970, 1, 1) ? "-" : date.ToOffset(new TimeSpan(offset, 0, 0)).ToString("dd MMM yyyy", new CultureInfo("id-ID"));
                     result.Rows.Add(index, item.UnitCode, item.PONo, item.ProductCode, item.ProductName, item.ProductRemark, item.BeginingbalanceQty, item.QuantityReceipt, item.QuantityExpend, item.EndbalanceQty, item.UomUnit);
                 }
+
+                result.Rows.Add("", "", "T O T A L......", "", "", "", BeginingbalanceQtyTotal, QuantityReceiptTotal, QuantityExpendTotal, EndbalanceQtyTotal, "");
             }
 
             return Excel.CreateExcel(new List<KeyValuePair<DataTable, string>>() { new KeyValuePair<DataTable, string>(result, "Report Stock Gudang Sisa - ACC") }, true);
@@ -593,6 +636,34 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                 c.index = index;
 
             });
+
+            if (page == ((TotalData / size) + 1) && TotalData != 0)
+            {
+                var BeginingbalanceQtyTotal = Query.Sum(x => x.BeginingbalanceQty);
+                var QuantityReceiptTotal = Query.Sum(x => x.QuantityReceipt);
+                var QuantityExpendTotal = Query.Sum(x => x.QuantityExpend);
+                var EndbalanceQtyTotal = Query.Sum(x => x.EndbalanceQty);
+
+
+                Data.Add(new GarmentLeftoverWarehouseStockMonitoringViewModel
+                {
+                    index = 0,
+                    BeginingbalanceQty = BeginingbalanceQtyTotal,
+                    EndbalanceQty = EndbalanceQtyTotal,
+                    FabricRemark = "",
+                    PONo = "TOTAL",
+                    ProductCode = "",
+                    ProductName = "",
+                    ProductRemark = "",
+                    QuantityExpend = QuantityExpendTotal,
+                    QuantityReceipt = QuantityReceiptTotal,
+                    ReferenceType = "",
+                    RO = "",
+                    UnitCode = "",
+                    UomUnit = ""
+                });
+            }
+
             return Tuple.Create(Data, TotalData);
         }
 
@@ -603,6 +674,12 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
         {
             var Query = GetReportQuery(dateFrom, dateTo, unitId, "Barang Jadi", offset);
             Query = Query.OrderByDescending(b => b.PONo);
+
+            var BeginingbalanceQtyTotal = Query.Sum(x => x.BeginingbalanceQty);
+            var QuantityReceiptTotal = Query.Sum(x => x.QuantityReceipt);
+            var QuantityExpendTotal = Query.Sum(x => x.QuantityExpend);
+            var EndbalanceQtyTotal = Query.Sum(x => x.EndbalanceQty);
+
             DataTable result = new DataTable();
 
             result.Columns.Add(new DataColumn() { ColumnName = "No", DataType = typeof(String) });
@@ -626,6 +703,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                     //string dateString = date == new DateTime(1970, 1, 1) ? "-" : date.ToOffset(new TimeSpan(offset, 0, 0)).ToString("dd MMM yyyy", new CultureInfo("id-ID"));
                     result.Rows.Add(index, item.UnitCode, item.RO, item.Comodity, item.BeginingbalanceQty, item.QuantityReceipt, item.QuantityExpend, item.EndbalanceQty, item.UomUnit);
                 }
+
+                result.Rows.Add("", "", "T O T A L......", "", BeginingbalanceQtyTotal, QuantityReceiptTotal, QuantityExpendTotal, EndbalanceQtyTotal, "");
             }
 
             return Excel.CreateExcel(new List<KeyValuePair<DataTable, string>>() { new KeyValuePair<DataTable, string>(result, "Report Stock Gudang Sisa - Barang Jadi") }, true);
@@ -659,6 +738,34 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                 c.index = index;
 
             });
+
+            if (page == ((TotalData / size) + 1) && TotalData != 0)
+            {
+                var BeginingbalanceQtyTotal = Query.Sum(x => x.BeginingbalanceQty);
+                var QuantityReceiptTotal = Query.Sum(x => x.QuantityReceipt);
+                var QuantityExpendTotal = Query.Sum(x => x.QuantityExpend);
+                var EndbalanceQtyTotal = Query.Sum(x => x.EndbalanceQty);
+
+
+                Data.Add(new GarmentLeftoverWarehouseStockMonitoringViewModel
+                {
+                    index = 0,
+                    BeginingbalanceQty = BeginingbalanceQtyTotal,
+                    EndbalanceQty = EndbalanceQtyTotal,
+                    FabricRemark = "",
+                    PONo = "",
+                    ProductCode = "",
+                    ProductName = "",
+                    ProductRemark = "",
+                    QuantityExpend = QuantityExpendTotal,
+                    QuantityReceipt = QuantityReceiptTotal,
+                    ReferenceType = "",
+                    RO = "TOTAL",
+                    UnitCode = "",
+                    UomUnit = ""
+                });
+            }
+
             return Tuple.Create(Data, TotalData);
         }
 
@@ -689,6 +796,34 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                 c.index = index;
 
             });
+
+            if (page == ((TotalData / size) + 1) && TotalData != 0)
+            {
+                var BeginingbalanceQtyTotal = Query.Sum(x => x.BeginingbalanceQty);
+                var QuantityReceiptTotal = Query.Sum(x => x.QuantityReceipt);
+                var QuantityExpendTotal = Query.Sum(x => x.QuantityExpend);
+                var EndbalanceQtyTotal = Query.Sum(x => x.EndbalanceQty);
+
+
+                Data.Add(new GarmentLeftoverWarehouseStockMonitoringViewModel
+                {
+                    index = 0,
+                    BeginingbalanceQty = BeginingbalanceQtyTotal,
+                    EndbalanceQty = EndbalanceQtyTotal,
+                    FabricRemark = "",
+                    PONo = "",
+                    ProductCode = "",
+                    ProductName = "",
+                    ProductRemark = "",
+                    QuantityExpend = QuantityExpendTotal,
+                    QuantityReceipt = QuantityReceiptTotal,
+                    ReferenceType = "TOTAL",
+                    RO = "",
+                    UnitCode = "",
+                    UomUnit = "",
+                });
+            }
+
             return Tuple.Create(Data, TotalData);
         }
 
@@ -696,6 +831,12 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
         {
             var Query = GetReportQuery(dateFrom, dateTo, unitId, "AVAL", offset, typeAval);
             Query = Query.OrderByDescending(b => b.PONo);
+
+            var BeginingbalanceQtyTotal = Query.Sum(x => x.BeginingbalanceQty);
+            var QuantityReceiptTotal = Query.Sum(x => x.QuantityReceipt);
+            var QuantityExpendTotal = Query.Sum(x => x.QuantityExpend);
+            var EndbalanceQtyTotal = Query.Sum(x => x.EndbalanceQty);
+
             DataTable result = new DataTable();
 
             result.Columns.Add(new DataColumn() { ColumnName = "No", DataType = typeof(String) });
@@ -720,6 +861,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                     //string dateString = date == new DateTime(1970, 1, 1) ? "-" : date.ToOffset(new TimeSpan(offset, 0, 0)).ToString("dd MMM yyyy", new CultureInfo("id-ID"));
                     result.Rows.Add(index, item.UnitCode, typeAval, item.ProductCode, item.ProductName, item.BeginingbalanceQty, item.QuantityReceipt, item.QuantityExpend, item.EndbalanceQty, item.UomUnit);
                 }
+
+                result.Rows.Add("", "", "T O T A L......", "", "", BeginingbalanceQtyTotal, QuantityReceiptTotal, QuantityExpendTotal, EndbalanceQtyTotal, "");
             }
 
             return Excel.CreateExcel(new List<KeyValuePair<DataTable, string>>() { new KeyValuePair<DataTable, string>(result, "Report Stock Gudang Sisa - FABRIC") }, true);
