@@ -19,11 +19,13 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
         ReadResponse<InventoryWeavingDocument> Read(int page, int size, string order, string keyword, string filter);
         Task<InventoryWeavingDocument> MapToModel(InventoryWeavingDocumentViewModel data);
         //Task<InventoryWeavingMovement> MapToModelMovement(InventoryWeavingDocumentViewModel data);
-       // Task<InventoryWeavingDocumentViewModel> MapToViewModel(List<InventoryWeavingDocumentCsvViewModel> data, DateTimeOffset date, string From);
-        Task<InventoryWeavingDocumentViewModel> MapToViewModel(List<InventoryWeavingDocumentCsvViewModel> data, string From);
+        Task<InventoryWeavingDocumentViewModel> MapToViewModel(List<InventoryWeavingDocumentCsvViewModel> data, DateTimeOffset date, string From);
+        //Task<InventoryWeavingDocumentViewModel> MapToViewModel(List<InventoryWeavingDocumentCsvViewModel> data, string From);
         ListResult<InventoryWeavingItemViewModel> ReadInputWeaving(string bonType, DateTimeOffset? dateFrom, DateTimeOffset? dateTo, int page, int size, string order, int offset);
 
         MemoryStream GenerateExcel(string from, DateTimeOffset? dateFrom, DateTimeOffset? dateTo, int offSet);
+
+        int checkNota(List<InventoryWeavingDocumentCsvViewModel> data);
 
 
     }
