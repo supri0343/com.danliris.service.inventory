@@ -27,7 +27,7 @@ namespace Com.Danliris.Service.Inventory.Lib.ViewModels.InventoryWeavingViewMode
             }
             if (this.bonType == null)
             {
-                yield return new ValidationResult("Destination is required", new List<string> { "destination" });
+                yield return new ValidationResult("Source is required", new List<string> { "destination" });
             }
             
         }

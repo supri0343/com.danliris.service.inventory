@@ -71,13 +71,15 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                 if (garmentProduct != null)
                 {
                     c.Composition = garmentProduct["Composition"].ToString();
-                    c.Const = garmentProduct["Const"].ToString() + "; " + garmentProduct["Yarn"].ToString() + "; " + garmentProduct["Width"].ToString();
+                    c.Const = receiptType == "ACCESSORIES" ? "-" : garmentProduct["Const"].ToString() + "; " + garmentProduct["Yarn"].ToString() + "; " + garmentProduct["Width"].ToString();
                 }
             });
 
 
-            int TotalData = pageable.TotalCount;
+            
 
+            int TotalData = pageable.TotalCount;
+            
             if (page == ((TotalData / size) + 1) && TotalData != 0)
             {
                 var QtyTotal = Query.Sum(x => x.Quantity);
@@ -107,6 +109,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                 Data.Add(vm);
 
             }
+
 
             return Tuple.Create(Data, TotalData);
         }
@@ -310,6 +313,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
             result.Columns.Add(new DataColumn() { ColumnName = "Tujuan", DataType = typeof(String) });
             result.Columns.Add(new DataColumn() { ColumnName = "Keterangan Tujuan", DataType = typeof(String) });
             result.Columns.Add(new DataColumn() { ColumnName = "Jumlah Keluar (KG)", DataType = typeof(double) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Komposisi", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Konstruksi", DataType = typeof(String) });
             result.Columns.Add(new DataColumn() { ColumnName = "Nomor PO", DataType = typeof(String) });
             result.Columns.Add(new DataColumn() { ColumnName = "Nama Barang", DataType = typeof(String) });
             result.Columns.Add(new DataColumn() { ColumnName = "Kode Barang", DataType = typeof(String) });
@@ -320,15 +325,19 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
             result.Columns.Add(new DataColumn() { ColumnName = "Tipe Bc", DataType = typeof(String) });
             result.Columns.Add(new DataColumn() { ColumnName = "Tanggal Bc", DataType = typeof(String) });
             if (Query.ToArray().Count() == 0)
-                result.Rows.Add("", "", "", "", "",0, "", "", "", 0, "", "", 0, "",""); // to allow column name to be generated properly for empty data as template
+                result.Rows.Add("", "", "", "", "",0, "", "", "", "", "", 0, "", "", 0, "",""); // to allow column name to be generated properly for empty data as template
             else
             {
                 int index = 0;
                 foreach (var item in Query)
                 {
                     index++;
-                    //DateTimeOffset date = item.date ?? new DateTime(1970, 1, 1);
-                    //string dateString = date == new DateTime(1970, 1, 1) ? "-" : date.ToOffset(new TimeSpan(offset, 0, 0)).ToString("dd MMM yyyy", new CultureInfo("id-ID"));
+                    var garmentProduct = GetProductFromCore(item.Product.Id);
+                    if (garmentProduct != null)
+                    {
+                        item.Composition = garmentProduct["Composition"].ToString();
+                        item.Const = receiptType == "ACCESSORIES" ? "-" : garmentProduct["Const"].ToString() + "; " + garmentProduct["Yarn"].ToString() + "; " + garmentProduct["Width"].ToString();
+                    }
                     result.Rows.Add(
                         index, 
                         item.ExpenditureNo, 
@@ -336,6 +345,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                         item.ExpenditureDestination, 
                         item.DescriptionOfPurpose, 
                         item.QtyKG,
+                        item.Composition,
+                        item.Const,
                         item.PONo, 
                         item.Product.Name, 
                         item.Product.Code, 
