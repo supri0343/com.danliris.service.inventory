@@ -46,7 +46,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                                               where data._IsDeleted == false && data.TypeOfGoods.ToString() == "FABRIC"
                                               select new { data._CreatedUtc, data.Id })
                                    join b in DbContext.GarmentLeftoverWarehouseBalanceStocksItems on a.Id equals b.BalanceStockId
-                                   where b.UnitId == UnitId
+                                   where b.UnitId == (UnitId == 0 ? b.UnitId : UnitId)
                                    select new GarmentLeftoverWarehouseStockMonitoringViewModel
                                    {
                                        PONo = b.PONo,
@@ -65,7 +65,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                 var QueryReceipt = from a in (from data in DbContext.GarmentLeftoverWarehouseReceiptFabrics
                                               where data._IsDeleted == false
                                          && data.ReceiptDate.AddHours(offset).Date <= DateTo.Date
-                                         && data.UnitFromId == UnitId
+                                         && data.UnitFromId == (UnitId == 0 ? data.UnitFromId : UnitId)
                                               select new { data.UnitFromCode, data.ReceiptDate, data.Id })
                                    join b in DbContext.GarmentLeftoverWarehouseReceiptFabricItems on a.Id equals b.GarmentLeftoverWarehouseReceiptFabricId
                                    select new GarmentLeftoverWarehouseStockMonitoringViewModel
@@ -89,7 +89,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
 
                                                   select new { data.UnitExpenditureCode, data.ExpenditureDate, data.Id })
                                        join b in (from expend in DbContext.GarmentLeftoverWarehouseExpenditureFabricItems
-                                                  where expend.UnitId == UnitId
+                                                  where expend.UnitId == (UnitId == 0 ? expend.UnitId : UnitId)
                                                   select new { expend.UomUnit, expend.PONo, expend.Quantity, expend.UnitCode, expend.ExpenditureId }) on a.Id equals b.ExpenditureId
                                        select new GarmentLeftoverWarehouseStockMonitoringViewModel
                                        {
@@ -169,7 +169,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
 
                                               select new { data._CreatedUtc, data.Id })
                                    join b in DbContext.GarmentLeftoverWarehouseBalanceStocksItems on a.Id equals b.BalanceStockId
-                                   where b.UnitId == UnitId
+                                   where b.UnitId == (UnitId == 0 ? b.UnitId : UnitId)
 
                                    select new GarmentLeftoverWarehouseStockMonitoringViewModel
                                    {
@@ -189,7 +189,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                 var QueryReceipt = from a in (from data in DbContext.GarmentLeftoverWarehouseReceiptFinishedGoods
                                               where data._IsDeleted == false
                                          && data.ReceiptDate.AddHours(offset).Date <= DateTo.Date
-                                         && data.UnitFromId == UnitId
+                                         && data.UnitFromId == (UnitId == 0 ? data.UnitFromId : UnitId)
                                               select new { data.UnitFromCode, data.ReceiptDate, data.Id })
                                    join b in DbContext.GarmentLeftoverWarehouseReceiptFinishedGoodItems on a.Id equals b.FinishedGoodReceiptId
                                    select new GarmentLeftoverWarehouseStockMonitoringViewModel
@@ -213,7 +213,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
 
                                                   select new { data.ExpenditureDate, data.Id })
                                        join b in (from expend in DbContext.GarmentLeftoverWarehouseExpenditureFinishedGoodItems
-                                                  where expend.UnitId == UnitId
+                                                  where expend.UnitId == (UnitId == 0 ? expend.UnitId : UnitId)
                                                   select new { expend.FinishedGoodExpenditureId, expend.UnitCode, expend.ExpenditureQuantity, expend.RONo }
                                                   ) on a.Id equals b.FinishedGoodExpenditureId
                                        select new GarmentLeftoverWarehouseStockMonitoringViewModel

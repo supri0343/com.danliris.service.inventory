@@ -75,11 +75,38 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                 }
             });
 
-        
 
             int TotalData = pageable.TotalCount;
 
+            if (page == ((TotalData / size) + 1) && TotalData != 0)
+            {
+                var QtyTotal = Query.Sum(x => x.Quantity);
+                var ExpendQtyTotal = Query.Sum(x => x.QtyKG);
+                GarmentLeftoverWarehouseReportExpenditureViewModel vm = new GarmentLeftoverWarehouseReportExpenditureViewModel();
 
+                vm.ExpenditureNo = "T O T A L";
+                vm.ExpenditureDate = DateTimeOffset.MinValue;
+                vm.ExpenditureDestination = "";
+                vm.DescriptionOfPurpose = "";
+                vm.Buyer = new BuyerViewModel();
+                vm.UnitExpenditure = new UnitViewModel();
+                vm.EtcRemark = "";
+                vm.PONo = "";
+                vm.Product = new ProductViewModel();
+                vm.ProductRemark = "";
+                vm.Quantity = QtyTotal;
+                vm.Uom = new UomViewModel();
+                vm.LocalSalesNoteNo = "";
+                vm.BCNo = "";
+                vm.BCType = "";
+                vm.BCDate = null;
+                vm.QtyKG = ExpendQtyTotal;
+                vm.Composition = "";
+                vm.Const = "";
+
+                Data.Add(vm);
+
+            }
 
             return Tuple.Create(Data, TotalData);
         }
@@ -272,6 +299,9 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
         {
             var Query = GetReportQuery(dateFrom, dateTo, receiptType, offset);
             Query = Query.OrderByDescending(b => b._LastModifiedUtc);
+
+            var QtyTotal = Query.Sum(x => x.Quantity);
+            var ExpendQtyTotal = Query.Sum(x => x.QtyKG);
             DataTable result = new DataTable();
 
             result.Columns.Add(new DataColumn() { ColumnName = "No", DataType = typeof(String) });
@@ -286,7 +316,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
             result.Columns.Add(new DataColumn() { ColumnName = "Qty", DataType = typeof(double) });
             result.Columns.Add(new DataColumn() { ColumnName = "Satuan", DataType = typeof(String) });
             result.Columns.Add(new DataColumn() { ColumnName = "No Nota Penjualan", DataType = typeof(String) });
-            result.Columns.Add(new DataColumn() { ColumnName = "No Bc Keluar", DataType = typeof(double) });
+            result.Columns.Add(new DataColumn() { ColumnName = "No Bc Keluar", DataType = typeof(String) });
             result.Columns.Add(new DataColumn() { ColumnName = "Tipe Bc", DataType = typeof(String) });
             result.Columns.Add(new DataColumn() { ColumnName = "Tanggal Bc", DataType = typeof(String) });
             if (Query.ToArray().Count() == 0)
@@ -316,6 +346,23 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                         item.BCType, 
                         item.BCDate?.ToString("dd MMM yyyy", new CultureInfo("id-ID")));
                 }
+
+                result.Rows.Add(
+                        "",
+                        "T O T A L .......",
+                        "",
+                        "",
+                        "",
+                        ExpendQtyTotal,
+                        "",
+                        "",
+                        "",
+                        QtyTotal,
+                        "",
+                        "",
+                        "",
+                        "",
+                        "");
             }
 
             return Excel.CreateExcel(new List<KeyValuePair<DataTable, string>>() { new KeyValuePair<DataTable, string>(result, "Report Pengeluaran Gudang Sisa") }, true);

@@ -64,7 +64,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                        };
 
             TotalCountReport = join.Distinct().OrderByDescending(o => o.date).Count();
-            var queryResult = size!=0 && page!=0 ? join.Distinct().OrderByDescending(o => o.date).Skip((page - 1) * size).Take(size).ToList() : join.Distinct().OrderByDescending(o => o.date).ToList();
+            var queryResult = size != 0 && page != 0 ? join.Distinct().OrderByDescending(o => o.date).Skip((page - 1) * size).Take(size).ToList() : join.Distinct().OrderByDescending(o => o.date).ToList();
 
             var fabricIds = queryResult.Select(s => s.fabricId).Distinct().ToList();
             var fabrics = DbContext.GarmentLeftoverWarehouseReceiptFabrics.Where(w => fabricIds.Contains(w.Id)).Select(s => new { s.Id, s.ReceiptNoteNo, s.ReceiptDate, s.UnitFromCode, s.UENNo }).ToList();
@@ -122,6 +122,32 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                 }
 
             });
+            if (size != 0)
+            {
+                if (page == ((TotalCountReport / size) + 1) && TotalCountReport != 0)
+                {
+                    var QtyTotal = items.Sum(x => x.Quantity);
+                    ReceiptMonitoringViewModel vm = new ReceiptMonitoringViewModel();
+
+                    vm.ProductRemark = "";
+                    vm.Product = new ProductViewModel();
+                    vm.Quantity = QtyTotal;
+                    vm.Uom = new UomViewModel();
+                    vm.UnitFrom = new UnitViewModel();
+                    vm.ReceiptDate = DateTimeOffset.MinValue;
+                    vm.ReceiptNoteNo = "T O T A L";
+                    vm.POSerialNumber = "";
+                    vm.index = 0;
+                    vm.UENNo = "";
+                    vm.FabricRemark = "";
+                    vm.Composition = "";
+
+                    listData.Add(vm);
+
+                }
+            }
+            
+                
             return listData;
         }
 
@@ -139,6 +165,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
         {
             //var offset = 7;
             var Query = GetFabricReceiptMonitoringQuery(dateFrom, dateTo, offset, 0, 0);
+
+            var QtyTotal = Query.Sum(x => x.Quantity);
 
             DataTable result = new DataTable();
 
@@ -197,6 +225,10 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                         item.UENNo, item.UnitFrom.Code, item.POSerialNumber, item.Product.Name, item.Product.Code, item.Composition, item.FabricRemark, item.Quantity,
                         item.Uom.Unit, no, type, date);
                 }
+
+                result.Rows.Add("", "T O T A L . . . . ", "",
+                     "", "", "", "", "", "", "", QtyTotal,
+                      "", "", "", "");
             }
             ExcelPackage package = new ExcelPackage();
             var sheet = package.Workbook.Worksheets.Add("Report Penerimaan Gudang Sisa");
@@ -294,6 +326,29 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                 }
 
             });
+
+            if (page == ((listData.Count() / size) + 1) && listData.Count() != 0)
+            {
+                var QtyTotal = listData.Sum(x => x.Quantity);
+                ReceiptMonitoringViewModel vm = new ReceiptMonitoringViewModel();
+
+                vm.ProductRemark = "";
+                vm.Product = new ProductViewModel();
+                vm.Quantity = QtyTotal;
+                vm.Uom = new UomViewModel();
+                vm.UnitFrom = new UnitViewModel();
+                vm.ReceiptDate = DateTimeOffset.MinValue;
+                vm.ReceiptNoteNo = "T O T A L";
+                vm.POSerialNumber = "";
+                vm.index = 0;
+                vm.UENNo = "";
+                vm.FabricRemark = "";
+                vm.Composition = "";
+
+                listData.Add(vm);
+
+            }
+
             return listData;
         }
 
@@ -335,7 +390,10 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
         public Tuple<MemoryStream, string> GenerateExcelAccessories(DateTime? dateFrom, DateTime? dateTo, int offset)
         {
             //var offset = 7;
+
             var Query = GetAccessoriesReceiptMonitoringQuery(dateFrom, dateTo, offset, 0, 0);
+
+            var QtyTotal = Query.Sum(x => x.Quantity);
 
             DataTable result = new DataTable();
 
@@ -393,6 +451,10 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                         item.UENNo, item.UnitFrom.Code, item.POSerialNumber, item.Product.Name, item.Product.Code, item.ProductRemark, item.Quantity,
                         item.Uom.Unit, no, type, date);
                 }
+
+                result.Rows.Add(0, "T O T A L . . . . ", "",
+                      "", "", "", "", "", "", QtyTotal,
+                       "","", "", "", "");
             }
             ExcelPackage package = new ExcelPackage();
             var sheet = package.Workbook.Worksheets.Add("Report Penerimaan Gudang Sisa");
