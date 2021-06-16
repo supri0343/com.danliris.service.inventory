@@ -9,6 +9,7 @@ namespace Com.Danliris.Service.Inventory.Lib.ViewModels.InventoryWeavingViewMode
     {
         public DateTimeOffset Date { get; set; }
         public string BonNo { get; set; }
+        public string ReferenceNo { get; set; }
         public string Construction { get; set; }
         public string Grade { get; set; }
         public string Piece { get; set; }
