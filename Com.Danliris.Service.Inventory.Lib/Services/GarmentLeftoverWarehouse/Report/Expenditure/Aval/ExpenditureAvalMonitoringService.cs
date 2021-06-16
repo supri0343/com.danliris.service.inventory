@@ -101,6 +101,31 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
 
 
             }
+            if (size != 0) {
+                if (page == ((listData.Count() / size) + 1) && listData.Count() != 0)
+                {
+                    var QtyTotal = listData.Sum(x => x.Quantity);
+                    ExpenditureAvalMonitoringViewModel vm = new ExpenditureAvalMonitoringViewModel();
+
+                    vm.AvalType = "";
+                    vm.ProductCode = "";
+                    vm.Quantity = QtyTotal;
+                    vm.ProductName = "";
+                    vm.ExpenditureDate = DateTimeOffset.MinValue;
+                    vm.AvalReceiptNo = "";
+                    vm.UomUnit = "";
+                    vm.Quantity = QtyTotal;
+                    vm.UnitCode = "";
+                    vm.ExpenditureTo = "";
+                    vm.ExpenditureNo = "T O T A L";
+                    vm.OtherDescription = "";
+                    vm.LocalSalesNoteNo = "";
+
+                    listData.Add(vm);
+
+                }
+            }
+            
 
             return listData;
         }
@@ -120,6 +145,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
         {
             var Query = GetMonitoringQuery(dateFrom, dateTo, type, offset, 0, 0);
             var data = Query.ToList();
+
+            var QtyTotal = data.Sum(x => x.Quantity);
             DataTable result = new DataTable();
 
             result.Columns.Add(new DataColumn() { ColumnName = "No", DataType = typeof(string) });
@@ -171,6 +198,9 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                         , item.AvalReceiptNo, item.ProductCode, item.ProductName, item.UnitCode, item.Quantity, item.UomUnit);
 
                 }
+
+                result.Rows.Add("", "T O T A L .........", "", "", "", "", ""
+                        , "", "", "", "", QtyTotal, "");
             }
             ExcelPackage package = new ExcelPackage();
             var sheet = package.Workbook.Worksheets.Add("Report Pengeluaran Gudang Sisa Aval");

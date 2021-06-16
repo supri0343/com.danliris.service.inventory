@@ -106,6 +106,41 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
 
             }
 
+            if(size !=0)
+            {
+                if (page == ((listData.Count() / size) + 1) && listData.Count() != 0)
+                {
+                    var QtyTotal = listData.Sum(x => x.Quantity);
+
+                    var Query2 = listData.GroupBy(x => x.ReceiptNoteNo, (key, group) => new {
+                        Qty = group.FirstOrDefault().Weight
+                    });
+
+                    var WeightTotal = Query2.Sum(x => x.Qty);
+                    ReceiptAvalMonitoringViewModel vm = new ReceiptAvalMonitoringViewModel();
+
+                    vm.AvalType = "";
+                    vm.ProductCode = "";
+                    vm.Quantity = QtyTotal;
+                    vm.Remark = "";
+                    vm.ProductName = "";
+                    vm.ReceiptDate = DateTimeOffset.MinValue;
+                    vm.ReceiptNoteNo = "T O T A L";
+                    vm.Weight = WeightTotal;
+                    vm.Id = 0;
+                    vm.UomUnit = "";
+                    vm.Quantity = QtyTotal;
+                    vm.RONo = "";
+                    vm.AvalComponentNo = "";
+                    vm.UnitCode = "";
+                    vm.Uom = "";
+
+                    listData.Add(vm);
+
+                }
+            }
+            
+
             return listData;
         }
 
@@ -123,6 +158,13 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
         {
             var Query = GetMonitoringQuery(dateFrom, dateTo, type, offset, 0, 0);
             var data = Query.ToList();
+
+            var Query2 = data.GroupBy(x => x.ReceiptNoteNo, (key, group) => new {
+                Qty = group.FirstOrDefault().Weight
+            });
+
+            var QtyTotal = data.Sum(x => x.Quantity);
+            var WeightTotal = Query2.Sum(x => x.Qty);
             DataTable result = new DataTable();
 
             result.Columns.Add(new DataColumn() { ColumnName = "No", DataType = typeof(string) });
@@ -176,6 +218,9 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                         , item.RONo, item.ProductCode, item.ProductName, item.Remark, item.Quantity, item.UomUnit, item.AvalComponentNo);
 
                 }
+
+                result.Rows.Add("", "T O T A L . . . .", "", "", WeightTotal, "", ""
+                        , "", "", "", "", QtyTotal, "", "");
             }
             ExcelPackage package = new ExcelPackage();
             var sheet = package.Workbook.Worksheets.Add("Report Penerimaan Gudang Sisa Aval");
