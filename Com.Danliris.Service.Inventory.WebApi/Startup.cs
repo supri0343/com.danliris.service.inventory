@@ -44,6 +44,7 @@ using Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.Repor
 using Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.Report.Expenditure.Aval;
 using Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving.Reports.ReportGreigeWeavingPerMonth;
 using Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.Report.Stock;
+using Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving.Reports.BalanceReportPerGrade;
 using Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.Report.Mutation;
 
 
@@ -123,6 +124,7 @@ namespace Com.Danliris.Service.Inventory.WebApi
                 .AddTransient<IInventoryWeavingDocumentOutService, InventoryWeavingDocumentOutService>()
                 .AddTransient<IGarmentLeftoverWarehouseMutationReportService, GarmentLeftoverWarehouseMutationReportService>()
                 .AddTransient<IReportGreigeWeavingPerMonthService, ReportGreigeWeavingPerMonthService>()
+                .AddTransient<IBalanceReportPerPieceService, BalanceReportPerPieceService>()
                 .AddScoped<IIdentityService, IdentityService>()
                 .AddScoped<IValidateService, ValidateService>()
                 .AddScoped<IHttpService, HttpService>()
