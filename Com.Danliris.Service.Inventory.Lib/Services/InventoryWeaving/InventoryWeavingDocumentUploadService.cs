@@ -26,6 +26,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
         private const string UserAgent = "inventory-service";
         protected DbSet<InventoryWeavingDocument> DbSet;
         protected DbSet<InventoryWeavingMovement> DbSet2;
+        protected DbSet<InventoryWeavingDocumentItem> DbSet3;
         public IIdentityService IdentityService;
         public readonly IServiceProvider ServiceProvider;
         public InventoryDbContext DbContext;
@@ -36,17 +37,13 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
             ServiceProvider = serviceProvider;
             DbSet = dbContext.Set<InventoryWeavingDocument>();
             DbSet2 = dbContext.Set<InventoryWeavingMovement>();
+            DbSet3 = dbContext.Set<InventoryWeavingDocumentItem>();
             IdentityService = serviceProvider.GetService<IIdentityService>();
             //IdentityService = serviceProvider.GetService<IIdentityService>();
         }
 
 
-        public List<string> CsvHeader { get; } = new List<string>()
-        {
-           // "BonNo", "Benang", "Anyaman", "Lusi", "Pakan", "Lebar", "JL", "JP", "AL", "AP", "SP", "Grade", "Piece", "Qty", "QtyPiece"
-
-            "BonNo","Tanggal","Benang","Anyaman","Lusi","Pakan","Lebar","JL","JP","AL","AP","SP","Grade","Piece","Qty","QtyPiece"
-        };
+        
 
         public ReadResponse<InventoryWeavingDocument> Read(int page, int size, string order, string keyword, string filter)
         {
@@ -102,25 +99,33 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
             public InventoryWeavingDocumentMap()
             {
                 Map(p => p.ReferenceNo).Index(0);
-                Map(p => p.Date).Index(1);
-                Map(p => p.MaterialName).Index(2);
-                Map(p => p.WovenType).Index(3);
-                Map(p => p.Yarn1).Index(4);
-                Map(p => p.Yarn2).Index(5);
-                Map(p => p.Width).Index(6);
-                Map(p => p.YarnType1).Index(7);
-                Map(p => p.YarnType2).Index(8);
-                Map(p => p.YarnOrigin1).Index(9);
-                Map(p => p.YarnOrigin2).Index(10);
-                Map(p => p.ProductionOrderNo).Index(11);
-                Map(p => p.Grade).Index(12);
-                Map(p => p.Piece).Index(13).TypeConverter<StringConverter>();
+                //Map(p => p.Date).Index(1);
+                Map(p => p.MaterialName).Index(1);
+                Map(p => p.WovenType).Index(2);
+                Map(p => p.Yarn1).Index(3);
+                Map(p => p.Yarn2).Index(4);
+                Map(p => p.Width).Index(5);
+                Map(p => p.YarnType1).Index(6);
+                Map(p => p.YarnType2).Index(7);
+                Map(p => p.YarnOrigin1).Index(8);
+                Map(p => p.YarnOrigin2).Index(9);
+                Map(p => p.ProductionOrderNo).Index(10);
+                Map(p => p.Grade).Index(11);
+                Map(p => p.Piece).Index(12).TypeConverter<StringConverter>();
+                Map(p => p.QtyPiece).Index(13).TypeConverter<StringConverter>();
                 Map(p => p.Qty).Index(14).TypeConverter<StringConverter>();
-                Map(p => p.QtyPiece).Index(15).TypeConverter<StringConverter>();
+                
 
 
             }
         }
+
+        public List<string> CsvHeader { get; } = new List<string>()
+        {
+           // "BonNo", "Benang", "Anyaman", "Lusi", "Pakan", "Lebar", "JL", "JP", "AL", "AP", "SP", "Grade", "Piece", "Qty", "QtyPiece"
+
+            "nota","benang","type","lusi","pakan","lebar","jlusi","jpakan","alusi","apakan","sp","grade","jenis","piece","meter"
+        };
 
         public Tuple<bool, List<object>> UploadValidate(ref List<InventoryWeavingDocumentCsvViewModel> Data, List<KeyValuePair<string, StringValues>> Body)
         {
@@ -137,10 +142,10 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
                     ErrorMessage = string.Concat(ErrorMessage, "No Bon Tidak Boleh Kosong tidak boleh kosong, ");
                 }
 
-                if (productVM.Date == null)
-                {
-                    ErrorMessage = string.Concat(ErrorMessage, "No Bon Tidak Boleh Kosong tidak boleh kosong, ");
-                }
+                //if (productVM.Date == null)
+                //{
+                //    ErrorMessage = string.Concat(ErrorMessage, "No Bon Tidak Boleh Kosong tidak boleh kosong, ");
+                //}
 
                 if (string.IsNullOrWhiteSpace(productVM.ProductionOrderNo))
                 {
@@ -256,7 +261,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
                     var Error = new ExpandoObject() as IDictionary<string, object>;
 
                     Error.Add("BonNo", productVM.ReferenceNo);
-                    Error.Add("Tanggal", productVM.Date);
+                   // Error.Add("Tanggal", productVM.Date);
                     Error.Add("Benang", productVM.MaterialName);
                     Error.Add("Lusi", productVM.Yarn1);
                     Error.Add("Pakan", productVM.Yarn2);
@@ -332,8 +337,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
         }
 
 
-        //public async Task<InventoryWeavingDocumentViewModel> MapToViewModel(List<InventoryWeavingDocumentCsvViewModel> csv, DateTimeOffset date, string from)
-        public async Task<InventoryWeavingDocumentViewModel> MapToViewModel(List<InventoryWeavingDocumentCsvViewModel> csv, string from)
+        public async Task<InventoryWeavingDocumentViewModel> MapToViewModel(List<InventoryWeavingDocumentCsvViewModel> csv, DateTimeOffset date, string from)
+        //public async Task<InventoryWeavingDocumentViewModel> MapToViewModel(List<InventoryWeavingDocumentCsvViewModel> csv, string from)
         {
             List<InventoryWeavingDocumentItemViewModel> DocsItems = new List<InventoryWeavingDocumentItemViewModel>();
             //var itemx = GetItem();
@@ -385,8 +390,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
 
             InventoryWeavingDocumentViewModel sPKDocsViews = new InventoryWeavingDocumentViewModel
             {
-                bonNo = GenerateBon(from, csv.FirstOrDefault().Date),
-                date = csv.FirstOrDefault().Date,
+                bonNo = GenerateBon(from, date),
+                date = date,
                 bonType = from == "PRODUKSI" ? "PRODUKSI" : from == "RETUR PACKING" ? "PACKING"
                           : from == "RETUR FINISHING" ? "FINISHING" : from == "RETUR PRINTING" ? "PRINTING"
                           : from == "RECHEKING" ? "RECHEKING" : "LAIN-LAIN",
@@ -549,6 +554,29 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
 
 
             return DocsItems;
+        }
+
+        public int checkNota(List<InventoryWeavingDocumentCsvViewModel>data)
+        {
+            var index = 0;
+
+            var data1 = data.GroupBy(x => x.ReferenceNo).Select( s => new {s.FirstOrDefault().ReferenceNo });
+            foreach (var i in data1)
+            {
+                var query = this.DbSet3.Where(d => d.ReferenceNo.Equals(i.ReferenceNo)).Count();
+
+                if (query != 0)
+                {
+                    index++;
+                }
+
+
+            }
+
+         
+
+
+            return index;
         }
 
         public ListResult<InventoryWeavingItemViewModel> ReadInputWeaving(string bonType, DateTimeOffset? dateFrom, DateTimeOffset? dateTo, int page, int size, string order, int offset)

@@ -442,12 +442,38 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.E
                 c.index = index;
 
             });
+
+            if (page == ((TotalData / size) + 1) && TotalData != 0)
+            {
+                var QtyTotal = Query.Sum(x => x.ExpenditureQuantity);
+                //var WeightTotal = Query.Sum(x => x.Weight);
+                ExpenditureFInishedGoodReportViewModel vm = new ExpenditureFInishedGoodReportViewModel();
+
+                vm.FinishedGoodExpenditureNo = "T O T A L";
+                vm.ExpenditureDate = DateTimeOffset.MinValue;
+                vm.LocalSalesNoteNo = "";
+                vm.Consignment = "";
+                vm.ExpenditureTo = "";
+                vm.ExpenditureDestinationDesc = "";
+                vm.UnitFrom = new UnitViewModel();
+                vm.RONo = "";
+                vm.LeftoverComodityName = "";
+                vm.ExpenditureQuantity = QtyTotal;
+                vm.Uom = "";
+
+                Data.Add(vm);
+
+            }
+
             return Tuple.Create(Data, TotalData);
         }
         public MemoryStream GenerateExcel(DateTime? dateFrom, DateTime? dateTo, int offset)
         {
             var Query = GetReportQuery(dateFrom, dateTo, offset);
             Query = Query.OrderByDescending(b => b.ExpenditureDate);
+
+            var QtyTotal = Query.Sum(x => x.ExpenditureQuantity);
+
             DataTable result = new DataTable();
 
             result.Columns.Add(new DataColumn() { ColumnName = "No", DataType = typeof(String) });
@@ -475,6 +501,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.E
                     //string dateString = date == new DateTime(1970, 1, 1) ? "-" : date.ToOffset(new TimeSpan(offset, 0, 0)).ToString("dd MMM yyyy", new CultureInfo("id-ID"));
                     result.Rows.Add(index, item.FinishedGoodExpenditureNo,item.ExpenditureDate.AddHours(offset).ToString("dd MMM yyyy", new CultureInfo("id-ID")), item.ExpenditureTo,item.ExpenditureDestinationDesc,item.UnitFrom.Code,item.RONo,item.LeftoverComodityName, item.ExpenditureQuantity,item.Uom,item.Consignment,item.LocalSalesNoteNo);
                 }
+
+                result.Rows.Add("", "T O T A L ..........", "", "", "", "", "", "", QtyTotal, "", "", "");
             }
 
             return Excel.CreateExcel(new List<KeyValuePair<DataTable, string>>() { new KeyValuePair<DataTable, string>(result, "Report Pengeluaran Gudang Sisa Barang Jadi") }, true);

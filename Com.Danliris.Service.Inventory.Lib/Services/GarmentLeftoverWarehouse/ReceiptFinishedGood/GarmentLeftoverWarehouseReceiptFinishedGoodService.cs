@@ -507,12 +507,33 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
                 c.index = index;
 
             });
+
+            if (page == ((TotalData / size) + 1) && TotalData != 0)
+            {
+                var QtyTotal = Query.Sum(x => x.Quantity);
+                //var WeightTotal = Query.Sum(x => x.Weight);
+                ReceiptFinishedGoodMonitoringViewModel vm = new ReceiptFinishedGoodMonitoringViewModel();
+
+                vm.ReceiptNoteNo = "T O T A L .........";
+                vm.ReceiptDate = DateTimeOffset.MinValue;
+                vm.UnitFromCode = "";
+                vm.ExpenditureGoodNo = "";
+                vm.ComodityName = "";
+                vm.Quantity = QtyTotal;
+                vm.RONo = "";
+                vm.UomUnit = "";
+
+                Data.Add(vm);
+
+            }
             return Tuple.Create(Data, TotalData);
         }
         public MemoryStream GenerateExcel(DateTime? dateFrom, DateTime? dateTo, int offset)
         {
             var Query = GetReportQuery(dateFrom, dateTo, offset);
             Query = Query.OrderByDescending(b => b.ReceiptDate);
+
+            var QtyTotal = Query.Sum(x => x.Quantity);
             DataTable result = new DataTable();
 
             result.Columns.Add(new DataColumn() { ColumnName = "No", DataType = typeof(String) });
@@ -537,6 +558,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
                     //string dateString = date == new DateTime(1970, 1, 1) ? "-" : date.ToOffset(new TimeSpan(offset, 0, 0)).ToString("dd MMM yyyy", new CultureInfo("id-ID"));
                     result.Rows.Add(index, item.ReceiptNoteNo, item.ReceiptDate.AddHours(offset).ToString("dd MMM yyyy", new CultureInfo("id-ID")), item.UnitFromCode, item.ExpenditureGoodNo, item.RONo, item.ComodityName, item.Quantity, item.UomUnit);
                 }
+
+                result.Rows.Add("" , "T O T A L .......", "", "", "", "", "", QtyTotal, "");
             }
 
             return Excel.CreateExcel(new List<KeyValuePair<DataTable, string>>() { new KeyValuePair<DataTable, string>(result, "Report Pengeluaran Gudang Sisa Barang Jadi") }, true);
