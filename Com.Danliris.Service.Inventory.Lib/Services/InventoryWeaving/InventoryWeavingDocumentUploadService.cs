@@ -112,8 +112,9 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
                 Map(p => p.ProductionOrderNo).Index(10);
                 Map(p => p.Grade).Index(11);
                 Map(p => p.Piece).Index(12).TypeConverter<StringConverter>();
-                Map(p => p.Qty).Index(13).TypeConverter<StringConverter>();
-                Map(p => p.QtyPiece).Index(14).TypeConverter<StringConverter>();
+                Map(p => p.QtyPiece).Index(13).TypeConverter<StringConverter>();
+                Map(p => p.Qty).Index(14).TypeConverter<StringConverter>();
+                
 
 
             }
