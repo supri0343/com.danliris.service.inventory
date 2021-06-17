@@ -23,5 +23,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Models.GarmentLeftoverWarehouse.Exp
 
         public long UomId { get; set; }
         public string UomUnit { get; set; }
+
+        public double BasicPrice { get; set; }
     }
 }

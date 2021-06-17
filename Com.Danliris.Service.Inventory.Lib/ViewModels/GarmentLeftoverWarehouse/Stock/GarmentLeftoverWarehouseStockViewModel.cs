@@ -23,5 +23,6 @@ namespace Com.Danliris.Service.Inventory.Lib.ViewModels.GarmentLeftoverWarehouse
         public double Quantity { get; set; }
 
         public List<GarmentLeftoverWarehouseStockHistoryViewModel> Histories { get; set; }
+        public double BasicPrice { get; set; }
     }
 }

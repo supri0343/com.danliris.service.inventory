@@ -35,5 +35,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Models.GarmentLeftoverWarehouse.Bal
         public long LeftoverComodityId { get; set; }
         public string LeftoverComodityCode { get; set; }
         public string LeftoverComodityName { get; set; }
+
+        public double BasicPrice { get; set; }
     }
 }
