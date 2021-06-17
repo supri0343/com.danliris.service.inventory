@@ -28,6 +28,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Models.GarmentLeftoverWarehouse.Gar
         public long LeftoverComodityId { get; set; }
         public string LeftoverComodityCode { get; set; }
         public string LeftoverComodityName { get; set; }
+        public double BasicPrice { get; set; }
         public virtual GarmentLeftoverWarehouseReceiptFinishedGood GarmentLeftoverWarehouseReceiptFinishedGood { get; set; }
     }
 }

@@ -19,6 +19,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Models.GarmentLeftoverWarehouse.Rec
         public string UomUnit { get; set; }
         public string ROJob { get; set; }
         public string Remark { get; set; }
+        public double BasicPrice { get; set; }
         public int GarmentLeftOverWarehouseReceiptAccessoriesId { get; set; }
         [ForeignKey("GarmentLeftOverWarehouseReceiptAccessoriesId")]
         public virtual GarmentLeftoverWarehouseReceiptAccessory GarmentLeftoverWarehouseExpenditureAccessories { get; set; }
