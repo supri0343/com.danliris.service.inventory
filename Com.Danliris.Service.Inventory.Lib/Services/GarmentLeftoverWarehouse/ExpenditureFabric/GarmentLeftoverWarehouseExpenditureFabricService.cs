@@ -373,7 +373,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.E
                 PONo = item.PONo,
                 UomId = item.UomId,
                 UomUnit = item.UomUnit,
-                Quantity = item.Quantity
+                Quantity = item.Quantity,
+                BasicPrice = item.BasicPrice
             };
 
             return stock;
