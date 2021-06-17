@@ -190,12 +190,12 @@ namespace Com.Danliris.Service.Inventory.Lib.PDFTemplates.GarmentLeftoverWarehou
                     bodyTable.AddCell(bodyTableCellLeftBorder);
                     bodyTableCellLeftBorder.Phrase = new Phrase(item.Unit.Name, normal_font);
                     bodyTable.AddCell(bodyTableCellLeftBorder);
-                    bodyTableCellRightBorder.Phrase = new Phrase(item.Quantity.ToString(), normal_font);
+                    bodyTableCellRightBorder.Phrase = new Phrase(item.ActualQuantity.ToString(), normal_font);
                     bodyTable.AddCell(bodyTableCellRightBorder);
                     bodyTableCellLeftBorder.Phrase = new Phrase("KG", normal_font);
                     bodyTable.AddCell(bodyTableCellLeftBorder);
 
-                    totalQuantity += item.Quantity;
+                    totalQuantity += item.ActualQuantity;
                 }
                 bodyTableCellRightBorder.Phrase = new Phrase("TOTAL", bold_font);
                 bodyTableCellRightBorder.Colspan = 3;
@@ -242,12 +242,12 @@ namespace Com.Danliris.Service.Inventory.Lib.PDFTemplates.GarmentLeftoverWarehou
                     bodyTable.AddCell(bodyTableCellLeftBorder);
                     bodyTableCellLeftBorder.Phrase = new Phrase(item.Unit.Name, normal_font);
                     bodyTable.AddCell(bodyTableCellLeftBorder);
-                    bodyTableCellRightBorder.Phrase = new Phrase(item.Quantity.ToString(), normal_font);
+                    bodyTableCellRightBorder.Phrase = new Phrase(item.ActualQuantity.ToString(), normal_font);
                     bodyTable.AddCell(bodyTableCellRightBorder);
                     bodyTableCellLeftBorder.Phrase = new Phrase("KG", normal_font);
                     bodyTable.AddCell(bodyTableCellLeftBorder);
 
-                    totalQuantity += item.Quantity;
+                    totalQuantity += item.ActualQuantity;
                 }
                 bodyTableCellRightBorder.Phrase = new Phrase("TOTAL", bold_font);
                 bodyTableCellRightBorder.Colspan = 3;
