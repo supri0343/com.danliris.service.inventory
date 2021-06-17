@@ -106,7 +106,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.S
 
             List<string> SelectedFields = (select != null && select.Count > 0) ? select : new List<string>()
             {
-                "Id", "ReferenceType", "Unit", "PONo","RONo", "Product", "Uom", "Quantity"
+                "Id", "ReferenceType", "Unit", "PONo","RONo", "Product", "Uom", "Quantity","BasicPrice"
             };
 
             Pageable<GarmentLeftoverWarehouseStock> pageable = new Pageable<GarmentLeftoverWarehouseStock>(Query, page - 1, size);
