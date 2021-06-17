@@ -29,5 +29,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Models.GarmentLeftoverWarehouse.Sto
         public double Quantity { get; set; }
 
         public virtual ICollection<GarmentLeftoverWarehouseStockHistory> Histories { get; set; }
+
+        public double BasicPrice { get; set; }
     }
 }

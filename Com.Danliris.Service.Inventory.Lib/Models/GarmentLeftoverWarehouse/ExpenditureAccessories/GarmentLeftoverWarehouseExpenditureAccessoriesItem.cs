@@ -25,5 +25,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Models.GarmentLeftoverWarehouse.Exp
         public long ProductId { get; set; }
         public string ProductCode { get; set; }
         public string ProductName { get; set; }
+
+        public double BasicPrice { get; set; }
     }
 }
