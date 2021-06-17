@@ -1,4 +1,5 @@
 ﻿using Com.Danliris.Service.Inventory.Lib.Models.GarmentLeftoverWarehouse.GarmentLeftoverWarehouseReceiptFinishedGoodModels;
+using Com.Danliris.Service.Inventory.Lib.PDFTemplates.GarmentLeftoverWarehouse;
 using Com.Danliris.Service.Inventory.Lib.Services;
 using Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.GarmentLeftoverWarehouseReceiptFinishedGoodServices;
 using Com.Danliris.Service.Inventory.Lib.ViewModels.GarmentLeftoverWarehouse.GarmentLeftoverWarehouseReceiptFinishedGoodViewModel;
@@ -7,6 +8,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace Com.Danliris.Service.Inventory.WebApi.Controllers.v1.GarmentLeftoverWarehouse.GarmentLeftoverWarehouseReceiptFinishedGoodControllers
 {
@@ -71,6 +74,31 @@ namespace Com.Danliris.Service.Inventory.WebApi.Controllers.v1.GarmentLeftoverWa
                 var file = File(xlsInBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", filename);
                 return file;
 
+            }
+            catch (Exception e)
+            {
+                Dictionary<string, object> Result =
+                    new ResultFormatter(ApiVersion, General.INTERNAL_ERROR_STATUS_CODE, e.Message)
+                    .Fail();
+                return StatusCode(General.INTERNAL_ERROR_STATUS_CODE, Result);
+            }
+        }
+
+        [HttpGet("pdf/{Id}")]
+        public async Task<IActionResult> GetPdfById([FromRoute] int Id)
+        {
+            try
+            {
+                var model = await Service.ReadByIdAsync(Id);
+                var viewModel = Service.MapToViewModel(model);
+
+                GarmentLeftoverWarehouseReceiptFinishedGoodPDFTemplate PdfTemplate = new GarmentLeftoverWarehouseReceiptFinishedGoodPDFTemplate();
+                MemoryStream stream = PdfTemplate.GeneratePdfTemplate(viewModel);
+
+                return new FileStreamResult(stream, "application/pdf")
+                {
+                    FileDownloadName = $"Bon Terima Barang Jadi Gudang Sisa {viewModel.FinishedGoodReceiptNo}.pdf"
+                };
             }
             catch (Exception e)
             {

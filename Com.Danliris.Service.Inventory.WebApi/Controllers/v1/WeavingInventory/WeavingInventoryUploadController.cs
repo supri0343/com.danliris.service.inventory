@@ -27,13 +27,15 @@ namespace Com.Danliris.Service.Inventory.WebApi.Controllers.v1.WeavingInventory
         private readonly IMapper mapper;
         private readonly IInventoryWeavingDocumentUploadService service;
         private readonly IdentityService identityService;
+        protected readonly IValidateService ValidateService;
         private readonly string ContentType = "application/vnd.openxmlformats";
         private readonly string FileName = string.Concat("Error Log - ", typeof(InventoryWeavingDocument).Name, " ", DateTime.Now.ToString("dd MMM yyyy"), ".csv");
-        public WeavingInventoryUploadController(IMapper mapper, IInventoryWeavingDocumentUploadService service, IdentityService identityService) //: base(facade, ApiVersion)
+        public WeavingInventoryUploadController(IMapper mapper, IInventoryWeavingDocumentUploadService service, IdentityService identityService, IValidateService validateService) //: base(facade, ApiVersion)
         {
             this.mapper = mapper;
             this.service = service;
             this.identityService = identityService;
+            this.ValidateService = validateService;
         }
 
         [HttpGet]
@@ -56,7 +58,7 @@ namespace Com.Danliris.Service.Inventory.WebApi.Controllers.v1.WeavingInventory
 
         }
         [HttpPost("upload")]
-        public async Task<IActionResult> PostCSVFileAsync(string source)
+        public async Task<IActionResult> PostCSVFileAsync(string source, DateTime date)
         // public async Task<IActionResult> PostCSVFileAsync(double source, double destination,  DateTime date)
         {
             try
@@ -85,30 +87,43 @@ namespace Com.Danliris.Service.Inventory.WebApi.Controllers.v1.WeavingInventory
 
                         List<InventoryWeavingDocumentCsvViewModel> Data = Csv.GetRecords<InventoryWeavingDocumentCsvViewModel>().ToList();
 
-                        //InventoryWeavingDocumentViewModel Data1 = await service.MapToViewModel(Data, date, source);
-                        InventoryWeavingDocumentViewModel Data1 = await service.MapToViewModel(Data, source);
+                        InventoryWeavingDocumentViewModel Data1 = await service.MapToViewModel(Data, date, source);
+                        //InventoryWeavingDocumentViewModel Data1 = await service.MapToViewModel(Data, source);
+
+                        ValidateService.Validate(Data1);
+
+                       
 
                         Tuple<bool, List<object>> Validated = service.UploadValidate(ref Data, Request.Form.ToList());
 
                         Reader.Close();
 
-                        if (Validated.Item1) /* If Data Valid */
+                        if (Validated.Item1)
                         {
-                            //InventoryWeavingDocument data = mapper.Map<InventoryWeavingDocument>(Data1);
+                            var CheckNota = service.checkNota(Data);
 
-                            InventoryWeavingDocument data = await service.MapToModel(Data1);
-                            //InventoryWeavingMovement dataMovement = await service.MapToModelMovement(Data1);
-                            //foreach (var item in data)
-                            //{
-                            //    Transfrom(item);
-                            //}
-                            await service.UploadData(data, identityService.Username);
+                            if (CheckNota == 0)
+                            {
+
+                                InventoryWeavingDocument data = await service.MapToModel(Data1);
+
+                                await service.UploadData(data, identityService.Username);
 
 
-                            Dictionary<string, object> Result =
-                                new ResultFormatter(ApiVersion, General.CREATED_STATUS_CODE, General.OK_MESSAGE)
-                                .Ok();
-                            return Created(HttpContext.Request.Path, Result);
+                                Dictionary<string, object> Result =
+                                    new ResultFormatter(ApiVersion, General.CREATED_STATUS_CODE, General.OK_MESSAGE)
+                                    .Ok();
+                                return Created(HttpContext.Request.Path, Result);
+
+
+                            }
+
+                            else
+                            {
+                                Dictionary<string, object> Result = new ResultFormatter(ApiVersion, General.INTERNAL_ERROR_STATUS_CODE, "Nota Sudah Pernah di Input").Fail();
+
+                                return StatusCode(General.INTERNAL_ERROR_STATUS_CODE, Result);
+                            }
 
                         }
                         else
