@@ -30,6 +30,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.E
         private readonly IGarmentLeftoverWarehouseStockService StockService;
 
         private readonly string GarmentUnitReceiptNoteUri;
+        private readonly string GarmentCoreProductUri;
 
         public GarmentLeftoverWarehouseExpenditureFabricService(InventoryDbContext dbContext, IServiceProvider serviceProvider)
         {
@@ -43,6 +44,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.E
             StockService = (IGarmentLeftoverWarehouseStockService)serviceProvider.GetService(typeof(IGarmentLeftoverWarehouseStockService));
 
             GarmentUnitReceiptNoteUri = APIEndpoint.Purchasing + "garment-unit-expenditure-notes/";
+            GarmentCoreProductUri = APIEndpoint.Core + "master/garmentProducts";
         }
 
         public GarmentLeftoverWarehouseExpenditureFabric MapToModel(GarmentLeftoverWarehouseExpenditureFabricViewModel viewModel)
@@ -378,5 +380,34 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.E
 
             return stock;
         }
+
+        public GarmentProductViewModel GetProductFromCore(string productId)
+        {
+            var httpService = (IHttpService)ServiceProvider.GetService(typeof(IHttpService));
+            var responseGarmentProduct = httpService.GetAsync($"{GarmentCoreProductUri}/" + productId).Result.Content.ReadAsStringAsync();
+
+            Dictionary<string, object> resultGarmentProduct = JsonConvert.DeserializeObject<Dictionary<string, object>>(responseGarmentProduct.Result);
+            GarmentProductViewModel viewModel = JsonConvert.DeserializeObject<GarmentProductViewModel>(resultGarmentProduct.GetValueOrDefault("data").ToString());
+            return viewModel;
+
+        }
+
+        public List<GarmentProductViewModel> getProductForPDF (GarmentLeftoverWarehouseExpenditureFabric model)
+        {
+            List<GarmentProductViewModel> garmentProducts = new List<GarmentProductViewModel>();
+            foreach (var item in model.Items)
+            {
+                GarmentProductViewModel garmentProduct = new GarmentProductViewModel();
+                var stock = DbContext.GarmentLeftoverWarehouseStocks.Where(a => a.PONo == item.PONo).FirstOrDefault();
+                if (stock != null)
+                {
+                    garmentProduct = GetProductFromCore(stock.ProductId.ToString());
+                    garmentProduct.PONo = item.PONo;
+                    garmentProducts.Add(garmentProduct);
+                }
+            }
+            return garmentProducts;
+        }
+
     }
 }
