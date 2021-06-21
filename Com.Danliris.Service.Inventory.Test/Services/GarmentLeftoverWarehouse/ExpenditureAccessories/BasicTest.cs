@@ -324,6 +324,12 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
                         {
                             Id = "1",
                             Unit = "Uom"
+                        },
+                        Product= new ProductViewModel
+                        {
+                            Id="1",
+                            Code="code",
+                            Name="name"
                         }
                     }
                 }
