@@ -74,7 +74,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                             Quantity = item.Quantity,
                             ProductCode=item.ProductCode,
                             ProductId=item.ProductId,
-                            ProductName=item.ProductName
+                            ProductName=item.ProductName,
+                            BasicPrice = item.BasicPrice
                         };
                         await StockService.StockIn(stock, model.InvoiceNoReceive, model.Id, item.Id);
                     }

@@ -247,7 +247,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
                             LeftoverComodityCode = item.LeftoverComodityCode,
                             LeftoverComodityId = item.LeftoverComodityId,
                             LeftoverComodityName = item.LeftoverComodityName,
-                            Quantity = item.Quantity
+                            Quantity = item.Quantity,
+                            BasicPrice = item.BasicPrice
                         };
                         await StockService.StockIn(stock, model.FinishedGoodReceiptNo, model.Id, item.Id);
                         await UpdateExpenditureGoodIsReceived(item.ExpenditureGoodId, "true");
@@ -295,7 +296,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
                             Quantity = existingItem.Quantity,
                             LeftoverComodityCode = existingItem.LeftoverComodityCode,
                             LeftoverComodityId = existingItem.LeftoverComodityId,
-                            LeftoverComodityName = existingItem.LeftoverComodityName
+                            LeftoverComodityName = existingItem.LeftoverComodityName,
+                            BasicPrice = existingItem.BasicPrice
                         };
 
                         await StockService.StockOut(stockOut, model.FinishedGoodReceiptNo, model.Id, existingItem.Id);
@@ -341,7 +343,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
                             Quantity = item.Quantity,
                             LeftoverComodityCode = item.LeftoverComodityCode,
                             LeftoverComodityId = item.LeftoverComodityId,
-                            LeftoverComodityName = item.LeftoverComodityName
+                            LeftoverComodityName = item.LeftoverComodityName,
+                            BasicPrice=item.BasicPrice
                         };
 
                         await StockService.StockIn(stock, model.FinishedGoodReceiptNo, model.Id, item.Id);
@@ -390,7 +393,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
                             LeftoverComodityCode = item.LeftoverComodityCode,
                             LeftoverComodityId = item.LeftoverComodityId,
                             LeftoverComodityName = item.LeftoverComodityName,
-                            Quantity = item.Quantity
+                            Quantity = item.Quantity,
+                            BasicPrice = item.BasicPrice
                         };
 
                         await StockService.StockOut(stock, model.FinishedGoodReceiptNo, model.Id, item.Id);

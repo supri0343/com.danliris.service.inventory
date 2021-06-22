@@ -253,7 +253,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.B
                     LeftoverComodityName = item.LeftoverComodityName,
                     ProductCode = item.ProductCode,
                     ProductId = item.ProductId,
-                    ProductName = item.ProductName
+                    ProductName = item.ProductName,
+                    BasicPrice = item.BasicPrice
                 };
             }
             else
@@ -269,7 +270,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.B
                     RONo = item.RONo,
                     LeftoverComodityCode = item.LeftoverComodityCode,
                     LeftoverComodityId = item.LeftoverComodityId,
-                    LeftoverComodityName = item.LeftoverComodityName
+                    LeftoverComodityName = item.LeftoverComodityName,
+                    BasicPrice = item.BasicPrice
                 };
             }
 

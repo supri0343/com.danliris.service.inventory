@@ -384,7 +384,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.E
                 Quantity = item.Quantity,
                 ProductCode = item.ProductCode,
                 ProductId = item.ProductId,
-                ProductName = item.ProductName
+                ProductName = item.ProductName,
+                BasicPrice = item.BasicPrice
             };
 
             return stock;
