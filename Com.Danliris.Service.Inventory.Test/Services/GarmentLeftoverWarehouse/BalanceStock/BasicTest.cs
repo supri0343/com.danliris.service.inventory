@@ -284,5 +284,75 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
 
             Assert.NotNull(result);
         }
+
+        [Fact]
+        public void ValidateViewModel()
+        {
+            GarmentLeftoverWarehouseBalanceStockViewModel viewModel = new GarmentLeftoverWarehouseBalanceStockViewModel()
+            {
+                BalanceStockDate = null,
+                TypeOfGoods=null,
+            };
+            var result = viewModel.Validate(null);
+            Assert.True(result.Count() > 0);
+
+            GarmentLeftoverWarehouseBalanceStockViewModel viewModel2 = new GarmentLeftoverWarehouseBalanceStockViewModel()
+            {
+                BalanceStockDate = DateTimeOffset.MinValue,
+                TypeOfGoods="FABRIC",
+                Items = new List<GarmentLeftoverWarehouseBalanceStockItemViewModel>()
+                    {
+                        new GarmentLeftoverWarehouseBalanceStockItemViewModel()
+                        {
+                            PONo=null,
+                            Product=null
+                        }
+                    }
+            };
+            var result2 = viewModel2.Validate(null);
+            Assert.True(result2.Count() > 0);
+
+            GarmentLeftoverWarehouseBalanceStockViewModel viewModel3 = new GarmentLeftoverWarehouseBalanceStockViewModel()
+            {
+                BalanceStockDate = DateTimeOffset.MinValue,
+                TypeOfGoods = "ACCESSORIES",
+                Items = new List<GarmentLeftoverWarehouseBalanceStockItemViewModel>()
+                    {
+                        new GarmentLeftoverWarehouseBalanceStockItemViewModel()
+                        {
+                        }
+                    }
+            };
+            var result3 = viewModel3.Validate(null);
+            Assert.True(result3.Count() > 0);
+
+            GarmentLeftoverWarehouseBalanceStockViewModel viewModel4 = new GarmentLeftoverWarehouseBalanceStockViewModel()
+            {
+                BalanceStockDate = DateTimeOffset.Now,
+                TypeOfGoods = "BARANG JADI",
+                Items = new List<GarmentLeftoverWarehouseBalanceStockItemViewModel>()
+                    {
+                        new GarmentLeftoverWarehouseBalanceStockItemViewModel()
+                        {
+                        }
+                    }
+            };
+            var result4 = viewModel4.Validate(null);
+            Assert.True(result4.Count() > 0);
+
+            GarmentLeftoverWarehouseBalanceStockViewModel viewModel5 = new GarmentLeftoverWarehouseBalanceStockViewModel()
+            {
+                BalanceStockDate = DateTimeOffset.Now,
+                TypeOfGoods = "ETC",
+                Items = new List<GarmentLeftoverWarehouseBalanceStockItemViewModel>()
+                    {
+                        new GarmentLeftoverWarehouseBalanceStockItemViewModel()
+                        {
+                        }
+                    }
+            };
+            var result5 = viewModel5.Validate(null);
+            Assert.True(result5.Count() > 0);
+        }
     }
 }
