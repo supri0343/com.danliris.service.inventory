@@ -359,21 +359,23 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                 }
 
                 result.Rows.Add(
-                        "",
-                        "T O T A L .......",
-                        "",
-                        "",
-                        "",
-                        ExpendQtyTotal,
-                        "",
-                        "",
-                        "",
-                        QtyTotal,
-                        "",
-                        "",
-                        "",
-                        "",
-                        "");
+                         "",
+                         "T O T A L .......",
+                         "",
+                         "",
+                         "",
+                         ExpendQtyTotal,
+                         "",
+                         "",
+                         "",
+                         "",
+                         "",
+                         QtyTotal,
+                         "",
+                         "",
+                         "",
+                         "",
+                         "");
             }
 
             return Excel.CreateExcel(new List<KeyValuePair<DataTable, string>>() { new KeyValuePair<DataTable, string>(result, "Report Pengeluaran Gudang Sisa") }, true);
