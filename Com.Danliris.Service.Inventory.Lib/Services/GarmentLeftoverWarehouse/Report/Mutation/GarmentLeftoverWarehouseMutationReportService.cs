@@ -44,7 +44,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
             DateTimeOffset DateFrom = dateFrom == null ? new DateTime(1970, 1, 1) : (DateTimeOffset)dateFrom;
             DateTimeOffset DateTo = dateTo == null ? DateTime.Now : (DateTimeOffset)dateTo;
 
-            var BalanceDate = DbContext.GarmentLeftoverWarehouseBalanceStocks.OrderByDescending(x=>x.BalanceStockDate).FirstOrDefault().BalanceStockDate;
+            var BalanceDate = DbContext.GarmentLeftoverWarehouseBalanceStocks.OrderByDescending(x=>x.BalanceStockDate).Select(x=>x.BalanceStockDate).FirstOrDefault();
 
             var BalanceStock = (from a in DbContext.GarmentLeftoverWarehouseBalanceStocks
                                 join b in DbContext.GarmentLeftoverWarehouseBalanceStocksItems on a.Id equals b.BalanceStockId
@@ -382,7 +382,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                 });
             }
 
-            if (SaldoAkhir.FirstOrDefault(x => x.ClassificationName == "AVAL KOMPONEN") == null) {
+            if (SaldoAkhir.FirstOrDefault(x => x.ClassificationName == "Aval Komponen") == null) {
                 SaldoAkhir.Add(new GarmentLeftoverWarehouseMutationReportViewModel
                 {
                     ClassificationCode = "AV002",
@@ -397,6 +397,56 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                     UnitQtyName = "KG"
                 });
             }
+            if (SaldoAkhir.FirstOrDefault(x => x.ClassificationName == "Aval Bahan Penolong") == null)
+            {
+                SaldoAkhir.Add(new GarmentLeftoverWarehouseMutationReportViewModel
+                {
+                    ClassificationCode = "AV004",
+                    ClassificationName = "Aval Bahan Penolong",
+                    SaldoAwal = 0,
+                    Pemasukan = 0,
+                    Pengeluaran = 0,
+                    Penyesuaian = 0,
+                    Selisih = 0,
+                    SaldoAkhir = 0,
+                    StockOpname = 0,
+                    UnitQtyName = "KG"
+                });
+            }
+            if (SaldoAkhir.FirstOrDefault(x => x.ClassificationName == "Aval Besar") == null)
+            {
+                SaldoAkhir.Add(new GarmentLeftoverWarehouseMutationReportViewModel
+                {
+                    ClassificationCode = "AV001",
+                    ClassificationName = "Aval Besar",
+                    SaldoAwal = 0,
+                    Pemasukan = 0,
+                    Pengeluaran = 0,
+                    Penyesuaian = 0,
+                    Selisih = 0,
+                    SaldoAkhir = 0,
+                    StockOpname = 0,
+                    UnitQtyName = "KG"
+                });
+            }
+            if (SaldoAkhir.FirstOrDefault(x => x.ClassificationName == "Reject") == null)
+            {
+                SaldoAkhir.Add(new GarmentLeftoverWarehouseMutationReportViewModel
+                {
+                    ClassificationCode = "RJ001",
+                    ClassificationName = "Reject",
+                    SaldoAwal = 0,
+                    Pemasukan = 0,
+                    Pengeluaran = 0,
+                    Penyesuaian = 0,
+                    Selisih = 0,
+                    SaldoAkhir = 0,
+                    StockOpname = 0,
+                    UnitQtyName = "KG"
+                });
+            };
+
+
 
             var mutation = SaldoAkhir.Concat(mutationScrap).ToList();
 
@@ -433,7 +483,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
             }
             else
             {
-                List<GarmentLeftoverWarehouseMutationReportViewModel> viewModel = null;
+                List<GarmentLeftoverWarehouseMutationReportViewModel> viewModel = new List<GarmentLeftoverWarehouseMutationReportViewModel>();
                 return viewModel;
             }
         }
