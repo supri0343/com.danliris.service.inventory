@@ -483,7 +483,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
             }
             else
             {
-                List<GarmentLeftoverWarehouseMutationReportViewModel> viewModel = null;
+                List<GarmentLeftoverWarehouseMutationReportViewModel> viewModel = new List<GarmentLeftoverWarehouseMutationReportViewModel>();
                 return viewModel;
             }
         }
