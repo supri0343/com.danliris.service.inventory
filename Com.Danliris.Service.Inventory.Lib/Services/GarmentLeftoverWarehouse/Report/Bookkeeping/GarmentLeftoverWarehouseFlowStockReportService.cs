@@ -35,6 +35,12 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
             ServiceProvider = serviceProvider;
             IdentityService = (IIdentityService)serviceProvider.GetService(typeof(IIdentityService));
         }
+          class Products
+        {
+            public string ProductCode { get; internal set; }
+            public string ProductName { get; internal set; }
+            public string PONo { get; internal set; }
+        }
         #region REPORT
         public IQueryable<GarmentLeftoverWarehouseFlowStockMonitoringViewModel> GetReportQuery(string category,DateTime? dateFrom, DateTime? dateTo, int UnitId,  int offset, string typeAval = "")
         {
@@ -44,9 +50,21 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
 
 
             List<GarmentLeftoverWarehouseFlowStockMonitoringViewModel> GarmentLeftoverWarehouseFlowStockMonitoringViewModel = new List<GarmentLeftoverWarehouseFlowStockMonitoringViewModel>();
+            var _productF = (from a in DbContext.GarmentLeftoverWarehouseReceiptFabricItems
+                             where a._IsDeleted == false
+                             select new Products { ProductCode = a.ProductCode, ProductName = a.ProductName, PONo = a.POSerialNumber }).Distinct();
+            var _productB = (from a in DbContext.GarmentLeftoverWarehouseBalanceStocksItems
+                             where a._IsDeleted == false
+                             select new Products { ProductCode = a.ProductCode, ProductName = a.ProductName, PONo = a.PONo }).Distinct();
+            var _productA = (from a in DbContext.GarmentLeftoverWarehouseReceiptAccessoryItems
+                             where a._IsDeleted == false
+                             select new Products { ProductCode = a.ProductCode, ProductName = a.ProductName, PONo = a.POSerialNumber }).Distinct();
 
+            var _product = _productF.Union(_productB).Union(_productA);
             if (category == "FABRIC")
             {
+
+               
                 var QueryBalance = from a in (from data in DbContext.GarmentLeftoverWarehouseBalanceStocks
                                               where data._IsDeleted == false && data.TypeOfGoods.ToString() == "FABRIC"
                                               select new { data._CreatedUtc, data.Id })
@@ -129,11 +147,11 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                                            BasicPrice= b.BasicPrice,
                                            UomUnit = b.UomUnit,
                                            UnitName = b.UnitName,
-                                           ProductCode = (from aa in DbContext.GarmentLeftoverWarehouseReceiptFabricItems where aa._IsDeleted == false && aa.POSerialNumber == b.PONo select aa.ProductCode).FirstOrDefault() == null ? (from aa in DbContext.GarmentLeftoverWarehouseBalanceStocksItems where aa.PONo == b.PONo select aa.ProductCode).FirstOrDefault() : "",
-                                           ProductName = (from aa in DbContext.GarmentLeftoverWarehouseReceiptFabricItems where aa._IsDeleted == false && aa.POSerialNumber == b.PONo select aa.ProductName).FirstOrDefault() == null ? (from aa in DbContext.GarmentLeftoverWarehouseBalanceStocksItems where aa.PONo == b.PONo select aa.ProductName).FirstOrDefault() : "",
+                                           ProductCode = (from aa in _product where aa.PONo == b.PONo select aa.ProductCode).FirstOrDefault() ,
+                                           ProductName = (from aa in _product where aa.PONo == b.PONo select aa.ProductName).FirstOrDefault() ,
                                            EndbalanceQty = 0
                                        };
-                var Query = QueryReceipt.Union(QueryExpenditure).Union(QueryBalance);
+                 var Query = QueryReceipt.Union(QueryExpenditure).Union(QueryBalance);
                 var querySum = Query.ToList()
                     .GroupBy(x => new { x.PONo, x.UnitName, x.UomUnit,x.ProductCode,x.ProductName }, (key, group) => new
                     {
@@ -198,6 +216,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                                    select new GarmentLeftoverWarehouseFlowStockMonitoringViewModel
                                    {
                                        RO = b.RONo,
+                                       BeginingbalanceQty= b.Quantity,
                                        BeginingbalancePrice = b.Quantity * b.BasicPrice,
                                        QuantityReceipt = 0,
                                        PriceReceipt = 0,
@@ -249,7 +268,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                                                   select new { data.ExpenditureDate, data.Id,data.ExpenditureTo })
                                        join b in (from expend in DbContext.GarmentLeftoverWarehouseExpenditureFinishedGoodItems
                                                   where expend.UnitId == (UnitId == 0 ? expend.UnitId : UnitId)
-                                                  select new {expend.BasicPrice, expend.FinishedGoodExpenditureId, expend.UnitName, expend.ExpenditureQuantity, expend.RONo, expend.LeftoverComodityName }
+                                                  select new {expend.BasicPrice, expend.FinishedGoodExpenditureId, expend.UnitName, expend.ExpenditureQuantity,expend.LeftoverComodityCode, expend.RONo, expend.LeftoverComodityName }
                                                   ) on a.Id equals b.FinishedGoodExpenditureId
                                        select new GarmentLeftoverWarehouseFlowStockMonitoringViewModel
                                        {
@@ -269,8 +288,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                                            PriceSampleExpend =( a.ExpenditureDate.AddHours(offset).Date >= DateFrom.Date && a.ExpenditureTo == "SAMPLE" ? b.ExpenditureQuantity : 0) * b.BasicPrice,
                                            UomUnit = "PCS",
                                            UnitName = b.UnitName,
-                                           ProductCode = (from aa in DbContext.GarmentLeftoverWarehouseReceiptFinishedGoodItems where aa.RONo == b.RONo select aa.LeftoverComodityCode).FirstOrDefault(),
-                                           ProductName = (from aa in DbContext.GarmentLeftoverWarehouseReceiptFinishedGoodItems where aa.RONo == b.RONo select aa.LeftoverComodityName).FirstOrDefault(),
+                                           ProductCode = b.LeftoverComodityCode,
+                                           ProductName = b.LeftoverComodityName,
                                            EndbalanceQty = 0
                                        };
                 var Query = QueryReceipt.Union(QueryExpenditure).Union(QueryBalance);
