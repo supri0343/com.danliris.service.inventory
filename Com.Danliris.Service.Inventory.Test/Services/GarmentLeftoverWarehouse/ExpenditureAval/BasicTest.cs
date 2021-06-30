@@ -518,6 +518,7 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
                 .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.InternalServerError) { Content = new StringContent( JsonConvert.SerializeObject(new List<GarmentLeftoverWarehouseMutationReportViewModel>())) });
 
 
+
             serviceProvider21
                 .Setup(x => x.GetService(typeof(IIdentityService)))
                 .Returns(new IdentityService() { Token = "Token", Username = "Test" });
@@ -528,7 +529,7 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
 
             GarmentLeftoverWarehouseMutationReportService service = new GarmentLeftoverWarehouseMutationReportService(_dbContext(GetCurrentMethod()), serviceProvider21.Object);
 
-            var result = service.GetMutation(null,null, 1,25);
+            var result = service.GetMutation(null, null, 1, 25);
 
             Assert.True(result.Item1.Count() > 0);
 
