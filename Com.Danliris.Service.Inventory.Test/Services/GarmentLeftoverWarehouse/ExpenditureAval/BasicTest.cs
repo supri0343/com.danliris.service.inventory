@@ -4,19 +4,25 @@ using Com.Danliris.Service.Inventory.Lib.Models.GarmentLeftoverWarehouse.Stock;
 using Com.Danliris.Service.Inventory.Lib.Services;
 using Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.ExpenditureAval;
 using Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.GarmentLeftoverWarehouseReceiptAvalServices;
+using Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.Report.Mutation;
 using Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.Stock;
 using Com.Danliris.Service.Inventory.Lib.ViewModels;
 using Com.Danliris.Service.Inventory.Lib.ViewModels.GarmentLeftoverWarehouse.ExpenditureAval;
+using Com.Danliris.Service.Inventory.Lib.ViewModels.GarmentLeftoverWarehouse.Report.Mutation;
 using Com.Danliris.Service.Inventory.Test.DataUtils.GarmentLeftoverWarehouse.ExpenditureAval;
 using Com.Danliris.Service.Inventory.Test.DataUtils.GarmentLeftoverWarehouse.GarmentLeftoverWarehouseReceiptAvalDataUtils;
 using Com.Danliris.Service.Inventory.Test.Helpers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Moq;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -498,6 +504,64 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
             };
             var result2 = viewModel2.Validate(null);
             Assert.True(result2.Count() > 0);
+        }
+
+        [Fact]
+        public void MutationScrap()
+        {
+            var serviceProvider21 = new Mock<IServiceProvider>();
+
+            var httpClientService = new Mock<IHttpService>();
+
+            httpClientService
+                .Setup(x => x.GetAsync(It.Is<string>(s => s.Contains("scrap-transactions/mutation"))))
+                .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.InternalServerError) { Content = new StringContent(JsonConvert.SerializeObject(new List<GarmentLeftoverWarehouseMutationReportViewModel>())) });
+
+
+            serviceProvider21
+                .Setup(x => x.GetService(typeof(IIdentityService)))
+                .Returns(new IdentityService() { Token = "Token", Username = "Test" });
+
+            serviceProvider21
+                .Setup(x => x.GetService(typeof(IHttpService)))
+                .Returns(httpClientService.Object);
+
+            GarmentLeftoverWarehouseMutationReportService service = new GarmentLeftoverWarehouseMutationReportService(_dbContext(GetCurrentMethod()), serviceProvider21.Object);
+
+            var result = service.GetMutation(null, null, 1, 25);
+
+            Assert.True(result.Item1.Count() > 0);
+
+
+        }
+
+        [Fact]
+        public void Excel_MutationScrap()
+        {
+            var serviceProvider21 = new Mock<IServiceProvider>();
+
+            var httpClientService = new Mock<IHttpService>();
+
+            httpClientService
+                .Setup(x => x.GetAsync(It.Is<string>(s => s.Contains("scrap-transactions/mutation"))))
+                .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.InternalServerError) { Content = new StringContent(JsonConvert.SerializeObject(new List<GarmentLeftoverWarehouseMutationReportViewModel>())) });
+
+
+            serviceProvider21
+                .Setup(x => x.GetService(typeof(IIdentityService)))
+                .Returns(new IdentityService() { Token = "Token", Username = "Test" });
+
+            serviceProvider21
+                .Setup(x => x.GetService(typeof(IHttpService)))
+                .Returns(httpClientService.Object);
+
+            GarmentLeftoverWarehouseMutationReportService service = new GarmentLeftoverWarehouseMutationReportService(_dbContext(GetCurrentMethod()), serviceProvider21.Object);
+
+            var result = service.GenerateExcelMutation(DateTime.Now, DateTime.Now);
+
+            Assert.IsType<MemoryStream>(result);
+
+
         }
     }
 }
