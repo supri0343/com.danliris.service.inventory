@@ -13,7 +13,7 @@ using System.Security.Claims;
 using System.Text;
 using Xunit;
 
-namespace Com.Danliris.Service.Inventory.Test.Controllers.GarmentLeftoverWarehouse.Report
+namespace Com.Danliris.Service.Inventory.Test.Controllers.GarmentLeftoverWarehouse.MutationScrap
 {
     public class GarmentLeftOverMutationReportControllerTest
     {

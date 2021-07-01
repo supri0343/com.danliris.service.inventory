@@ -514,8 +514,8 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
             var httpClientService = new Mock<IHttpService>();
 
             httpClientService
-                .Setup(x=>x.GetAsync(It.Is<string>(s=>s.Contains("scrap-transactions/mutation"))))
-                .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.InternalServerError) { Content = new StringContent( JsonConvert.SerializeObject(new List<GarmentLeftoverWarehouseMutationReportViewModel>())) });
+                .Setup(x => x.GetAsync(It.Is<string>(s => s.Contains("scrap-transactions/mutation"))))
+                .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.InternalServerError) { Content = new StringContent(JsonConvert.SerializeObject(new List<GarmentLeftoverWarehouseMutationReportViewModel>())) });
 
 
             serviceProvider21
@@ -528,7 +528,7 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
 
             GarmentLeftoverWarehouseMutationReportService service = new GarmentLeftoverWarehouseMutationReportService(_dbContext(GetCurrentMethod()), serviceProvider21.Object);
 
-            var result = service.GetMutation(null,null, 1,25);
+            var result = service.GetMutation(null, null, 1, 25);
 
             Assert.True(result.Item1.Count() > 0);
 
