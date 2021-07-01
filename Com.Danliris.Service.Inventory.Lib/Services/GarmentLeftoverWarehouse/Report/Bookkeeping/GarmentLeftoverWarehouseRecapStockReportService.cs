@@ -29,7 +29,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
             IdentityService = (IIdentityService)serviceProvider.GetService(typeof(IIdentityService));
         }
 
-        public IQueryable<GarmentLeftoverWarehouseRecapStockReportViewModel> GetReportQuery(DateTime? dateFrom, DateTime? dateTo, int offset, string typeAval = "")
+        public IQueryable<GarmentLeftoverWarehouseRecapStockReportViewModel> GetReportQuery(DateTime? dateFrom, DateTime? dateTo, int offset)
         {
 
             DateTimeOffset DateFrom = dateFrom == null ? new DateTime(1970, 1, 1) : (DateTimeOffset)dateFrom;
