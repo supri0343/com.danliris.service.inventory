@@ -171,7 +171,7 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
             Assert.NotNull(result);
         }
         [Fact]
-        public async Task Should_Success_GetFlowStockReportTypeAcc()
+        public async Task Should_Success_GetFlowStockReport()
         {
             var serviceProvider = GetServiceProvider();
 
@@ -209,7 +209,7 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
             Assert.NotNull(result);
         }
         [Fact]
-        public async Task Should_Success_GetFlowStockReportTypeFinishedGood()
+        public async Task Should_Success_GetFlowStockExcelReport()
         {
             var serviceProvider = GetServiceProvider();
 
@@ -230,22 +230,23 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
 
             GarmentLeftoverWarehouseRecapStockReportService utilService = new GarmentLeftoverWarehouseRecapStockReportService(_dbContext(GetCurrentMethod()), GetServiceProvider().Object);
 
-            GarmentLeftoverWarehouseExpenditureFinishedGoodService service = new GarmentLeftoverWarehouseExpenditureFinishedGoodService(_dbContext(GetCurrentMethod()), serviceProvider.Object);
+            GarmentLeftoverWarehouseExpenditureAccessoriesService service = new GarmentLeftoverWarehouseExpenditureAccessoriesService(_dbContext(GetCurrentMethod()), serviceProvider.Object);
 
             GarmentLeftoverWarehouseBalanceStockService _balanceservice = new GarmentLeftoverWarehouseBalanceStockService(_dbContext(GetCurrentMethod()), serviceProvider.Object);
 
-            GarmentLeftoverWarehouseReceiptFinishedGoodService receiptFInishedGoodservice = new GarmentLeftoverWarehouseReceiptFinishedGoodService(_dbContext(GetCurrentMethod()), serviceProvider.Object);
+            GarmentLeftoverWarehouseReceiptAccessoriesService receiptAccservice = new GarmentLeftoverWarehouseReceiptAccessoriesService(_dbContext(GetCurrentMethod()), serviceProvider.Object);
 
-            var dataFInishedGood = await _dataUtilReceiptFinishedGood(receiptFInishedGoodservice).GetTestData();
+            var dataFabric = await _dataUtilAcc(service).GetTestData();
 
             var data_Balance = _dataUtilbalanceStock(_balanceservice).GetTestData_FINISHEDGOOD();
 
-            var dataReceiptFinishedGood = _dataUtilFinishedGood(service).GetTestData();
-            var result = utilService.GetReportQuery( DateTime.Now, DateTime.Now,  7);
+            var dataReceiptAcc = _dataUtilReceiptAcc(receiptAccservice).GetTestData();
+            var result = utilService.GenerateExcel(DateTime.Now, DateTime.Now, 7);
 
 
             Assert.NotNull(result);
         }
+
 
     }
 }
