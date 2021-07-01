@@ -247,6 +247,43 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
 
             Assert.NotNull(result);
         }
+        [Fact]
+        public async Task Should_Success_GetExcelFlowStockReportTypeFinishedGood()
+        {
+            var serviceProvider = GetServiceProvider();
 
+            var stockServiceMock = new Mock<IGarmentLeftoverWarehouseStockService>();
+            stockServiceMock.Setup(s => s.StockOut(It.IsAny<GarmentLeftoverWarehouseStock>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>()))
+                .ReturnsAsync(1);
+            stockServiceMock.Setup(s => s.StockIn(It.IsAny<GarmentLeftoverWarehouseStock>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>()))
+              .ReturnsAsync(1);
+
+
+            serviceProvider
+                .Setup(x => x.GetService(typeof(IGarmentLeftoverWarehouseStockService)))
+                .Returns(stockServiceMock.Object);
+
+            serviceProvider
+                .Setup(x => x.GetService(typeof(IHttpService)))
+                .Returns(new HttpTestService());
+
+            GarmentLeftoverWarehouseFlowStockReportService utilService = new GarmentLeftoverWarehouseFlowStockReportService(_dbContext(GetCurrentMethod()), GetServiceProvider().Object);
+
+            GarmentLeftoverWarehouseExpenditureFinishedGoodService service = new GarmentLeftoverWarehouseExpenditureFinishedGoodService(_dbContext(GetCurrentMethod()), serviceProvider.Object);
+
+            GarmentLeftoverWarehouseBalanceStockService _balanceservice = new GarmentLeftoverWarehouseBalanceStockService(_dbContext(GetCurrentMethod()), serviceProvider.Object);
+
+            GarmentLeftoverWarehouseReceiptFinishedGoodService receiptFInishedGoodservice = new GarmentLeftoverWarehouseReceiptFinishedGoodService(_dbContext(GetCurrentMethod()), serviceProvider.Object);
+
+            var dataFInishedGood = await _dataUtilReceiptFinishedGood(receiptFInishedGoodservice).GetTestData();
+
+            var data_Balance = _dataUtilbalanceStock(_balanceservice).GetTestData_FINISHEDGOOD();
+
+            var dataReceiptFinishedGood = _dataUtilFinishedGood(service).GetTestData();
+            var result = utilService.GenerateExcelFlowStock("BARANG JADI", DateTime.Now, DateTime.Now, 1, 7);
+
+
+            Assert.NotNull(result);
+        }
     }
 }
