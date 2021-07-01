@@ -10,6 +10,7 @@ using Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.Garme
 using Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.ReceiptAccessories;
 using Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.Report.Bookkeeping;
 using Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.Stock;
+using Com.Danliris.Service.Inventory.Test.DataUtils.GarmentLeftoverWarehouse.BalanceStock;
 using Com.Danliris.Service.Inventory.Test.DataUtils.GarmentLeftoverWarehouse.ExpenditureAccessories;
 using Com.Danliris.Service.Inventory.Test.DataUtils.GarmentLeftoverWarehouse.ExpenditureFabric;
 using Com.Danliris.Service.Inventory.Test.DataUtils.GarmentLeftoverWarehouse.ExpenditureFinishedGood;
@@ -91,11 +92,11 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
             GetServiceProvider();
             return new GarmentLeftoverWarehouseReceiptFinishedGoodDataUtil(service);
         }
-        private GarmentLeftoverWarehouseStockDataUtil _dataUtilbalanceStock(GarmentLeftoverWarehouseBalanceStockService service)
+        private GarmentLeftoverWarehouseBalanceStockDataUtil _dataUtilbalanceStock(GarmentLeftoverWarehouseBalanceStockService service)
         {
 
             GetServiceProvider();
-            return new GarmentLeftoverWarehouseStockDataUtil(service);
+            return new GarmentLeftoverWarehouseBalanceStockDataUtil(service);
         }
         private Mock<IServiceProvider> GetServiceProvider()
         {
@@ -161,7 +162,7 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
 
             var dataFabric =await _dataUtilFabric(service).GetTestData();
              
-            var data_Balance = _dataUtilbalanceStock(_balanceservice).GetNewData("FABRIC");
+            var data_Balance = _dataUtilbalanceStock(_balanceservice).GetNewData_FABRIC();
 
             var dataReceiptAcc = _dataUtilReceiptFabric(receiptFabservice).GetTestData();
 
@@ -200,7 +201,7 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
 
             var dataFabric = await _dataUtilAcc(service).GetTestData(); 
 
-            var data_Balance = _dataUtilbalanceStock(_balanceservice).GetNewData("ACCESSORIES");
+            var data_Balance = _dataUtilbalanceStock(_balanceservice).GetTestData_FABRIC();
 
             var dataReceiptAcc= _dataUtilReceiptAcc(receiptAccservice).GetTestData();
             var result = utilService.GetMonitoringFlowStock("ACCESSORIES", DateTime.Now, DateTime.Now, 1, 1, 1, "{}", 7);
@@ -238,7 +239,7 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
 
             var dataFInishedGood = await _dataUtilReceiptFinishedGood(receiptFInishedGoodservice).GetTestData();
 
-            var data_Balance = _dataUtilbalanceStock(_balanceservice).GetNewData("BARANG JADI");
+            var data_Balance = _dataUtilbalanceStock(_balanceservice).GetTestData_FINISHEDGOOD();
 
             var dataReceiptFinishedGood = _dataUtilFinishedGood(service).GetTestData();
             var result = utilService.GetMonitoringFlowStock("BARANG JADI", DateTime.Now, DateTime.Now, 1, 1, 1, "{}", 7);
