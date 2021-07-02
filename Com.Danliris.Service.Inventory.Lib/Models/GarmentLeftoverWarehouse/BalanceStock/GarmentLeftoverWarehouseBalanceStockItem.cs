@@ -26,7 +26,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Models.GarmentLeftoverWarehouse.Bal
 
         public string Composition { get; set; }
         public string Construction { get; set; }
-        public int Quantity { get; set; }
+        public double Quantity { get; set; }
         public string RONo { get; set; }
 
         public long UomId { get; set; }
