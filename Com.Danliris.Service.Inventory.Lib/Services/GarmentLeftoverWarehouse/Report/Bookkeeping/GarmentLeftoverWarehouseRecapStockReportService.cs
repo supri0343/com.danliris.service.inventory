@@ -268,7 +268,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                                                        select new { expend.BasicPrice, expend.UomUnit, expend.Quantity, expend.UnitName, expend.ExpenditureId }) on a.Id equals b.ExpenditureId
                                             select new GarmentLeftoverWarehouseRecapStockReportViewModel
                                             {
-                                                Description = "U/" + b.UnitName,
+                                                Description = "U/" + a.ExpenditureDestination,
                                                 FabricPrice = b.Quantity * b.BasicPrice,
                                                 FabricQty = b.Quantity,
                                                 FabricUom = b.UomUnit,
@@ -287,7 +287,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                                                     select new { expend.BasicPrice, expend.UomUnit, expend.Quantity, expend.UnitName, expend.ExpenditureId }) on a.Id equals b.ExpenditureId
                                          select new GarmentLeftoverWarehouseRecapStockReportViewModel
                                          {
-                                             Description = "U/" + b.UnitName,
+                                             Description = "U/" + a.ExpenditureDestination,
                                              FabricPrice = 0,
                                              FabricQty = 0,
                                              AccPrice = b.Quantity * b.BasicPrice,
@@ -300,12 +300,12 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
             var QueryExpenditureFinishedGoodNow = from a in (from data in DbContext.GarmentLeftoverWarehouseExpenditureFinishedGoods
                                                              where data._IsDeleted == false
                                                                  && data.ExpenditureDate.AddHours(offset).Date >= DateFrom.Date && data.ExpenditureDate.AddHours(offset).Date <= DateTo.Date
-                                                             select new { data.ExpenditureDate, data.Id })
+                                                             select new { data.ExpenditureDate, data.Id,data.ExpenditureTo })
                                                   join b in (from expend in DbContext.GarmentLeftoverWarehouseExpenditureFinishedGoodItems
                                                              select new { expend.BasicPrice, expend.ExpenditureQuantity, expend.UnitName, expend.FinishedGoodExpenditureId }) on a.Id equals b.FinishedGoodExpenditureId
                                                   select new GarmentLeftoverWarehouseRecapStockReportViewModel
                                                   {
-                                                      Description = "U/" + b.UnitName,
+                                                      Description = "U/" + a.ExpenditureTo,
                                                       FabricPrice = 0,
                                                       FabricQty = 0,
                                                       AccPrice = 0,
@@ -524,7 +524,6 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                     worksheet.Cells["A" + 1 + ":I" + (counter + 2) + ""].Style.Border.Top.Style = ExcelBorderStyle.Thin;
                     worksheet.Cells["A" + 1 + ":I" + (counter + 2) + ""].Style.Border.Left.Style = ExcelBorderStyle.Thin;
                     worksheet.Cells["A" + 1 + ":I" + (counter + 2) + ""].Style.Border.Right.Style = ExcelBorderStyle.Thin;
-                    worksheet.Cells["A" + 1 + ":I" + (counter + 2) + ""].AutoFitColumns();
 
                     for (int i = 1; i < counter + 3; i++)
                     {
@@ -550,23 +549,29 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                     foreach (var cell in worksheet.Cells["B" + 3 + ":B" + (counter + 2) + ""])
                     {
                         cell.Value = Convert.ToDecimal(cell.Value);
+                        cell.Style.Numberformat.Format = "#,##0.00";
                         cell.Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
                     }
                     foreach (var cell in worksheet.Cells["D" + 3 + ":D" + (counter + 2) + ""])
                     {
                         cell.Value = Convert.ToDecimal(cell.Value);
+                        cell.Style.Numberformat.Format = "#,##0.00";
                         cell.Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
                     }
                     foreach (var cell in worksheet.Cells["E" + 3 + ":E" + (counter + 2) + ""])
                     {
                         cell.Value = Convert.ToDecimal(cell.Value);
+                        cell.Style.Numberformat.Format = "#,##0.00";
                         cell.Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
                     }
                     foreach (var cell in worksheet.Cells["G" + 3 + ":I" + (counter + 2) + ""])
                     {
                         cell.Value = Convert.ToDecimal(cell.Value);
+                        cell.Style.Numberformat.Format = "#,##0.00";
                         cell.Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
                     }
+                    worksheet.Cells["A" + 1 + ":I" + (counter + 2) + ""].AutoFitColumns();
+
                     package.SaveAs(stream);
 
                 }
