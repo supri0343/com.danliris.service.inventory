@@ -404,10 +404,10 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                 var QueryExpenditure = from a in (from data in DbContext.GarmentLeftoverWarehouseExpenditureAccessories
                                                   where data._IsDeleted == false
                                              && data.ExpenditureDate.AddHours(offset).Date <= DateTo.Date
-
+                                              
                                                   select new { data.ExpenditureDate, data.Id ,data.ExpenditureDestination})
                                        join b in (from expend in DbContext.GarmentLeftoverWarehouseExpenditureAccessoriesItems
-                                                  where expend.UnitId == UnitId
+                                                  where expend.UnitId == (UnitId == 0 ? expend.UnitId : UnitId)
                                                   select new { expend.BasicPrice,expend.ExpenditureId, expend.UomUnit, expend.UnitName, expend.Quantity, expend.PONo }
                                                   ) on a.Id equals b.ExpenditureId
                                        select new GarmentLeftoverWarehouseFlowStockMonitoringViewModel
@@ -427,8 +427,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                                            PriceSampleExpend =(a.ExpenditureDate.AddHours(offset).Date >= DateFrom.Date && a.ExpenditureDestination == "SAMPLE" ? b.Quantity : 0) * b.BasicPrice,
                                            UomUnit = b.UomUnit,
                                            UnitName = b.UnitName,
-                                           ProductCode = (from aa in DbContext.GarmentLeftoverWarehouseReceiptAccessoryItems where aa.POSerialNumber == b.PONo select aa.ProductCode).FirstOrDefault(),
-                                           ProductName = (from aa in DbContext.GarmentLeftoverWarehouseReceiptAccessoryItems where aa.POSerialNumber == b.PONo select aa.ProductName).FirstOrDefault(),
+                                           ProductCode = (from aa in _product where aa.PONo == b.PONo select aa.ProductCode).FirstOrDefault(),
+                                           ProductName = (from aa in _product where aa.PONo == b.PONo select aa.ProductName).FirstOrDefault(),
                                            EndbalanceQty = 0
                                        };
                 var Query = QueryReceipt.Union(QueryExpenditure).Union(QueryBalance);
@@ -532,10 +532,34 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                 expendlocalPrice = group.Sum(s => s.PriceLocalExpend),
                 receipt = group.Sum(s => s.QuantityReceipt),
                 priceReceipt = group.Sum(s => s.PriceReceipt),
-                basicprice = group.Sum(s => s.BasicPrice),
+                basicprice = group.Sum(s => s.BasicPrice)
             });
             var query = queryGroup.Union(queryGroupTotal).OrderBy(s => s.unitname);
             List<GarmentLeftoverWarehouseFlowStockMonitoringViewModel> stockMonitoringViewModels = new List<GarmentLeftoverWarehouseFlowStockMonitoringViewModel>();
+            var queryGrandTotal = queryGroupTotal.GroupBy(x => new
+            {
+                x.productcode
+            }, (key, group) => new
+            {
+                productcode = "",
+                productname = "",
+                uomunit = "",
+                unitname = "GRAND TOTAL ",
+                begining = group.Sum(s => s.begining),
+                beginingPrice = group.Sum(s => s.beginingPrice),
+                expendunit = group.Sum(s => s.expendunit),
+                expendunitPrice = group.Sum(s => s.expendunitPrice),
+                expendsample = group.Sum(s => s.expendsample),
+                expendsamplePrice = group.Sum(s => s.expendsamplePrice),
+                expendother = group.Sum(s => s.expendother),
+                expendotherPrice = group.Sum(s => s.expendotherPrice),
+                expendlocal = group.Sum(s => s.expendlocal),
+                expendlocalPrice = group.Sum(s => s.expendlocalPrice),
+                receipt = group.Sum(s => s.receipt),
+                priceReceipt = group.Sum(s => s.priceReceipt),
+                basicprice = group.Sum(s => s.basicprice)
+            }
+                );
             foreach (var data in query)
             {
 
@@ -559,6 +583,34 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                     UomUnit = data.uomunit,
                     ProductCode =data.productcode,
                     ProductName =data.productname,
+                    EndbalanceQty = data.begining + data.receipt - data.expendunit - data.expendsample - data.expendother - data.expendlocal,
+                    EndbalancePrice = data.beginingPrice + data.priceReceipt - data.expendunitPrice - data.expendsamplePrice - data.expendotherPrice - data.expendlocalPrice
+                };
+                stockMonitoringViewModels.Add(garmentLeftover);
+            }
+            foreach (var data in queryGrandTotal)
+            {
+
+                GarmentLeftoverWarehouseFlowStockMonitoringViewModel garmentLeftover = new GarmentLeftoverWarehouseFlowStockMonitoringViewModel
+                {
+
+                    BeginingbalanceQty = data.begining,
+                    BeginingbalancePrice = data.beginingPrice,
+                    QuantityReceipt = data.receipt,
+                    PriceReceipt = data.priceReceipt,
+                    BasicPrice = data.basicprice,
+                    QuantityUnitExpend = data.expendunit,
+                    PriceUnitExpend = data.expendunitPrice,
+                    QuantityLocalExpend = data.expendlocal,
+                    PriceLocalExpend = data.expendlocalPrice,
+                    QuantityOtherExpend = data.expendother,
+                    PriceOtherExpend = data.expendotherPrice,
+                    QuantitySampleExpend = data.expendsample,
+                    PriceSampleExpend = data.expendsamplePrice,
+                    UnitName = data.unitname,
+                    UomUnit = data.uomunit,
+                    ProductCode = data.productcode,
+                    ProductName = data.productname,
                     EndbalanceQty = data.begining + data.receipt - data.expendunit - data.expendsample - data.expendother - data.expendlocal,
                     EndbalancePrice = data.beginingPrice + data.priceReceipt - data.expendunitPrice - data.expendsamplePrice - data.expendotherPrice - data.expendlocalPrice
                 };
@@ -653,19 +705,28 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                 worksheet.Cells["A" + 1 + ":R" + (counter + 2) + ""].Style.Border.Top.Style = ExcelBorderStyle.Thin;
                 worksheet.Cells["A" + 1 + ":R" + (counter + 2) + ""].Style.Border.Left.Style = ExcelBorderStyle.Thin;
                 worksheet.Cells["A" + 1 + ":R" + (counter + 2) + ""].Style.Border.Right.Style = ExcelBorderStyle.Thin;
+             
+                worksheet.Cells["A" + 1 + ":R" + (counter + 2) + ""].Style.Numberformat.Format = "#,##0.00";
 
                 for (int i = 1; i < counter + 3; i++)
                 {
                     if (worksheet.Cells["A" + i].Value != null)
-                    { 
-                    string _val = worksheet.Cells["A" + i].Value.ToString();
-
-                    if (_val.Contains("TOTAL"))
                     {
+                        string _val = worksheet.Cells["A" + i].Value.ToString();
 
-                        worksheet.Cells["A" + i + ":R" + i + ""].Style.Font.Bold = true;
+                        if (_val.Contains("TOTAL"))
+                        {
+
+                            worksheet.Cells["A" + i + ":D" + i + ""].Merge = true;
+                            worksheet.Cells["A" + i + ":R" + i + ""].Style.Font.Bold = true;
+                        }
+                        if (_val.Contains("GRAND TOTAL"))
+                        {
+                            worksheet.Cells["A" + i + ":R" + i + ""].Style.Fill.PatternType = ExcelFillStyle.Solid;
+
+                            worksheet.Cells["A" + i + ":R" + i + ""].Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.LightGray);
+                        }
                     }
-                }
                 }
 
 
@@ -673,7 +734,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                 {
                     cell.Value = Convert.ToDecimal(cell.Value);
                 }
-
+                worksheet.Cells["A" + 1 + ":R" + (counter + 2) + ""].AutoFitColumns();
                 var stream = new MemoryStream();
 
                 package.SaveAs(stream);
