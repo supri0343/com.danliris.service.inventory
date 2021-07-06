@@ -706,6 +706,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                 worksheet.Cells["A" + 1 + ":R" + (counter + 2) + ""].Style.Border.Left.Style = ExcelBorderStyle.Thin;
                 worksheet.Cells["A" + 1 + ":R" + (counter + 2) + ""].Style.Border.Right.Style = ExcelBorderStyle.Thin;
                 worksheet.Cells["A" + 1 + ":R" + (counter + 2) + ""].AutoFitColumns();
+                worksheet.Cells["A" + 1 + ":R" + (counter + 2) + ""].Style.Numberformat.Format = "#,##0.00";
 
                 for (int i = 1; i < counter + 3; i++)
                 {
