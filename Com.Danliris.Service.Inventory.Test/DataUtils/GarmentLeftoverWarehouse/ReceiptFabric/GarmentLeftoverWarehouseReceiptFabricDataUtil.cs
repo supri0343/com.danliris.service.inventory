@@ -36,7 +36,8 @@ namespace Com.Danliris.Service.Inventory.Test.DataUtils.GarmentLeftoverWarehouse
                     new GarmentLeftoverWarehouseReceiptFabricItem
                     {
                         UENItemId = 1,
-                        ProductId = 1,
+                        ProductId = 1, 
+                        POSerialNumber="PONo",
                         ProductCode = "Product",
                         ProductName = "Product",
                         ProductRemark = "Remark",
@@ -45,7 +46,7 @@ namespace Com.Danliris.Service.Inventory.Test.DataUtils.GarmentLeftoverWarehouse
                         BasicPrice = 1,
                         Quantity = 1,
                         UomId = 1,
-                        UomUnit = "Uom"
+                        UomUnit = "Uom",
                     }
                 }
             };

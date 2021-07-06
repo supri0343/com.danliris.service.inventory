@@ -17,7 +17,6 @@ using Com.Danliris.Service.Inventory.Test.DataUtils.GarmentLeftoverWarehouse.Exp
 using Com.Danliris.Service.Inventory.Test.DataUtils.GarmentLeftoverWarehouse.GarmentLeftoverWarehouseReceiptFabricDataUtils;
 using Com.Danliris.Service.Inventory.Test.DataUtils.GarmentLeftoverWarehouse.GarmentLeftoverWarehouseReceiptFinishedGoodDataUtils;
 using Com.Danliris.Service.Inventory.Test.DataUtils.GarmentLeftoverWarehouse.ReceiptAccessories;
-using Com.Danliris.Service.Inventory.Test.DataUtils.GarmentLeftoverWarehouse.Stock;
 using Com.Danliris.Service.Inventory.Test.Helpers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
@@ -32,9 +31,9 @@ using Xunit;
 
 namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.Report
 {
-   public class GarmentLeftOverFlowStockReportTest
+    public class GarmentLeftOverRecapStockReportTest
     {
-        private const string ENTITY = "flowStockReport";
+        private const string ENTITY = "recapStockReport";
 
         [MethodImpl(MethodImplOptions.NoInlining)]
         public string GetCurrentMethod()
@@ -131,10 +130,10 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
             return serviceProvider;
         }
         [Fact]
-        public async Task Should_Success_GetFlowStockReportTypeFabric()
+        public async Task Should_Success_GetRecapStockReportTypeFabric()
         {
-             
-         
+
+
             var serviceProvider = GetServiceProvider();
 
             var stockServiceMock = new Mock<IGarmentLeftoverWarehouseStockService>();
@@ -152,7 +151,7 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
                 .Setup(x => x.GetService(typeof(IHttpService)))
                 .Returns(new HttpTestService());
 
-            GarmentLeftoverWarehouseFlowStockReportService utilService = new GarmentLeftoverWarehouseFlowStockReportService(_dbContext(GetCurrentMethod()), GetServiceProvider().Object);
+            GarmentLeftoverWarehouseRecapStockReportService utilService = new GarmentLeftoverWarehouseRecapStockReportService(_dbContext(GetCurrentMethod()), GetServiceProvider().Object);
 
             GarmentLeftoverWarehouseExpenditureFabricService service = new GarmentLeftoverWarehouseExpenditureFabricService(_dbContext(GetCurrentMethod()), serviceProvider.Object);
 
@@ -160,19 +159,19 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
 
             GarmentLeftoverWarehouseReceiptFabricService receiptFabservice = new GarmentLeftoverWarehouseReceiptFabricService(_dbContext(GetCurrentMethod()), serviceProvider.Object);
 
-            var dataFabric =await _dataUtilFabric(service).GetTestData();
-             
-            var data_Balance = _dataUtilbalanceStock(_balanceservice).GetNewData_FABRIC();
+            var dataFabric = await _dataUtilFabric(service).GetTestData();
+
+            var data_Balance = _dataUtilbalanceStock(_balanceservice).GetTestData_FABRIC();
 
             var dataReceiptAcc = _dataUtilReceiptFabric(receiptFabservice).GetTestData();
 
-            var result = utilService.GetMonitoringFlowStock("FABRIC", DateTime.Now, DateTime.Now, 1, 1, 1, "{}", 7);
-             
-       
-           Assert.NotNull(result);
+            var result = utilService.GetReportQuery( DateTime.Now, DateTime.Now,7);
+
+
+            Assert.NotNull(result);
         }
         [Fact]
-        public async Task Should_Success_GetFlowStockReportTypeAcc()
+        public async Task Should_Success_GetFlowStockReport()
         {
             var serviceProvider = GetServiceProvider();
 
@@ -191,7 +190,7 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
                 .Setup(x => x.GetService(typeof(IHttpService)))
                 .Returns(new HttpTestService());
 
-            GarmentLeftoverWarehouseFlowStockReportService utilService = new GarmentLeftoverWarehouseFlowStockReportService(_dbContext(GetCurrentMethod()), GetServiceProvider().Object);
+            GarmentLeftoverWarehouseRecapStockReportService utilService = new GarmentLeftoverWarehouseRecapStockReportService(_dbContext(GetCurrentMethod()), GetServiceProvider().Object);
 
             GarmentLeftoverWarehouseExpenditureAccessoriesService service = new GarmentLeftoverWarehouseExpenditureAccessoriesService(_dbContext(GetCurrentMethod()), serviceProvider.Object);
 
@@ -199,18 +198,18 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
 
             GarmentLeftoverWarehouseReceiptAccessoriesService receiptAccservice = new GarmentLeftoverWarehouseReceiptAccessoriesService(_dbContext(GetCurrentMethod()), serviceProvider.Object);
 
-            var dataFabric = await _dataUtilAcc(service).GetTestData(); 
+            var dataFabric = await _dataUtilAcc(service).GetTestData();
 
-            var data_Balance = _dataUtilbalanceStock(_balanceservice).GetTestData_FABRIC();
+            var data_Balance = _dataUtilbalanceStock(_balanceservice).GetTestData_FINISHEDGOOD();
 
-            var dataReceiptAcc= _dataUtilReceiptAcc(receiptAccservice).GetTestData();
-            var result = utilService.GetMonitoringFlowStock("ACCESSORIES", DateTime.Now, DateTime.Now, 1, 1, 1, "{}", 7);
+            var dataReceiptAcc = _dataUtilReceiptAcc(receiptAccservice).GetTestData();
+            var result = utilService.GetReportQuery( DateTime.Now, DateTime.Now, 7);
 
 
             Assert.NotNull(result);
         }
         [Fact]
-        public async Task Should_Success_GetFlowStockReportTypeFinishedGood()
+        public async Task Should_Success_GetFlowStockExcelReport()
         {
             var serviceProvider = GetServiceProvider();
 
@@ -229,61 +228,26 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
                 .Setup(x => x.GetService(typeof(IHttpService)))
                 .Returns(new HttpTestService());
 
-            GarmentLeftoverWarehouseFlowStockReportService utilService = new GarmentLeftoverWarehouseFlowStockReportService(_dbContext(GetCurrentMethod()), GetServiceProvider().Object);
+            GarmentLeftoverWarehouseRecapStockReportService utilService = new GarmentLeftoverWarehouseRecapStockReportService(_dbContext(GetCurrentMethod()), GetServiceProvider().Object);
 
-            GarmentLeftoverWarehouseExpenditureFinishedGoodService service = new GarmentLeftoverWarehouseExpenditureFinishedGoodService(_dbContext(GetCurrentMethod()), serviceProvider.Object);
+            GarmentLeftoverWarehouseExpenditureAccessoriesService service = new GarmentLeftoverWarehouseExpenditureAccessoriesService(_dbContext(GetCurrentMethod()), serviceProvider.Object);
 
             GarmentLeftoverWarehouseBalanceStockService _balanceservice = new GarmentLeftoverWarehouseBalanceStockService(_dbContext(GetCurrentMethod()), serviceProvider.Object);
 
-            GarmentLeftoverWarehouseReceiptFinishedGoodService receiptFInishedGoodservice = new GarmentLeftoverWarehouseReceiptFinishedGoodService(_dbContext(GetCurrentMethod()), serviceProvider.Object);
+            GarmentLeftoverWarehouseReceiptAccessoriesService receiptAccservice = new GarmentLeftoverWarehouseReceiptAccessoriesService(_dbContext(GetCurrentMethod()), serviceProvider.Object);
 
-            var dataFInishedGood = await _dataUtilReceiptFinishedGood(receiptFInishedGoodservice).GetTestData();
+            var dataFabric = await _dataUtilAcc(service).GetTestData();
 
             var data_Balance = _dataUtilbalanceStock(_balanceservice).GetTestData_FINISHEDGOOD();
 
-            var dataReceiptFinishedGood = _dataUtilFinishedGood(service).GetTestData();
-            var result = utilService.GetMonitoringFlowStock("BARANG JADI", DateTime.Now, DateTime.Now, 1, 1, 1, "{}", 7);
+            var dataReceiptAcc = _dataUtilReceiptAcc(receiptAccservice).GetTestData();
+            var result = utilService.GenerateExcel(DateTime.Now, DateTime.Now, 7);
 
 
             Assert.NotNull(result);
         }
-        [Fact]
-        public async Task Should_Success_GetExcelFlowStockReportTypeFinishedGood()
-        {
-            var serviceProvider = GetServiceProvider();
-
-            var stockServiceMock = new Mock<IGarmentLeftoverWarehouseStockService>();
-            stockServiceMock.Setup(s => s.StockOut(It.IsAny<GarmentLeftoverWarehouseStock>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>()))
-                .ReturnsAsync(1);
-            stockServiceMock.Setup(s => s.StockIn(It.IsAny<GarmentLeftoverWarehouseStock>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>()))
-              .ReturnsAsync(1);
 
 
-            serviceProvider
-                .Setup(x => x.GetService(typeof(IGarmentLeftoverWarehouseStockService)))
-                .Returns(stockServiceMock.Object);
-
-            serviceProvider
-                .Setup(x => x.GetService(typeof(IHttpService)))
-                .Returns(new HttpTestService());
-
-            GarmentLeftoverWarehouseFlowStockReportService utilService = new GarmentLeftoverWarehouseFlowStockReportService(_dbContext(GetCurrentMethod()), GetServiceProvider().Object);
-
-            GarmentLeftoverWarehouseExpenditureFinishedGoodService service = new GarmentLeftoverWarehouseExpenditureFinishedGoodService(_dbContext(GetCurrentMethod()), serviceProvider.Object);
-
-            GarmentLeftoverWarehouseBalanceStockService _balanceservice = new GarmentLeftoverWarehouseBalanceStockService(_dbContext(GetCurrentMethod()), serviceProvider.Object);
-
-            GarmentLeftoverWarehouseReceiptFinishedGoodService receiptFInishedGoodservice = new GarmentLeftoverWarehouseReceiptFinishedGoodService(_dbContext(GetCurrentMethod()), serviceProvider.Object);
-
-            var dataFInishedGood = await _dataUtilReceiptFinishedGood(receiptFInishedGoodservice).GetTestData();
-
-            var data_Balance = _dataUtilbalanceStock(_balanceservice).GetTestData_FINISHEDGOOD();
-
-            var dataReceiptFinishedGood = _dataUtilFinishedGood(service).GetTestData();
-            var result = utilService.GenerateExcelFlowStock("BARANG JADI", DateTime.Now, DateTime.Now, 1, 7);
-
-
-            Assert.NotNull(result);
-        }
     }
 }
+
