@@ -326,8 +326,9 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                                        });
 
             var FilteredReceiptAvalKomponen = (from a in DbContext.GarmentLeftoverWarehouseReceiptAvals
-                                       join b in DbContext.GarmentLeftoverWarehouseReceiptAvalItems on a.Id equals b.AvalReceiptId
-                                       where a._IsDeleted == false && b._IsDeleted == false
+                                       //join b in DbContext.GarmentLeftoverWarehouseReceiptAvalItems on a.Id equals b.AvalReceiptId
+                                       where a._IsDeleted == false
+                                       //&& b._IsDeleted == false
                                        && a.ReceiptDate >= DateFrom
                                        && a.ReceiptDate <= DateTo
                                        && a.AvalType == "AVAL KOMPONEN"
