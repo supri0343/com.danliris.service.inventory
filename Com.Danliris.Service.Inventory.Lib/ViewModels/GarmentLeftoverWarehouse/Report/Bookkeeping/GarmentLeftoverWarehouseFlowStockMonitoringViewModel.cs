@@ -12,9 +12,7 @@ namespace Com.Danliris.Service.Inventory.Lib.ViewModels.GarmentLeftoverWarehouse
         public string RO { get; set; }
         public string ProductCode { get; set; }
         public string ProductName { get; set; }
-       
         public double BeginingbalanceQty { get; set; }
-
         public double BeginingbalancePrice { get; set; }
         public double QuantityReceipt { get; set; }
         public double PriceReceipt { get; set; }
