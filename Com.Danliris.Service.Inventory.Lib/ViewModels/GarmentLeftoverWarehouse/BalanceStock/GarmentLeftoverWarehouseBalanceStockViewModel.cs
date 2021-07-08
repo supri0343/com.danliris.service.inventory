@@ -51,17 +51,17 @@ namespace Com.Danliris.Service.Inventory.Lib.ViewModels.GarmentLeftoverWarehouse
                             errorCount++;
                         }
 
-                        if (item.Composition == null)
-                        {
-                            errorItem["Composition"] = "Komposisi tidak boleh kosong";
-                            errorCount++;
-                        }
+                        //if (item.Composition == null)
+                        //{
+                        //    errorItem["Composition"] = "Komposisi tidak boleh kosong";
+                        //    errorCount++;
+                        //}
 
-                        if (item.Construction == null)
-                        {
-                            errorItem["Construction"] = "Konstruksi tidak boleh kosong";
-                            errorCount++;
-                        }
+                        //if (item.Construction == null)
+                        //{
+                        //    errorItem["Construction"] = "Konstruksi tidak boleh kosong";
+                        //    errorCount++;
+                        //}
                     } else if (TypeOfGoods == "ACCESSORIES")
                     {
                         if (item.PONo == null)
