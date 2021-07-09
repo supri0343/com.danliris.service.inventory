@@ -442,10 +442,11 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
 
             foreach (var mm in mutationScrap)
             {
-                var saldoawal = mm.SaldoAwal < 0 ? 0 : mm.SaldoAwal;
-                var saldoakhir = mm.SaldoAkhir < 0 ? 0 : mm.SaldoAkhir;
-                mm.SaldoAwal = saldoawal;
-                mm.SaldoAkhir = saldoakhir;
+                //var saldoawal = mm.SaldoAwal < 0 ? 0 : mm.SaldoAwal;
+                //var saldoakhir = mm.SaldoAkhir < 0 ? 0 : mm.SaldoAkhir;
+                
+                //mm.SaldoAwal = saldoawal;
+                //mm.SaldoAkhir = saldoakhir;
                 mm.ClassificationName = "Aval Tc Kecil";
             }
 
