@@ -112,13 +112,14 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
             var SAReceiptAval = (from a in DbContext.GarmentLeftoverWarehouseReceiptAvals
                                  join b in DbContext.GarmentLeftoverWarehouseReceiptAvalItems on a.Id equals b.AvalReceiptId
                                  where a._IsDeleted == false && b._IsDeleted == false
-                                 && a._CreatedUtc > BalanceDate
-                                 && a._CreatedUtc < DateFrom
+                                 && a.ReceiptDate > BalanceDate
+                                 && a.ReceiptDate < DateFrom
+                                 && a.AvalType != "AVAL KOMPONEN"
                                  select new GarmentLeftoverWarehouseMutationReportViewModel
                                  {
-                                     ClassificationCode = a.AvalType == "AVAL FABRIC" ? "AV001" : a.AvalType == "AVAL BAHAN PENOLONG" ? "AV004" : "AV002",
-                                     ClassificationName = a.AvalType == "AVAL FABRIC" ? "Aval Besar" : a.AvalType == "AVAL BAHAN PENOLONG" ? "Aval Bahan Penolong" : "Aval Komponen",
-                                     SaldoAwal = b.Quantity,
+                                     ClassificationCode = a.AvalType == "AVAL FABRIC" ? "AV001" :  "AV004",
+                                     ClassificationName = a.AvalType == "AVAL FABRIC" ? "Aval Besar" : "Aval Bahan Penolong" ,
+                                     SaldoAwal =  b.Quantity,
                                      Pemasukan = 0,
                                      Pengeluaran = 0,
                                      Penyesuaian = 0,
@@ -140,6 +141,42 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                                      UnitQtyName = key.UnitQtyName
 
                                  });
+
+            var SAReceiptAvalKomponen = (from a in DbContext.GarmentLeftoverWarehouseReceiptAvals
+                                // join b in DbContext.GarmentLeftoverWarehouseReceiptAvalItems on a.Id equals b.AvalReceiptId
+                                 where a._IsDeleted == false 
+                                 //&& b._IsDeleted == false
+                                 && a.ReceiptDate > BalanceDate
+                                 && a.ReceiptDate < DateFrom
+                                 && a.AvalType == "AVAL KOMPONEN"
+                                 select new
+                                 {
+                                     ClassificationCode = "AV002",
+                                     ClassificationName =  "Aval Komponen",
+                                     SaldoAwal = a.TotalAval ,
+                                     Pemasukan = 0,
+                                     Pengeluaran = 0,
+                                     Penyesuaian = 0,
+                                     Selisih = 0,
+                                     SaldoAkhir = 0,
+                                     StockOpname = 0,
+                                     UnitQtyName = "KG"
+                                 }).GroupBy(x => new { x.ClassificationCode, x.ClassificationName}, (key, group) => new GarmentLeftoverWarehouseMutationReportViewModel
+                                 {
+                                     ClassificationCode = key.ClassificationCode,
+                                     ClassificationName = key.ClassificationName,
+                                     SaldoAwal = group.Sum(x => x.SaldoAwal),
+                                     Pemasukan = group.Sum(x => x.Pemasukan),
+                                     Pengeluaran = group.Sum(x => x.Pengeluaran),
+                                     Penyesuaian = group.Sum(x => x.Penyesuaian),
+                                     Selisih = group.Sum(x => x.Selisih),
+                                     SaldoAkhir = group.Sum(x => x.SaldoAkhir),
+                                     StockOpname = group.Sum(x => x.StockOpname),
+                                     UnitQtyName = group.First().UnitQtyName
+
+                                 });
+
+
 
             var SAExpendBarangJadi = (from a in DbContext.GarmentLeftoverWarehouseExpenditureFinishedGoods
                                       join b in DbContext.GarmentLeftoverWarehouseExpenditureFinishedGoodItems on a.Id equals b.FinishedGoodExpenditureId
@@ -174,7 +211,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                                       });
 
             var SAExpendAval = (from a in DbContext.GarmentLeftoverWarehouseExpenditureAvals
-                                join b in DbContext.GarmentLeftoverWarehouseExpenditureAvalItems on a.Id equals b.AvalReceiptId
+                                join b in DbContext.GarmentLeftoverWarehouseExpenditureAvalItems on a.Id equals b.AvalExpenditureId
                                 where a._IsDeleted == false && b._IsDeleted == false
                                 && a._CreatedUtc > BalanceDate
                                 && a._CreatedUtc < DateFrom
@@ -190,22 +227,24 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                                     SaldoAkhir = 0,
                                     StockOpname = 0,
                                     UnitQtyName = b.UomUnit
-                                }).GroupBy(x => new { x.ClassificationCode, x.ClassificationName, x.UnitQtyName }, (key, group) => new GarmentLeftoverWarehouseMutationReportViewModel
-                                {
-                                    ClassificationCode = key.ClassificationCode,
-                                    ClassificationName = key.ClassificationName,
-                                    SaldoAwal = group.Sum(x => x.SaldoAwal),
-                                    Pemasukan = group.Sum(x => x.Pemasukan),
-                                    Pengeluaran = group.Sum(x => x.Pengeluaran),
-                                    Penyesuaian = group.Sum(x => x.Penyesuaian),
-                                    Selisih = group.Sum(x => x.Selisih),
-                                    SaldoAkhir = group.Sum(x => x.SaldoAkhir),
-                                    StockOpname = group.Sum(x => x.StockOpname),
-                                    UnitQtyName = key.UnitQtyName
+                                })
+                                //.GroupBy(x => new { x.ClassificationCode, x.ClassificationName, x.UnitQtyName }, (key, group) => new GarmentLeftoverWarehouseMutationReportViewModel
+                                //{
+                                //    ClassificationCode = key.ClassificationCode,
+                                //    ClassificationName = key.ClassificationName,
+                                //    SaldoAwal = group.Sum(x => x.SaldoAwal),
+                                //    Pemasukan = group.Sum(x => x.Pemasukan),
+                                //    Pengeluaran = group.Sum(x => x.Pengeluaran),
+                                //    Penyesuaian = group.Sum(x => x.Penyesuaian),
+                                //    Selisih = group.Sum(x => x.Selisih),
+                                //    SaldoAkhir = group.Sum(x => x.SaldoAkhir),
+                                //    StockOpname = group.Sum(x => x.StockOpname),
+                                //    UnitQtyName = key.UnitQtyName
 
-                                });
+                                //})
+                                ;
 
-            var SAwal = BalanceStock.Concat(SAReceiptBarangJadi).Concat(SAReceiptAval).Concat(SAExpendAval).Concat(SAExpendBarangJadi).AsEnumerable();
+            var SAwal = BalanceStock.Concat(SAReceiptBarangJadi).Concat(SAReceiptAval).Concat(SAReceiptAvalKomponen).Concat(SAExpendAval).Concat(SAExpendBarangJadi).AsEnumerable();
             var SaldoAwal = SAwal.GroupBy(x => new { x.ClassificationCode, x.ClassificationName, x.UnitQtyName }, (key, group) => new GarmentLeftoverWarehouseMutationReportViewModel
             {
                 ClassificationCode = key.ClassificationCode,
@@ -256,12 +295,13 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
             var FilteredReceiptAval = (from a in DbContext.GarmentLeftoverWarehouseReceiptAvals
                                        join b in DbContext.GarmentLeftoverWarehouseReceiptAvalItems on a.Id equals b.AvalReceiptId
                                        where a._IsDeleted == false && b._IsDeleted == false
-                                       && a._CreatedUtc >= DateFrom
-                                       && a._CreatedUtc <= DateTo
+                                       && a.ReceiptDate >= DateFrom
+                                       && a.ReceiptDate <= DateTo
+                                       && a.AvalType != "AVAL KOMPONEN"
                                        select new GarmentLeftoverWarehouseMutationReportViewModel
                                        {
-                                           ClassificationCode = a.AvalType == "AVAL FABRIC" ? "AV001" : a.AvalType == "AVAL BAHAN PENOLONG" ? "AV004" : "AV002",
-                                           ClassificationName = a.AvalType == "AVAL FABRIC" ? "Aval Besar" : a.AvalType == "AVAL BAHAN PENOLONG" ? "Aval Bahan Penolong" : "Aval Komponen",
+                                           ClassificationCode = a.AvalType == "AVAL FABRIC" ? "AV001" : "AV004" ,
+                                           ClassificationName = a.AvalType == "AVAL FABRIC" ? "Aval Besar" :  "Aval Bahan Penolong",
                                            SaldoAwal = 0,
                                            Pemasukan = b.Quantity,
                                            Pengeluaran = 0,
@@ -282,6 +322,40 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                                            SaldoAkhir = group.Sum(x => x.SaldoAkhir),
                                            StockOpname = group.Sum(x => x.StockOpname),
                                            UnitQtyName = key.UnitQtyName
+
+                                       });
+
+            var FilteredReceiptAvalKomponen = (from a in DbContext.GarmentLeftoverWarehouseReceiptAvals
+                                       //join b in DbContext.GarmentLeftoverWarehouseReceiptAvalItems on a.Id equals b.AvalReceiptId
+                                       where a._IsDeleted == false
+                                       //&& b._IsDeleted == false
+                                       && a.ReceiptDate >= DateFrom
+                                       && a.ReceiptDate <= DateTo
+                                       && a.AvalType == "AVAL KOMPONEN"
+                                       select new GarmentLeftoverWarehouseMutationReportViewModel
+                                       {
+                                           ClassificationCode =  "AV002",
+                                           ClassificationName =  "Aval Komponen",
+                                           SaldoAwal = 0,
+                                           Pemasukan = a.TotalAval,
+                                           Pengeluaran = 0,
+                                           Penyesuaian = 0,
+                                           Selisih = 0,
+                                           SaldoAkhir = 0,
+                                           StockOpname = 0,
+                                           UnitQtyName = "KG"
+                                       }).GroupBy(x => new { x.ClassificationCode, x.ClassificationName }, (key, group) => new GarmentLeftoverWarehouseMutationReportViewModel
+                                       {
+                                           ClassificationCode = key.ClassificationCode,
+                                           ClassificationName = key.ClassificationName,
+                                           SaldoAwal = group.Sum(x => x.SaldoAwal),
+                                           Pemasukan = group.Sum(x => x.Pemasukan),
+                                           Pengeluaran = group.Sum(x => x.Pengeluaran),
+                                           Penyesuaian = group.Sum(x => x.Penyesuaian),
+                                           Selisih = group.Sum(x => x.Selisih),
+                                           SaldoAkhir = group.Sum(x => x.SaldoAkhir),
+                                           StockOpname = group.Sum(x => x.StockOpname),
+                                           UnitQtyName = group.First().UnitQtyName
 
                                        });
 
@@ -318,7 +392,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                                             });
 
             var FilteredExpendAval = (from a in DbContext.GarmentLeftoverWarehouseExpenditureAvals
-                                      join b in DbContext.GarmentLeftoverWarehouseExpenditureAvalItems on a.Id equals b.AvalReceiptId
+                                      join b in DbContext.GarmentLeftoverWarehouseExpenditureAvalItems on a.Id equals b.AvalExpenditureId
                                       where a._IsDeleted == false && b._IsDeleted == false
                                       && a._CreatedUtc >= DateFrom
                                       && a._CreatedUtc <= DateTo
@@ -348,7 +422,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                                           UnitQtyName = key.UnitQtyName
 
                                       });
-            var SAkhir = SaldoAwal.Concat(FilteredReceiptAval).Concat(FilteredReceiptBarangJadi).Concat(FilteredExpendAval).Concat(FilteredExpendBarangJadi).AsEnumerable();
+            var SAkhir = SaldoAwal.Concat(FilteredReceiptAval).Concat(FilteredReceiptBarangJadi).Concat(FilteredExpendAval).Concat(FilteredExpendBarangJadi).Concat(FilteredReceiptAvalKomponen).AsEnumerable();
             var SaldoAkhir = SAkhir.GroupBy(x => new { x.ClassificationCode, x.ClassificationName, x.UnitQtyName }, (key, group) => new GarmentLeftoverWarehouseMutationReportViewModel
             {
                 ClassificationCode = key.ClassificationCode,

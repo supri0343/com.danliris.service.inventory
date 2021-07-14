@@ -135,6 +135,7 @@ namespace Com.Danliris.Service.Inventory.WebApi
                 .AddTransient<IGarmentLeftoverWarehouseFlowStockReportService, GarmentLeftoverWarehouseFlowStockReportService>()
                 .AddTransient<IReportRecapStockGreigePerTypeService, ReportRecapStockGreigePerTypeService>()
                 .AddTransient<IReportGreigeWeavingPerGradeService, ReportGreigeWeavingPerGradeService>()
+                .AddTransient<IGarmentLeftoverWarehouseStockBookkeepingReportService, GarmentLeftoverWarehouseStockBookkeepingReportService>()
                 .AddTransient<IReportExpenseGreigeWeavingService, ReportExpenseGreigeWeavingService>()
                 .AddScoped<IIdentityService, IdentityService>()
                 .AddScoped<IValidateService, ValidateService>()
