@@ -26,11 +26,13 @@ namespace Com.Danliris.Service.Inventory.WebApi.Controllers.v1.WeavingInventory
         private string ApiVersion = "1.0.0";
         private readonly IMapper mapper;
         private readonly IInventoryWeavingDocumentUploadService service;
-        private readonly IdentityService identityService;
+        private readonly IIdentityService identityService;
         protected readonly IValidateService ValidateService;
         private readonly string ContentType = "application/vnd.openxmlformats";
         private readonly string FileName = string.Concat("Error Log - ", typeof(InventoryWeavingDocument).Name, " ", DateTime.Now.ToString("dd MMM yyyy"), ".csv");
-        public WeavingInventoryUploadController(IMapper mapper, IInventoryWeavingDocumentUploadService service, IdentityService identityService, IValidateService validateService) //: base(facade, ApiVersion)
+
+       // IIdentityService identityService, IValidateService validateService, ICOAService service, IMapper mapper
+        public WeavingInventoryUploadController(IIdentityService identityService, IValidateService validateService, IInventoryWeavingDocumentUploadService service, IMapper mapper  ) //: base(facade, ApiVersion)
         {
             this.mapper = mapper;
             this.service = service;
@@ -46,6 +48,7 @@ namespace Com.Danliris.Service.Inventory.WebApi.Controllers.v1.WeavingInventory
             {
 
                 var data = service.Read(page, size, order, keyword ,filter);
+                
                 return Ok(data);
             }
             catch (Exception ex)
