@@ -108,7 +108,7 @@ namespace Com.Danliris.Service.Inventory.Test.Services.InventoryWeaving
         //}
 
         [Fact]
-        public async Task Should_success_GetStock()
+        public void Should_success_GetStock()
         {
             ReportGreigeWeavingPerGradeService service = new ReportGreigeWeavingPerGradeService(GetServiceProvider().Object, _dbContext(GetCurrentMethod()));
 
@@ -135,7 +135,7 @@ namespace Com.Danliris.Service.Inventory.Test.Services.InventoryWeaving
         //}
 
         [Fact]
-        public async Task Should_success_GenerateExcel()
+        public void Should_success_GenerateExcel()
         {
             ReportGreigeWeavingPerGradeService service = new ReportGreigeWeavingPerGradeService(GetServiceProvider().Object, _dbContext(GetCurrentMethod()));
 

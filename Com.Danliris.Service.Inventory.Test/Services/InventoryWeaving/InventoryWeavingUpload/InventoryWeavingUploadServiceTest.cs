@@ -186,13 +186,13 @@ namespace Com.Danliris.Service.Inventory.Test.Services.InventoryWeaving.Inventor
 
 
         [Fact]
-        public void  Should_Success_ReadById()
+        public async Task Should_Success_ReadById()
         {
             InventoryWeavingDocumentUploadService service = new InventoryWeavingDocumentUploadService(GetServiceProvider().Object, _dbContext(GetCurrentMethod()));
 
             var data = _dataUtilDoc(service).GetTestData();
 
-            var Response = service.ReadById(1);
+            var Response = service.ReadById(data.Result.Id);
             Assert.NotNull(Response);
         }
 
