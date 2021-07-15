@@ -204,7 +204,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving.Reports.R
                 {
                     // string date = model.Date == null ? "-" : model.Date.ToOffset(new TimeSpan(offSet, 0, 0)).ToString("dd MMM yyyy", new CultureInfo("id-ID"));
 
-                    dt.Rows.Add( model.Construction, model.Grade, "", "", model.QtyPiece, model.Qty, "");
+                    dt.Rows.Add("", model.Construction, model.Grade, "", "", model.QtyPiece, model.Qty, "");
                 }
             }
 

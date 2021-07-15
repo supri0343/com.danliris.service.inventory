@@ -90,7 +90,7 @@ namespace Com.Danliris.Service.Inventory.Test.Controllers.InventoryWeavingReport
                 .Throws(new Exception());
             var controller = GetController(mocks);
             controller.ControllerContext.HttpContext.Request.Headers["Accept"] = "application/json";
-            var response = controller.GetExpense(null, null, null, 1, 25, null);
+            var response = controller.GetExpense(null, DateTime.MinValue, DateTime.Now, 1, 25, null);
             Assert.Equal((int)HttpStatusCode.InternalServerError, GetStatusCode(response));
         }
 
@@ -101,7 +101,7 @@ namespace Com.Danliris.Service.Inventory.Test.Controllers.InventoryWeavingReport
             mocks.service.Setup(f => f.GenerateExcelExpense(It.IsAny<string>(), It.IsAny<DateTime>(), It.IsAny<DateTime?>(), It.IsAny<int>()))
                 .Returns(new MemoryStream());
             var controller = GetController(mocks);
-            var response = controller.GetXlsAll(null, null, null);
+            var response = controller.GetXlsAll(null, DateTime.MinValue, DateTime.Now);
             Assert.NotNull(response);
         }
 
@@ -113,7 +113,7 @@ namespace Com.Danliris.Service.Inventory.Test.Controllers.InventoryWeavingReport
                 .Throws(new Exception());
             var controller = GetController(mocks);
             controller.ControllerContext.HttpContext.Request.Headers["Accept"] = "application/json";
-            var response = controller.GetXlsAll(null, null, null);
+            var response = controller.GetXlsAll(null, DateTime.MinValue, DateTime.Now);
             Assert.Equal((int)HttpStatusCode.InternalServerError, GetStatusCode(response));
         }
     }
