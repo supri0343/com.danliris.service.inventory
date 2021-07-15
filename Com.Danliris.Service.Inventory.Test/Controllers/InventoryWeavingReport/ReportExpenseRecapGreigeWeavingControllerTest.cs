@@ -1,7 +1,7 @@
 ﻿using Com.Danliris.Service.Inventory.Lib.Services;
-using Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving.Reports.ReportExpenseGreigeWeaving;
+using Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving.Reports.ReportExpenseRecapGreigeWeaving;
 using Com.Danliris.Service.Inventory.Lib.ViewModels.InventoryWeavingViewModel.Report;
-using Com.Danliris.Service.Inventory.WebApi.Controllers.v1.WeavingInventory.Reports.ReportExpenseGreigeWeavingController;
+using Com.Danliris.Service.Inventory.WebApi.Controllers.v1.WeavingInventory.Reports.ReportExpenseRecapGreigeWeavingController;
 using Com.Moonlay.NetCore.Lib.Service;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -16,16 +16,16 @@ using Xunit;
 
 namespace Com.Danliris.Service.Inventory.Test.Controllers.InventoryWeavingReport
 {
-    public class ReportExpenseGreigeWeavingControllerTest
+    public class ReportExpenseRecapGreigeWeavingControllerTest
     {
         protected Lib.Models.InventoryWeavingModel.InventoryWeavingMovement Model
         {
             get { return new Lib.Models.InventoryWeavingModel.InventoryWeavingMovement(); }
         }
 
-        protected ExpenseReportViewModel ViewModel
+        protected ExpenseRecapReportViewModel ViewModel
         {
-            get { return new ExpenseReportViewModel(); }
+            get { return new ExpenseRecapReportViewModel(); }
         }
 
         protected ServiceValidationExeption GetServiceValidationExeption()
@@ -36,12 +36,12 @@ namespace Com.Danliris.Service.Inventory.Test.Controllers.InventoryWeavingReport
             return new ServiceValidationExeption(validationContext, validationResults);
         }
 
-        protected (Mock<IIdentityService> IdentityService, Mock<IValidateService> ValidateService, Mock<IReportExpenseGreigeWeavingService> service) GetMocks()
+        protected (Mock<IIdentityService> IdentityService, Mock<IValidateService> ValidateService, Mock<IReportExpenseRecapGreigeWeavingService> service) GetMocks()
         {
-            return (IdentityService: new Mock<IIdentityService>(), ValidateService: new Mock<IValidateService>(), service: new Mock<IReportExpenseGreigeWeavingService>());
+            return (IdentityService: new Mock<IIdentityService>(), ValidateService: new Mock<IValidateService>(), service: new Mock<IReportExpenseRecapGreigeWeavingService>());
         }
 
-        protected ReportExpenseGreigeWeavingController GetController((Mock<IIdentityService> IdentityService, Mock<IValidateService> ValidateService, Mock<IReportExpenseGreigeWeavingService> service) mocks)
+        protected ReportExpenseRecapGreigeWeavingController GetController((Mock<IIdentityService> IdentityService, Mock<IValidateService> ValidateService, Mock<IReportExpenseRecapGreigeWeavingService> service) mocks)
         {
             Mock<ClaimsPrincipal> user = new Mock<ClaimsPrincipal>();
             var claims = new Claim[]
@@ -49,7 +49,7 @@ namespace Com.Danliris.Service.Inventory.Test.Controllers.InventoryWeavingReport
                 new Claim("username", "unittestusername")
             };
             user.Setup(u => u.Claims).Returns(claims);
-            ReportExpenseGreigeWeavingController controller = (ReportExpenseGreigeWeavingController)Activator.CreateInstance(typeof(ReportExpenseGreigeWeavingController), mocks.IdentityService.Object, mocks.ValidateService.Object, mocks.service.Object);
+            ReportExpenseRecapGreigeWeavingController controller = (ReportExpenseRecapGreigeWeavingController)Activator.CreateInstance(typeof(ReportExpenseRecapGreigeWeavingController), mocks.IdentityService.Object, mocks.ValidateService.Object, mocks.service.Object);
             controller.ControllerContext = new ControllerContext()
             {
                 HttpContext = new DefaultHttpContext()
@@ -68,37 +68,35 @@ namespace Com.Danliris.Service.Inventory.Test.Controllers.InventoryWeavingReport
             return (int)response.GetType().GetProperty("StatusCode").GetValue(response, null);
         }
 
-
         [Fact]
-        public void Get_Report_Success_GetExpense()
+        public void Get_Report_Success_GetRecap()
         {
             var mocks = GetMocks();
-            mocks.service.Setup(f => f.GetReportExpense(It.IsAny<string>(), It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<int>()))
-                .Returns(new Tuple<List<ExpenseReportViewModel>, int>(new List<ExpenseReportViewModel>(), 1));
+            mocks.service.Setup(f => f.GetReportExpenseRecap(It.IsAny<string>(), It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<int>()))
+                .Returns(new Tuple<List<ExpenseRecapReportViewModel>, int>(new List<ExpenseRecapReportViewModel>(), 1));
             var controller = GetController(mocks);
-            var response = controller.GetExpense(null, DateTime.MinValue, DateTime.Now, 1, 25, "{}");
+            var response = controller.GetExpenseRecap(null, DateTime.MinValue, DateTime.Now, 1, 25, "{}");
             Assert.Equal((int)HttpStatusCode.OK, GetStatusCode(response));
             //Assert.NotNull(response);
         }
 
-
         [Fact]
-        public void Get_Report_Fail_GetExpense()
+        public void Get_Report_Fail_GetRecap()
         {
             var mocks = GetMocks();
-            mocks.service.Setup(f => f.GetReportExpense(It.IsAny<string>(), It.IsAny<DateTime>(), It.IsAny<DateTime?>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<int>()))
+            mocks.service.Setup(f => f.GetReportExpenseRecap(It.IsAny<string>(), It.IsAny<DateTime>(), It.IsAny<DateTime?>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<int>()))
                 .Throws(new Exception());
             var controller = GetController(mocks);
             controller.ControllerContext.HttpContext.Request.Headers["Accept"] = "application/json";
-            var response = controller.GetExpense(null, DateTime.MinValue, DateTime.Now, 1, 25, null);
+            var response = controller.GetExpenseRecap(null, null, null, 1, 25, null);
             Assert.Equal((int)HttpStatusCode.InternalServerError, GetStatusCode(response));
         }
 
         [Fact]
-        public void GetXls_Report_Success_ReportExpense()
+        public void GetXls_Report_Success_ReportRecap()
         {
             var mocks = GetMocks();
-            mocks.service.Setup(f => f.GenerateExcelExpense(It.IsAny<string>(), It.IsAny<DateTime>(), It.IsAny<DateTime?>(), It.IsAny<int>()))
+            mocks.service.Setup(f => f.GenerateExcelExpenseRecap(It.IsAny<string>(), It.IsAny<DateTime>(), It.IsAny<DateTime?>(), It.IsAny<int>()))
                 .Returns(new MemoryStream());
             var controller = GetController(mocks);
             var response = controller.GetXlsAll(null, DateTime.MinValue, DateTime.Now);
@@ -106,14 +104,14 @@ namespace Com.Danliris.Service.Inventory.Test.Controllers.InventoryWeavingReport
         }
 
         [Fact]
-        public void GetXls_Report_Fail_ReportExpense()
+        public void GetXls_Report_Fail_ReportRecap()
         {
             var mocks = GetMocks();
-            mocks.service.Setup(f => f.GenerateExcelExpense(It.IsAny<string>(), It.IsAny<DateTime>(), It.IsAny<DateTime?>(), It.IsAny<int>()))
+            mocks.service.Setup(f => f.GenerateExcelExpenseRecap(It.IsAny<string>(), It.IsAny<DateTime>(), It.IsAny<DateTime?>(), It.IsAny<int>()))
                 .Throws(new Exception());
             var controller = GetController(mocks);
             controller.ControllerContext.HttpContext.Request.Headers["Accept"] = "application/json";
-            var response = controller.GetXlsAll(null, DateTime.MinValue, DateTime.Now);
+            var response = controller.GetXlsAll(null, null, null);
             Assert.Equal((int)HttpStatusCode.InternalServerError, GetStatusCode(response));
         }
     }
