@@ -80,8 +80,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
             var SAReceiptBarangJadi = (from a in DbContext.GarmentLeftoverWarehouseReceiptFinishedGoods
                                        join b in DbContext.GarmentLeftoverWarehouseReceiptFinishedGoodItems on a.Id equals b.FinishedGoodReceiptId
                                        where a._IsDeleted == false && b._IsDeleted == false
-                                       && a._CreatedUtc > BalanceDate
-                                       && a._CreatedUtc < DateFrom
+                                       && a.ReceiptDate > BalanceDate
+                                       && a.ReceiptDate < DateFrom
                                        select new GarmentLeftoverWarehouseMutationReportViewModel
                                        {
                                            ClassificationCode = "RJ001",
@@ -181,8 +181,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
             var SAExpendBarangJadi = (from a in DbContext.GarmentLeftoverWarehouseExpenditureFinishedGoods
                                       join b in DbContext.GarmentLeftoverWarehouseExpenditureFinishedGoodItems on a.Id equals b.FinishedGoodExpenditureId
                                       where a._IsDeleted == false && b._IsDeleted == false
-                                      && a._CreatedUtc > BalanceDate
-                                      && a._CreatedUtc < DateFrom
+                                      && a.ExpenditureDate > BalanceDate
+                                      && a.ExpenditureDate < DateFrom
                                       select new GarmentLeftoverWarehouseMutationReportViewModel
                                       {
                                           ClassificationCode = "RJ001",
@@ -213,8 +213,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
             var SAExpendAval = (from a in DbContext.GarmentLeftoverWarehouseExpenditureAvals
                                 join b in DbContext.GarmentLeftoverWarehouseExpenditureAvalItems on a.Id equals b.AvalExpenditureId
                                 where a._IsDeleted == false && b._IsDeleted == false
-                                && a._CreatedUtc > BalanceDate
-                                && a._CreatedUtc < DateFrom
+                                && a.ExpenditureDate > BalanceDate
+                                && a.ExpenditureDate < DateFrom
                                 select new GarmentLeftoverWarehouseMutationReportViewModel
                                 {
                                     ClassificationCode = a.AvalType == "AVAL FABRIC" ? "AV001" : a.AvalType == "AVAL BAHAN PENOLONG" ? "AV004" : "AV002",
@@ -263,8 +263,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
             var FilteredReceiptBarangJadi = (from a in DbContext.GarmentLeftoverWarehouseReceiptFinishedGoods
                                              join b in DbContext.GarmentLeftoverWarehouseReceiptFinishedGoodItems on a.Id equals b.FinishedGoodReceiptId
                                              where a._IsDeleted == false && b._IsDeleted == false
-                                             && a._CreatedUtc >= DateFrom
-                                             && a._CreatedUtc <= DateTo
+                                             && a.ReceiptDate >= DateFrom
+                                             && a.ReceiptDate <= DateTo
                                              select new GarmentLeftoverWarehouseMutationReportViewModel
                                              {
                                                  ClassificationCode = "RJ001",
@@ -362,8 +362,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
             var FilteredExpendBarangJadi = (from a in DbContext.GarmentLeftoverWarehouseExpenditureFinishedGoods
                                             join b in DbContext.GarmentLeftoverWarehouseExpenditureFinishedGoodItems on a.Id equals b.FinishedGoodExpenditureId
                                             where a._IsDeleted == false && b._IsDeleted == false
-                                            && a._CreatedUtc >= DateFrom
-                                            && a._CreatedUtc <= DateTo
+                                            && a.ExpenditureDate >= DateFrom
+                                            && a.ExpenditureDate <= DateTo
                                             select new GarmentLeftoverWarehouseMutationReportViewModel
                                             {
                                                 ClassificationCode = "RJ001",
@@ -394,8 +394,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
             var FilteredExpendAval = (from a in DbContext.GarmentLeftoverWarehouseExpenditureAvals
                                       join b in DbContext.GarmentLeftoverWarehouseExpenditureAvalItems on a.Id equals b.AvalExpenditureId
                                       where a._IsDeleted == false && b._IsDeleted == false
-                                      && a._CreatedUtc >= DateFrom
-                                      && a._CreatedUtc <= DateTo
+                                      && a.ExpenditureDate >= DateFrom
+                                      && a.ExpenditureDate <= DateTo
                                       select new GarmentLeftoverWarehouseMutationReportViewModel
                                       {
                                           ClassificationCode = a.AvalType == "AVAL FABRIC" ? "AV001" : a.AvalType == "AVAL BAHAN PENOLONG" ? "AV004" : "AV002",
