@@ -98,13 +98,13 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
                     Type = s.Type,
                     _LastModifiedUtc = s._LastModifiedUtc,
 
-                });
+                }).OrderByDescending(x => x.Date);
 
 
             #region OrderBy
 
             Dictionary<string, string> OrderDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(order);
-            Query = QueryHelper<InventoryWeavingDocument>.Order(Query, OrderDictionary);
+            //Query = QueryHelper<InventoryWeavingDocument>.Order(Query, OrderDictionary);
             #endregion OrderBy
 
             #region Paging
@@ -114,6 +114,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
             int TotalData = pageable.TotalCount;
 
             #endregion Paging
+            //Data = Data.OrderByDescending(x => x.Date).ToList();
 
             return new ReadResponse<InventoryWeavingDocument>(Data, TotalData, OrderDictionary, SelectedFields);
         }
@@ -417,7 +418,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
                 date = date,
                 bonType = from == "PRODUKSI" ? "PRODUKSI" : from == "RETUR PACKING" ? "PACKING"
                           : from == "RETUR FINISHING" ? "FINISHING" : from == "RETUR PRINTING" ? "PRINTING"
-                          : from == "RECHEKING" ? "RECHEKING" : "LAIN-LAIN",
+                          : from == "RECHEKING" ? "RECHEKING" : from == "DEVELOPMENT" ? "DEVELOPMENT":"LAIN-LAIN",
                 storageId = 105,
                 storageCode = "DNWDX2GZ",
                 storageName = "WEAVING 2 (EX. WEAVING 3) / WEAVING",
@@ -479,7 +480,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
                 }).ToList()
             };
             return model;
-
+ 
         }
 
         private string GenerateBon(string from, DateTimeOffset date)
@@ -487,7 +488,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
 
 
             var type = from == "PRODUKSI" ? "PR" : from == "RETUR PACKING" ? "PC" : from == "RETUR FINISHING" ? "RF"
-                      : from == "RETUR PRINTING" ? "RP" : from == "RECHEKING" ? "RC" : "LL";
+                      : from == "RETUR PRINTING" ? "RP" : from == "RECHEKING" ? "RC" : from == "DEVELOPMENT" ? "DV" : "LL";
 
             var totalData = DbSet.Count(s => s.BonNo.Substring(0, 2) == type && s._CreatedUtc.Year == date.Date.Year) + 1;
 
