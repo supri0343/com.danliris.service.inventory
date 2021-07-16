@@ -200,7 +200,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
                 ListItems = s.GroupBy(x => new { x.Grade }).Select(item => new ItemListDetailViewModel()
                 {
                     Grade = item.Key.Grade,
-                    Piece = item.FirstOrDefault().Piece == "1" ? "BESAR": item.FirstOrDefault().Piece == "2" ? "KECIL" : "POTONGAN",
+                    //Piece = item.FirstOrDefault().Piece == "1" ? "BESAR": item.FirstOrDefault().Piece == "2" ? "KECIL" : "POTONGAN",
 
                     MaterialName = item.FirstOrDefault().MaterialName,
                     WovenType = item.FirstOrDefault().WovenType,
@@ -270,7 +270,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
                         Construction = i.Construction,
 
                         Grade = d.Grade,
-                        Piece = d.Piece == "BESAR" ? "1" : d.Piece == "KECIL"? "2" : "3",
+                        //Piece = d.Piece == "BESAR" ? "1" : d.Piece == "KECIL"? "2" : "3",
                         MaterialName = d.MaterialName,
                         WovenType = d.WovenType,
                         Width = d.Width,
@@ -342,7 +342,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
                         ReferenceNo = item.ReferenceNo,
                         Construction = item.Construction,
                         Grade = item.Grade,
-                        Piece = item.Piece,
+                       //Piece = item.Piece,
                         MaterialName = item.MaterialName,
                         WovenType = item.WovenType,
                         Width = item.Width,
@@ -521,7 +521,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
                         _LastModifiedUtc = s._LastModifiedUtc,
 
                         Grade = s.Grade,
-                        Piece = s.Piece == "1" ? "BESAR" : s.Piece == "2"? "KECIL": "POTONGAN",
+                        //Piece = s.Piece == "1" ? "BESAR" : s.Piece == "2"? "KECIL": "POTONGAN",
                         MaterialName = s.MaterialName,
                         WovenType = s.WovenType,
                         Yarn1 = s.Yarn1,
@@ -613,7 +613,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
                             AL = b.YarnOrigin1.Trim(),
                             AP = b.YarnOrigin2.Trim(),
                             Grade = b.Grade.Trim(),
-                            Piece = b.Piece,
+                            //Piece = b.Piece,
                             Qty = b.Quantity,
                             QtyPiece = b.QuantityPiece,
 
@@ -645,7 +645,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
                              BonNo = a.BonNo,
                              Construction = b.Construction,
                              Grade = b.Grade,
-                             Piece = b.Piece,
+                             //Piece = b.Piece,
                              Quantity = b.Quantity,
                              QuantityPiece = b.QuantityPiece,
                              Remark = b.ProductRemark
@@ -668,7 +668,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
                               BonNo = a.BonNo,
                               Construction = a.Construction,
                               Grade = a.Grade,
-                              Piece = a.Piece,
+                              //Piece = a.Piece,
                               Quantity = a.Quantity,
                               QuantityPiece = a.QuantityPiece,
                               QuantityTot = b.QuantityTot,

@@ -211,7 +211,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
             dt.Columns.Add(new DataColumn() { ColumnName = "No", DataType = typeof(String) });
             dt.Columns.Add(new DataColumn() { ColumnName = "Konstruksi", DataType = typeof(String) });
             dt.Columns.Add(new DataColumn() { ColumnName = "Grade", DataType = typeof(String) });
-            dt.Columns.Add(new DataColumn() { ColumnName = "Piece", DataType = typeof(double) });
+           // dt.Columns.Add(new DataColumn() { ColumnName = "Piece", DataType = typeof(double) });
             dt.Columns.Add(new DataColumn() { ColumnName = "Meter", DataType = typeof(double) });
             dt.Columns.Add(new DataColumn() { ColumnName = "Keterangan", DataType = typeof(String) });
             if (query.ToArray().Count() == 0)
@@ -351,8 +351,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
             dt.Columns.Add(new DataColumn() { ColumnName = "Konstruksi", DataType = typeof(String) });
             dt.Columns.Add(new DataColumn() { ColumnName = "Kg", DataType = typeof(String) });
             dt.Columns.Add(new DataColumn() { ColumnName = "Ball", DataType = typeof(String) });
-            dt.Columns.Add(new DataColumn() { ColumnName = "Piece", DataType = typeof(double) });
-            dt.Columns.Add(new DataColumn() { ColumnName = "Meter", DataType = typeof(double) });
+            dt.Columns.Add(new DataColumn() { ColumnName = "Jml. Piece", DataType = typeof(double) });
+            dt.Columns.Add(new DataColumn() { ColumnName = "Jml. Meter", DataType = typeof(double) });
             dt.Columns.Add(new DataColumn() { ColumnName = "Ket", DataType = typeof(String) });
             if (Query.ToArray().Count() == 0)
                 dt.Rows.Add("", "", "", "", 0, 0, ""); // to allow column name to be generated properly for empty data as template
