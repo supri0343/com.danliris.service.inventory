@@ -185,7 +185,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving.Reports.R
             string Tanggal = DateTo.ToString("dd MMM yyyy", new CultureInfo("id-ID"));
 
             DataTable result = new DataTable();
-            var headers = new string[] { "No", "Konstruksi", "Piece", "Meter", "Keterangan"};
+            var headers = new string[] { "No", "Konstruksi", "Jml. Piece", "Jml. Meter", "Keterangan"};
            // var subheaders = new string[] { "Piece", "Meter", "Piece", "Meter", "Piece", "Meter", "Piece", "Meter", };
 
 

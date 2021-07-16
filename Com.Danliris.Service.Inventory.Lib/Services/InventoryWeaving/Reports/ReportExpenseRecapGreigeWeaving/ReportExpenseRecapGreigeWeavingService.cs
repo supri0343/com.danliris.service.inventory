@@ -185,18 +185,18 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving.Reports.R
             var Query = GetReport(bonType, dateFrom, dateTo, offSet);
 
             DataTable dt = new DataTable();
-            dt.Columns.Add(new DataColumn() { ColumnName = "No. SC", DataType = typeof(string) });
+            //dt.Columns.Add(new DataColumn() { ColumnName = "No. SC", DataType = typeof(string) });
             dt.Columns.Add(new DataColumn() { ColumnName = "Konstruksi", DataType = typeof(string) });
             dt.Columns.Add(new DataColumn() { ColumnName = "Grade", DataType = typeof(string) });
             dt.Columns.Add(new DataColumn() { ColumnName = "Kg", DataType = typeof(string) });
             dt.Columns.Add(new DataColumn() { ColumnName = "Ball", DataType = typeof(string) });
-            dt.Columns.Add(new DataColumn() { ColumnName = "Piece", DataType = typeof(double) });
-            dt.Columns.Add(new DataColumn() { ColumnName = "Meter", DataType = typeof(double) });
+            dt.Columns.Add(new DataColumn() { ColumnName = "Jml. Piece", DataType = typeof(double) });
+            dt.Columns.Add(new DataColumn() { ColumnName = "Jml. Meter", DataType = typeof(double) });
             dt.Columns.Add(new DataColumn() { ColumnName = "Ket", DataType = typeof(string) });
 
             if (Query.Count() == 0)
             {
-                dt.Rows.Add("", "", "", "", "", 0, 0, "");
+                dt.Rows.Add( "", "", "", "", 0, 0, "");
             }
             else
             {
@@ -204,7 +204,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving.Reports.R
                 {
                     // string date = model.Date == null ? "-" : model.Date.ToOffset(new TimeSpan(offSet, 0, 0)).ToString("dd MMM yyyy", new CultureInfo("id-ID"));
 
-                    dt.Rows.Add("", model.Construction, model.Grade, "", "", model.QtyPiece, model.Qty, "");
+                    dt.Rows.Add(model.Construction, model.Grade, "", "", model.QtyPiece, model.Qty, "");
                 }
             }
 

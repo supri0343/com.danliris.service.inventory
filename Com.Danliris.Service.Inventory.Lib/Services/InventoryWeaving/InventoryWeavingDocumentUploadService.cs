@@ -333,7 +333,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
                     ReferenceNo = item.ReferenceNo,
                     Construction = item.Construction,
                     Grade = item.Grade,
-                    Piece = item.Piece,
+                    //Piece = item.Piece,
                     MaterialName = item.MaterialName,
                     WovenType = item.WovenType,
                     Width = item.Width,
@@ -392,7 +392,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
 
                     construction = constructonC,
                     grade = i.Grade,
-                    piece = i.Piece,
+                   // piece = i.Piece,
                     materialName = MaterialName,
                     wovenType = WovenType,
                     width = Width,
@@ -460,7 +460,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
                     ReferenceNo = item.referenceNo,
                     Construction = item.construction,
                     Grade = item.grade,
-                    Piece = item.piece,
+                   // Piece = item.piece,
                     MaterialName = item.materialName,
                     WovenType = item.wovenType,
                     Width = item.width,
@@ -545,7 +545,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
                         _LastModifiedUtc = s._LastModifiedUtc,
 
                         Grade = s.Grade,
-                        Piece = s.Piece,
+                        //Piece = s.Piece,
                         MaterialName = s.MaterialName,
                         WovenType = s.WovenType,
                         Yarn1 = s.Yarn1,
@@ -669,7 +669,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
                              ReferenceNo = b.ReferenceNo,
                              Construction = b.Construction,
                              Grade = b.Grade,
-                             Piece = b.Piece,
+                             //Piece = b.Piece,
                              Quantity = b.Quantity,
                              QuantityPiece = b.QuantityPiece
                          })
@@ -708,7 +708,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
             dt.Columns.Add(new DataColumn() { ColumnName = "Nota", DataType = typeof(string) });
             dt.Columns.Add(new DataColumn() { ColumnName = "Construction", DataType = typeof(string) });
             dt.Columns.Add(new DataColumn() { ColumnName = "Grade", DataType = typeof(string) });
-            dt.Columns.Add(new DataColumn() { ColumnName = "Piece", DataType = typeof(string) });
+            //dt.Columns.Add(new DataColumn() { ColumnName = "Piece", DataType = typeof(string) });
             dt.Columns.Add(new DataColumn() { ColumnName = "Quantity", DataType = typeof(string) });
             dt.Columns.Add(new DataColumn() { ColumnName = "Quantity Piece", DataType = typeof(string) });
 
@@ -724,7 +724,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
                     string date = model.Date == null ? "-" : model.Date.ToOffset(new TimeSpan(offSet, 0, 0)).ToString("dd MMM yyyy", new CultureInfo("id-ID"));
                     //var dateIn = model.Date.Equals(DateTimeOffset.MinValue) ? "" : model.Date.ToOffset(new TimeSpan(offSet, 0, 0)).Date.ToString("d");
 
-                    dt.Rows.Add(date, model.BonNo, model.ReferenceNo, model.Construction, model.Grade, model.Piece, model.Quantity.ToString("N2", CultureInfo.InvariantCulture),
+                    dt.Rows.Add(date, model.BonNo, model.ReferenceNo, model.Construction, model.Grade, model.Quantity.ToString("N2", CultureInfo.InvariantCulture),
                         model.QuantityPiece.ToString("N2", CultureInfo.InvariantCulture));
 
                     //foreach (var item in model.DyeingPrintingAreaInputProductionOrders.Where(d => !d.HasOutputDocument).OrderBy(s => s.ProductionOrderNo))
