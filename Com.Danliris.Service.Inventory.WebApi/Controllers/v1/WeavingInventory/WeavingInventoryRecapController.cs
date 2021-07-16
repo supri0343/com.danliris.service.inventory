@@ -25,14 +25,16 @@ namespace Com.Danliris.Service.Inventory.WebApi.Controllers.v1.WeavingInventory
         private string ApiVersion = "1.0.0";
         private readonly IMapper mapper;
         private readonly IInventoryWeavingMovementService service;
-        private readonly IdentityService identityService;
+        private readonly IIdentityService identityService;
+        protected readonly IValidateService ValidateService;
         private readonly string ContentType = "application/vnd.openxmlformats";
         private readonly string FileName = string.Concat("Error Log - ", typeof(InventoryWeavingDocument).Name, " ", DateTime.Now.ToString("dd MMM yyyy"), ".csv");
-        public WeavingInventoryRecapController(IMapper mapper, IInventoryWeavingMovementService service, IdentityService identityService)
+        public WeavingInventoryRecapController(IIdentityService identityService, IValidateService validateService, IInventoryWeavingMovementService service)
         {
-            this.mapper = mapper;
+            //this.mapper = mapper;
             this.service = service;
             this.identityService = identityService;
+            this.ValidateService = validateService;
         }
 
         [HttpGet]

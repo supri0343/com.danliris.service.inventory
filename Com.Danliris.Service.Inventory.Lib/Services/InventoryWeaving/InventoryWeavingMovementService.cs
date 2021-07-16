@@ -215,7 +215,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
             dt.Columns.Add(new DataColumn() { ColumnName = "Meter", DataType = typeof(double) });
             dt.Columns.Add(new DataColumn() { ColumnName = "Keterangan", DataType = typeof(String) });
             if (query.ToArray().Count() == 0)
-                dt.Rows.Add("", "", "", 0, 0, ""); // to allow column name to be generated properly for empty data as template
+                dt.Rows.Add("", "", "", 0, ""); // to allow column name to be generated properly for empty data as template
             else
             {
                 int index = 0;
