@@ -110,8 +110,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                                            QuantityExpend = a.ExpenditureDate.AddHours(offset).Date >= DateFrom.Date  ? b.Quantity : 0,
                                            PriceExpend = (a.ExpenditureDate.AddHours(offset).Date >= DateFrom.Date  ? b.Quantity : 0) * b.BasicPrice,
 
-                                           ProductCode = (from aa in _product select aa.ProductCode).FirstOrDefault(),
-                                           ProductName = (from aa in _product select aa.ProductName).FirstOrDefault(),
+                                           ProductCode = (from aa in _product where aa.PONo == b.PONo select aa.ProductCode).FirstOrDefault(),
+                                           ProductName = (from aa in _product where aa.PONo == b.PONo select aa.ProductName).FirstOrDefault(),
                                            EndbalanceQty = 0
                                        };
                 var Query = QueryReceipt.Union(QueryExpenditure).Union(QueryBalance);
