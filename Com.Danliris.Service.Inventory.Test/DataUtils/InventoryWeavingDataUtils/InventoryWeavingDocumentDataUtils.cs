@@ -1,4 +1,5 @@
-﻿using Com.Danliris.Service.Inventory.Lib.Models.InventoryWeavingModel;
+﻿using Com.Danliris.Service.Inventory.Lib.Helpers;
+using Com.Danliris.Service.Inventory.Lib.Models.InventoryWeavingModel;
 using Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving;
 using Com.Danliris.Service.Inventory.Lib.ViewModels.InventoryWeavingViewModel;
 using System;
@@ -132,6 +133,25 @@ namespace Com.Danliris.Service.Inventory.Test.DataUtils.InventoryWeavingDataUtil
             await Service.Create(invWDoc);
 
             return invWDoc;
+        }
+
+        public InventoryWeavingDocument CopyData(InventoryWeavingDocument oldData)
+        {
+            InventoryWeavingDocument newData = new InventoryWeavingDocument();
+
+            PropertyCopier<InventoryWeavingDocument, InventoryWeavingDocument>.Copy(oldData, newData);
+
+            newData.Items = new List<InventoryWeavingDocumentItem>();
+            foreach (var oldItem in oldData.Items)
+            {
+                InventoryWeavingDocumentItem newItem = new InventoryWeavingDocumentItem();
+
+                PropertyCopier<InventoryWeavingDocumentItem, InventoryWeavingDocumentItem>.Copy(oldItem, newItem);
+
+                newData.Items.Add(newItem);
+            }
+
+            return newData;
         }
     }
 }

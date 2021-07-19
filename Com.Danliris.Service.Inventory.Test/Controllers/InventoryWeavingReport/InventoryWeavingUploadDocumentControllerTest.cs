@@ -28,15 +28,24 @@ namespace Com.Danliris.Service.Inventory.Test.Controllers.InventoryWeavingReport
     public class InventoryWeavingUploadDocumentControllerTest
     {
 
-        protected Lib.Models.InventoryWeavingModel.InventoryWeavingMovement Model
-        {
-            get { return new Lib.Models.InventoryWeavingModel.InventoryWeavingMovement(); }
-        }
+        //protected Lib.Models.InventoryWeavingModel.InventoryWeavingMovement Model
+        //{
+        //    get { return new Lib.Models.InventoryWeavingModel.InventoryWeavingMovement(); }
+        //}
 
         protected InventoryWeavingDocumentCsvViewModel ViewModel
         {
             get { return new InventoryWeavingDocumentCsvViewModel(); }
         }
+        protected InventoryWeavingDocument Model
+        {
+            get { return new InventoryWeavingDocument(); }
+        }
+        protected InventoryWeavingDocumentDetailViewModel viewModel
+        {
+            get { return new InventoryWeavingDocumentDetailViewModel(); }
+        }
+
 
         protected ServiceValidationExeption GetServiceValidationExeption()
         {
@@ -46,9 +55,9 @@ namespace Com.Danliris.Service.Inventory.Test.Controllers.InventoryWeavingReport
             return new ServiceValidationExeption(validationContext, validationResults);
         }
 
-        protected (Mock<IIdentityService> IdentityService, Mock<IValidateService> ValidateService, Mock<IInventoryWeavingDocumentUploadService> service) GetMocks()
+        protected (Mock<IIdentityService> IdentityService, Mock<IValidateService> ValidateService, Mock<IInventoryWeavingDocumentUploadService> service, Mock<IMapper>mapper) GetMocks()
         {
-            return (IdentityService: new Mock<IIdentityService>(), ValidateService: new Mock<IValidateService>(), service: new Mock<IInventoryWeavingDocumentUploadService>());
+            return (IdentityService: new Mock<IIdentityService>(), ValidateService: new Mock<IValidateService>(), service: new Mock<IInventoryWeavingDocumentUploadService>(), mapper:new Mock<IMapper>());
         }
 
         protected WeavingInventoryUploadController GetController((Mock<IIdentityService> IdentityService, Mock<IValidateService> ValidateService, Mock<IInventoryWeavingDocumentUploadService> service, Mock<IMapper> mapper) mocks)
@@ -263,6 +272,74 @@ namespace Com.Danliris.Service.Inventory.Test.Controllers.InventoryWeavingReport
 
             var response = controller.PostCSVFileAsync("", DateTime.Now);
             Assert.NotNull(response.Result);
+        }
+
+        private async Task<int> GetStatusCodePut((Mock<IIdentityService> IdentityService, Mock<IValidateService> ValidateService, Mock<IInventoryWeavingDocumentUploadService> Service, Mock<IMapper> Mapper) mocks, int id, InventoryWeavingDocumentDetailViewModel viewModel)
+        {
+
+            WeavingInventoryUploadController controller = GetController(mocks);
+            IActionResult response = await controller.Put(id, viewModel);
+
+            return GetStatusCode(response);
+        }
+
+        [Fact]
+        public virtual async Task Put_ValidId_ReturnNoContent()
+        {
+            var mocks = GetMocks();
+            mocks.ValidateService.Setup(vs => vs.Validate(It.IsAny<InventoryWeavingDocumentDetailViewModel>())).Verifiable();
+            mocks.service.Setup(f => f.MapToModelUpdate(It.IsAny<InventoryWeavingDocumentDetailViewModel>())).ReturnsAsync(Model);
+            var id = 1;
+            var viewModel = new InventoryWeavingDocumentDetailViewModel()
+            {
+                Id = id
+            };
+            mocks.service.Setup(f => f.UpdateAsync(It.IsAny<int>(), It.IsAny<InventoryWeavingDocument>())).ReturnsAsync(1);
+
+            int statusCode = await GetStatusCodePut(mocks, id, viewModel);
+            Assert.Equal((int)HttpStatusCode.NoContent, statusCode);
+        }
+
+        [Fact]
+        public virtual async Task Put_InvalidId_ReturnBadRequest()
+        {
+            var mocks = GetMocks();
+            mocks.ValidateService.Setup(vs => vs.Validate(It.IsAny<InventoryWeavingDocumentDetailViewModel>())).Verifiable();
+            mocks.service.Setup(f => f.MapToModelUpdate(It.IsAny<InventoryWeavingDocumentDetailViewModel>())).ReturnsAsync(Model);
+            var id = 1;
+            var viewModel = new InventoryWeavingDocumentDetailViewModel()
+            {
+                Id = id + 1
+            };
+
+            int statusCode = await GetStatusCodePut(mocks, id, viewModel);
+            Assert.Equal((int)HttpStatusCode.BadRequest, statusCode);
+        }
+
+        [Fact]
+        public virtual async Task Put_ThrowServiceValidationExeption_ReturnBadRequest()
+        {
+            var mocks = GetMocks();
+            mocks.ValidateService.Setup(s => s.Validate(It.IsAny<InventoryWeavingDocumentDetailViewModel>())).Throws(GetServiceValidationExeption());
+            mocks.service.Setup(f => f.MapToModelUpdate(It.IsAny<InventoryWeavingDocumentDetailViewModel>())).ReturnsAsync(Model);
+            int statusCode = await GetStatusCodePut(mocks, 1, viewModel);
+            Assert.Equal((int)HttpStatusCode.BadRequest, statusCode);
+        }
+
+        [Fact]
+        public virtual async Task Put_ThrowException_ReturnInternalServerError()
+        {
+            var mocks = GetMocks();
+            mocks.ValidateService.Setup(vs => vs.Validate(It.IsAny<InventoryWeavingDocumentDetailViewModel>())).Verifiable();
+            var id = 1;
+            var viewModel = new InventoryWeavingDocumentDetailViewModel()
+            {
+                Id = id
+            };
+            mocks.service.Setup(f => f.UpdateAsync(It.IsAny<int>(), It.IsAny<InventoryWeavingDocument>())).ThrowsAsync(new Exception());
+            mocks.service.Setup(f => f.MapToModelUpdate(It.IsAny<InventoryWeavingDocumentDetailViewModel>())).ReturnsAsync(Model);
+            int statusCode = await GetStatusCodePut(mocks, id, viewModel);
+            Assert.Equal((int)HttpStatusCode.InternalServerError, statusCode);
         }
 
     }

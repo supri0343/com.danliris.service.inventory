@@ -271,5 +271,73 @@ namespace Com.Danliris.Service.Inventory.Test.Services.InventoryWeaving.Inventor
         }
 
 
+        [Fact]
+        public async Task Update_Success()
+        {
+            var serviceProvider = GetServiceProvider();
+
+            var stockServiceMock = new Mock<IInventoryWeavingMovementService>();
+            stockServiceMock.Setup(s => s.UpdateAsync(It.IsAny<InventoryWeavingMovement>()))
+                .ReturnsAsync(1);
+
+            serviceProvider
+                .Setup(x => x.GetService(typeof(IInventoryWeavingMovementService)))
+                .Returns(stockServiceMock.Object);
+
+            serviceProvider
+                .Setup(x => x.GetService(typeof(IHttpService)))
+                .Returns(new HttpTestService());
+
+            InventoryWeavingDocumentUploadService service = new InventoryWeavingDocumentUploadService(serviceProvider.Object, _dbContext(GetCurrentMethod()));
+
+            var dataUtil = _dataUtilDoc(service);
+            var oldData = dataUtil.GetNewData();
+            oldData.Items.Add(new InventoryWeavingDocumentItem
+            {
+                ProductOrderName = "product2",
+                ReferenceNo = "referencce2",
+                Construction = "CD2",
+                Grade = "A2",
+                Piece = "12",
+                MaterialName = "CD2",
+                WovenType = "",
+                Yarn1 = "yarn12",
+                Yarn2 = "yarn22",
+                YarnType1 = "yt12",
+                YarnType2 = "yt22",
+                YarnOrigin1 = "yo12",
+                YarnOrigin2 = "yo22",
+                Width = "12",
+                UomUnit = "MTR2",
+                UomId = 2,
+                Quantity = 2,
+                QuantityPiece = 2,
+                ProductRemark = "",
+                InventoryWeavingDocumentId = 1,
+            });
+
+            await service.Create(oldData);
+
+            var newData = dataUtil.CopyData(oldData);
+            //newData.ExpenditureDate = newData.ExpenditureDate.AddDays(-1);
+            newData.Remark = "New" + newData.Remark;
+            //newData.LocalSalesNoteNo = "New" + newData.LocalSalesNoteNo;
+            var firsItem = newData.Items.First();
+            firsItem.Quantity++;
+            var lastItem = newData.Items.Last();
+            lastItem.Id = 0;
+
+            var result = await service.UpdateAsync(newData.Id, newData);
+
+            Assert.NotEqual(0, result);
+        }
+
+        [Fact]
+        public async Task Update_Error()
+        {
+            InventoryWeavingDocumentUploadService service = new InventoryWeavingDocumentUploadService( GetServiceProvider().Object, _dbContext(GetCurrentMethod()));
+            await Assert.ThrowsAnyAsync<Exception>(() => service.UpdateAsync(0, null));
+        }
+
     }
 }
