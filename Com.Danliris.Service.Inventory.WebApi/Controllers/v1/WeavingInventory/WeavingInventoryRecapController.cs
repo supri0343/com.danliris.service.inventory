@@ -73,7 +73,7 @@ namespace Com.Danliris.Service.Inventory.WebApi.Controllers.v1.WeavingInventory
 
                 var xls = service.GenerateExcelRecap(bonType, dateFrom, dateTo, offset);
 
-                string filename = String.Format("Rincian Pemasukan - {0}.xlsx", DateTimeOffset.UtcNow.ToString("ddMMyyyy"));
+                string filename = String.Format("Rekapitulasi Pemasukan - {0}.xlsx", DateTimeOffset.UtcNow.ToString("ddMMyyyy"));
 
                 xlsInBytes = xls.ToArray();
                 var file = File(xlsInBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", filename);
