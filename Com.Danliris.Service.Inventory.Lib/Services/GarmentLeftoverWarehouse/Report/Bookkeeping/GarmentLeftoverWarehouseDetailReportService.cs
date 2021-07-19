@@ -169,64 +169,64 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                                                      where data._IsDeleted == false
                                                 && data.ReceiptDate.AddHours(offset).Date <= DateTo.Date
 
-                                                     select new { data.UnitFromName, data.ReceiptDate, data.Id })
+                                                     select new { data.UnitFromCode, data.ReceiptDate, data.Id })
                                           join b in DbContext.GarmentLeftoverWarehouseReceiptFabricItems on a.Id equals b.GarmentLeftoverWarehouseReceiptFabricId
                                           select new GarmentLeftoverWarehouseDetailReportViewModel
                                           {
                                               Description = "SALDO AWAL",
-                                              Unit2aQty = a.ReceiptDate.AddHours(offset).Date < DateFrom.Date && a.UnitFromName == "C2A" ? b.Quantity : 0,
-                                              Unit2aPrice = (a.ReceiptDate.AddHours(offset).Date < DateFrom.Date && a.UnitFromName == "C2A" ? b.Quantity : 0) * b.BasicPrice,
-                                              Unit2bQty = a.ReceiptDate.AddHours(offset).Date < DateFrom.Date && a.UnitFromName == "C2B" ? b.Quantity : 0,
-                                              Unit2bPrice = (a.ReceiptDate.AddHours(offset).Date < DateFrom.Date && a.UnitFromName == "C2B" ? b.Quantity : 0) * b.BasicPrice,
-                                              Unit2cQty = a.ReceiptDate.AddHours(offset).Date < DateFrom.Date && a.UnitFromName == "C2C" ? b.Quantity : 0,
-                                              Unit2cPrice = (a.ReceiptDate.AddHours(offset).Date < DateFrom.Date && a.UnitFromName == "C2C" ? b.Quantity : 0) * b.BasicPrice,
-                                              Unit1aQty = a.ReceiptDate.AddHours(offset).Date < DateFrom.Date && a.UnitFromName == "C1A" ? b.Quantity : 0,
-                                              Unit1aPrice = (a.ReceiptDate.AddHours(offset).Date < DateFrom.Date && a.UnitFromName == "C1A" ? b.Quantity : 0) * b.BasicPrice,
-                                              Unit1bQty = a.ReceiptDate.AddHours(offset).Date < DateFrom.Date && a.UnitFromName == "C1B" ? b.Quantity : 0,
-                                              Unit1bPrice = (a.ReceiptDate.AddHours(offset).Date < DateFrom.Date && a.UnitFromName == "C1B" ? b.Quantity : 0) * b.BasicPrice,
+                                              Unit2aQty = a.ReceiptDate.AddHours(offset).Date < DateFrom.Date && a.UnitFromCode == "C2A" ? b.Quantity : 0,
+                                              Unit2aPrice = (a.ReceiptDate.AddHours(offset).Date < DateFrom.Date && a.UnitFromCode == "C2A" ? b.Quantity : 0) * b.BasicPrice,
+                                              Unit2bQty = a.ReceiptDate.AddHours(offset).Date < DateFrom.Date && a.UnitFromCode == "C2B" ? b.Quantity : 0,
+                                              Unit2bPrice = (a.ReceiptDate.AddHours(offset).Date < DateFrom.Date && a.UnitFromCode == "C2B" ? b.Quantity : 0) * b.BasicPrice,
+                                              Unit2cQty = a.ReceiptDate.AddHours(offset).Date < DateFrom.Date && a.UnitFromCode == "C2C" ? b.Quantity : 0,
+                                              Unit2cPrice = (a.ReceiptDate.AddHours(offset).Date < DateFrom.Date && a.UnitFromCode == "C2C" ? b.Quantity : 0) * b.BasicPrice,
+                                              Unit1aQty = a.ReceiptDate.AddHours(offset).Date < DateFrom.Date && a.UnitFromCode == "C1A" ? b.Quantity : 0,
+                                              Unit1aPrice = (a.ReceiptDate.AddHours(offset).Date < DateFrom.Date && a.UnitFromCode == "C1A" ? b.Quantity : 0) * b.BasicPrice,
+                                              Unit1bQty = a.ReceiptDate.AddHours(offset).Date < DateFrom.Date && a.UnitFromCode == "C1B" ? b.Quantity : 0,
+                                              Unit1bPrice = (a.ReceiptDate.AddHours(offset).Date < DateFrom.Date && a.UnitFromCode == "C1B" ? b.Quantity : 0) * b.BasicPrice,
 
                                           };
                 var QueryExpenditureBalance = from a in (from data in DbContext.GarmentLeftoverWarehouseExpenditureFabrics
                                                          where data._IsDeleted == false
                                                     && data.ExpenditureDate.AddHours(offset).Date <= DateTo.Date
 
-                                                         select new { data.UnitExpenditureCode, data.ExpenditureDate, data.Id, data.ExpenditureDestination })
+                                                         select new {  data.ExpenditureDate, data.Id, data.ExpenditureDestination })
                                               join b in (from expend in DbContext.GarmentLeftoverWarehouseExpenditureFabricItems
-                                                         select new { expend.BasicPrice, expend.UomUnit, expend.PONo, expend.Quantity, expend.UnitName, expend.ExpenditureId }) on a.Id equals b.ExpenditureId
+                                                         select new {expend.UnitCode, expend.BasicPrice, expend.UomUnit, expend.PONo, expend.Quantity, expend.UnitName, expend.ExpenditureId }) on a.Id equals b.ExpenditureId
                                               select new GarmentLeftoverWarehouseDetailReportViewModel
                                               {
                                                   Description = "SALDO AWAL",
-                                                  Unit2aQty = a.ExpenditureDate.AddHours(offset).Date < DateFrom.Date && a.UnitExpenditureCode == "C2A" ? -b.Quantity : 0,
-                                                  Unit2aPrice = (a.ExpenditureDate.AddHours(offset).Date < DateFrom.Date && a.UnitExpenditureCode == "C2A" ? -b.Quantity : 0) * b.BasicPrice,
-                                                  Unit2bQty = a.ExpenditureDate.AddHours(offset).Date < DateFrom.Date && a.UnitExpenditureCode == "C2B" ? -b.Quantity : 0,
-                                                  Unit2bPrice = (a.ExpenditureDate.AddHours(offset).Date < DateFrom.Date && a.UnitExpenditureCode == "C2B" ? -b.Quantity : 0) * b.BasicPrice,
-                                                  Unit2cQty = a.ExpenditureDate.AddHours(offset).Date < DateFrom.Date && a.UnitExpenditureCode == "C2C" ? -b.Quantity : 0,
-                                                  Unit2cPrice = (a.ExpenditureDate.AddHours(offset).Date < DateFrom.Date && a.UnitExpenditureCode == "C2C" ? -b.Quantity : 0) * b.BasicPrice,
-                                                  Unit1aQty = a.ExpenditureDate.AddHours(offset).Date < DateFrom.Date && a.UnitExpenditureCode == "C1A" ? -b.Quantity : 0,
-                                                  Unit1aPrice = (a.ExpenditureDate.AddHours(offset).Date < DateFrom.Date && a.UnitExpenditureCode == "C1A" ? -b.Quantity : 0) * b.BasicPrice,
-                                                  Unit1bQty = a.ExpenditureDate.AddHours(offset).Date < DateFrom.Date && a.UnitExpenditureCode == "C1B" ? -b.Quantity : 0,
-                                                  Unit1bPrice = (a.ExpenditureDate.AddHours(offset).Date < DateFrom.Date && a.UnitExpenditureCode == "C1B" ? -b.Quantity : 0) * b.BasicPrice,
+                                                  Unit2aQty = a.ExpenditureDate.AddHours(offset).Date < DateFrom.Date && b.UnitCode == "C2A" ? -b.Quantity : 0,
+                                                  Unit2aPrice = (a.ExpenditureDate.AddHours(offset).Date < DateFrom.Date && b.UnitCode == "C2A" ? -b.Quantity : 0) * b.BasicPrice,
+                                                  Unit2bQty = a.ExpenditureDate.AddHours(offset).Date < DateFrom.Date && b.UnitCode == "C2B" ? -b.Quantity : 0,
+                                                  Unit2bPrice = (a.ExpenditureDate.AddHours(offset).Date < DateFrom.Date && b.UnitCode == "C2B" ? -b.Quantity : 0) * b.BasicPrice,
+                                                  Unit2cQty = a.ExpenditureDate.AddHours(offset).Date < DateFrom.Date && b.UnitCode == "C2C" ? -b.Quantity : 0,
+                                                  Unit2cPrice = (a.ExpenditureDate.AddHours(offset).Date < DateFrom.Date && b.UnitCode == "C2C" ? -b.Quantity : 0) * b.BasicPrice,
+                                                  Unit1aQty = a.ExpenditureDate.AddHours(offset).Date < DateFrom.Date && b.UnitCode == "C1A" ? -b.Quantity : 0,
+                                                  Unit1aPrice = (a.ExpenditureDate.AddHours(offset).Date < DateFrom.Date && b.UnitCode == "C1A" ? -b.Quantity : 0) * b.BasicPrice,
+                                                  Unit1bQty = a.ExpenditureDate.AddHours(offset).Date < DateFrom.Date && b.UnitCode == "C1B" ? -b.Quantity : 0,
+                                                  Unit1bPrice = (a.ExpenditureDate.AddHours(offset).Date < DateFrom.Date && b.UnitCode == "C1B" ? -b.Quantity : 0) * b.BasicPrice,
 
                                               };
                 var QueryReceipt = from a in (from data in DbContext.GarmentLeftoverWarehouseReceiptFabrics
                                               where data._IsDeleted == false
                                          && data.ReceiptDate.AddHours(offset).Date <= DateTo.Date
 
-                                              select new { data.UnitFromName, data.ReceiptDate, data.Id })
+                                              select new { data.UnitFromCode, data.ReceiptDate, data.Id })
                                    join b in DbContext.GarmentLeftoverWarehouseReceiptFabricItems on a.Id equals b.GarmentLeftoverWarehouseReceiptFabricId
                                    select new GarmentLeftoverWarehouseDetailReportViewModel
                                    {
                                        Description = "TOTAL PENERIMAAN",
-                                       Unit2aQty = a.ReceiptDate.AddHours(offset).Date >= DateFrom.Date && a.UnitFromName == "C2A" ? b.Quantity : 0,
-                                       Unit2aPrice = (a.ReceiptDate.AddHours(offset).Date >= DateFrom.Date && a.UnitFromName == "C2A" ? b.Quantity : 0) * b.BasicPrice,
-                                       Unit2bQty = a.ReceiptDate.AddHours(offset).Date >= DateFrom.Date && a.UnitFromName == "C2B" ? b.Quantity : 0,
-                                       Unit2bPrice = (a.ReceiptDate.AddHours(offset).Date >= DateFrom.Date && a.UnitFromName == "C2B" ? b.Quantity : 0) * b.BasicPrice,
-                                       Unit2cQty = a.ReceiptDate.AddHours(offset).Date >= DateFrom.Date && a.UnitFromName == "C2C" ? b.Quantity : 0,
-                                       Unit2cPrice = (a.ReceiptDate.AddHours(offset).Date >= DateFrom.Date && a.UnitFromName == "C2C" ? b.Quantity : 0) * b.BasicPrice,
-                                       Unit1aQty = a.ReceiptDate.AddHours(offset).Date >= DateFrom.Date && a.UnitFromName == "C1A" ? b.Quantity : 0,
-                                       Unit1aPrice = (a.ReceiptDate.AddHours(offset).Date >= DateFrom.Date && a.UnitFromName == "C1A" ? b.Quantity : 0) * b.BasicPrice,
-                                       Unit1bQty = a.ReceiptDate.AddHours(offset).Date >= DateFrom.Date && a.UnitFromName == "C1B" ? b.Quantity : 0,
-                                       Unit1bPrice = (a.ReceiptDate.AddHours(offset).Date >= DateFrom.Date && a.UnitFromName == "C1B" ? b.Quantity : 0) * b.BasicPrice,
+                                       Unit2aQty = a.ReceiptDate.AddHours(offset).Date >= DateFrom.Date && a.UnitFromCode == "C2A" ? b.Quantity : 0,
+                                       Unit2aPrice = (a.ReceiptDate.AddHours(offset).Date >= DateFrom.Date && a.UnitFromCode == "C2A" ? b.Quantity : 0) * b.BasicPrice,
+                                       Unit2bQty = a.ReceiptDate.AddHours(offset).Date >= DateFrom.Date && a.UnitFromCode == "C2B" ? b.Quantity : 0,
+                                       Unit2bPrice = (a.ReceiptDate.AddHours(offset).Date >= DateFrom.Date && a.UnitFromCode == "C2B" ? b.Quantity : 0) * b.BasicPrice,
+                                       Unit2cQty = a.ReceiptDate.AddHours(offset).Date >= DateFrom.Date && a.UnitFromCode == "C2C" ? b.Quantity : 0,
+                                       Unit2cPrice = (a.ReceiptDate.AddHours(offset).Date >= DateFrom.Date && a.UnitFromCode == "C2C" ? b.Quantity : 0) * b.BasicPrice,
+                                       Unit1aQty = a.ReceiptDate.AddHours(offset).Date >= DateFrom.Date && a.UnitFromCode == "C1A" ? b.Quantity : 0,
+                                       Unit1aPrice = (a.ReceiptDate.AddHours(offset).Date >= DateFrom.Date && a.UnitFromCode == "C1A" ? b.Quantity : 0) * b.BasicPrice,
+                                       Unit1bQty = a.ReceiptDate.AddHours(offset).Date >= DateFrom.Date && a.UnitFromCode == "C1B" ? b.Quantity : 0,
+                                       Unit1bPrice = (a.ReceiptDate.AddHours(offset).Date >= DateFrom.Date && a.UnitFromCode == "C1B" ? b.Quantity : 0) * b.BasicPrice,
 
                                    };
 
@@ -234,22 +234,22 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                                                   where data._IsDeleted == false
                                              && data.ExpenditureDate.AddHours(offset).Date <= DateTo.Date
 
-                                                  select new { data.UnitExpenditureCode, data.ExpenditureDate, data.Id, data.ExpenditureDestination })
+                                                  select new {  data.ExpenditureDate, data.Id, data.ExpenditureDestination })
                                        join b in (from expend in DbContext.GarmentLeftoverWarehouseExpenditureFabricItems
-                                                  select new { expend.BasicPrice, expend.UomUnit, expend.PONo, expend.Quantity, expend.UnitName, expend.ExpenditureId }) on a.Id equals b.ExpenditureId
+                                                  select new { expend.UnitCode,expend.BasicPrice, expend.UomUnit, expend.PONo, expend.Quantity, expend.UnitName, expend.ExpenditureId }) on a.Id equals b.ExpenditureId
                                        select new GarmentLeftoverWarehouseDetailReportViewModel
                                        {
                                            Description = "U/" + a.ExpenditureDestination,
-                                           Unit2aQty = a.ExpenditureDate.AddHours(offset).Date >= DateFrom.Date && a.UnitExpenditureCode == "C2A" ? b.Quantity : 0,
-                                           Unit2aPrice = (a.ExpenditureDate.AddHours(offset).Date >= DateFrom.Date && a.UnitExpenditureCode == "C2A" ? b.Quantity : 0) * b.BasicPrice,
-                                           Unit2bQty = a.ExpenditureDate.AddHours(offset).Date >= DateFrom.Date && a.UnitExpenditureCode == "C2B" ? b.Quantity : 0,
-                                           Unit2bPrice = (a.ExpenditureDate.AddHours(offset).Date >= DateFrom.Date && a.UnitExpenditureCode == "C2B" ? b.Quantity : 0) * b.BasicPrice,
-                                           Unit2cQty = a.ExpenditureDate.AddHours(offset).Date >= DateFrom.Date && a.UnitExpenditureCode == "C2C" ? b.Quantity : 0,
-                                           Unit2cPrice = (a.ExpenditureDate.AddHours(offset).Date >= DateFrom.Date && a.UnitExpenditureCode == "C2C" ? b.Quantity : 0) * b.BasicPrice,
-                                           Unit1aQty = a.ExpenditureDate.AddHours(offset).Date >= DateFrom.Date && a.UnitExpenditureCode == "C1A" ? b.Quantity : 0,
-                                           Unit1aPrice = (a.ExpenditureDate.AddHours(offset).Date >= DateFrom.Date && a.UnitExpenditureCode == "C1A" ? b.Quantity : 0) * b.BasicPrice,
-                                           Unit1bQty = a.ExpenditureDate.AddHours(offset).Date >= DateFrom.Date && a.UnitExpenditureCode == "C1B" ? b.Quantity : 0,
-                                           Unit1bPrice = (a.ExpenditureDate.AddHours(offset).Date >= DateFrom.Date && a.UnitExpenditureCode == "C1B" ? b.Quantity : 0) * b.BasicPrice,
+                                           Unit2aQty = a.ExpenditureDate.AddHours(offset).Date >= DateFrom.Date && b.UnitCode == "C2A" ? b.Quantity : 0,
+                                           Unit2aPrice = (a.ExpenditureDate.AddHours(offset).Date >= DateFrom.Date && b.UnitCode == "C2A" ? b.Quantity : 0) * b.BasicPrice,
+                                           Unit2bQty = a.ExpenditureDate.AddHours(offset).Date >= DateFrom.Date && b.UnitCode == "C2B" ? b.Quantity : 0,
+                                           Unit2bPrice = (a.ExpenditureDate.AddHours(offset).Date >= DateFrom.Date && b.UnitCode == "C2B" ? b.Quantity : 0) * b.BasicPrice,
+                                           Unit2cQty = a.ExpenditureDate.AddHours(offset).Date >= DateFrom.Date && b.UnitCode == "C2C" ? b.Quantity : 0,
+                                           Unit2cPrice = (a.ExpenditureDate.AddHours(offset).Date >= DateFrom.Date && b.UnitCode == "C2C" ? b.Quantity : 0) * b.BasicPrice,
+                                           Unit1aQty = a.ExpenditureDate.AddHours(offset).Date >= DateFrom.Date && b.UnitCode == "C1A" ? b.Quantity : 0,
+                                           Unit1aPrice = (a.ExpenditureDate.AddHours(offset).Date >= DateFrom.Date && b.UnitCode == "C1A" ? b.Quantity : 0) * b.BasicPrice,
+                                           Unit1bQty = a.ExpenditureDate.AddHours(offset).Date >= DateFrom.Date && b.UnitCode == "C1B" ? b.Quantity : 0,
+                                           Unit1bPrice = (a.ExpenditureDate.AddHours(offset).Date >= DateFrom.Date && b.UnitCode == "C1B" ? b.Quantity : 0) * b.BasicPrice,
 
                                        };
                 var Query = QueryBalance.Union(QueryReceiptBalance).Union(QueryExpenditureBalance);
