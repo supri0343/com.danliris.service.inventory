@@ -110,8 +110,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                                            QuantityExpend = a.ExpenditureDate.AddHours(offset).Date >= DateFrom.Date  ? b.Quantity : 0,
                                            PriceExpend = (a.ExpenditureDate.AddHours(offset).Date >= DateFrom.Date  ? b.Quantity : 0) * b.BasicPrice,
 
-                                           ProductCode = (from aa in _product select aa.ProductCode).FirstOrDefault(),
-                                           ProductName = (from aa in _product select aa.ProductName).FirstOrDefault(),
+                                           ProductCode = (from aa in _product where aa.PONo == b.PONo select aa.ProductCode).FirstOrDefault(),
+                                           ProductName = (from aa in _product where aa.PONo == b.PONo select aa.ProductName).FirstOrDefault(),
                                            EndbalanceQty = 0
                                        };
                 var Query = QueryReceipt.Union(QueryExpenditure).Union(QueryBalance);
@@ -139,6 +139,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                         BeginingbalancePrice = data.beginingPrice,
                         QuantityReceipt = data.receipt,
                         PriceReceipt = data.priceReceipt,
+                        PriceExpend = data.expendPrice,
+                        QuantityExpend = data.expend,
                         BasicPrice = data.basicprice,
                         UomUnit = data.uomunit,
                         ProductCode = data.productCode,
@@ -236,6 +238,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                         BeginingbalancePrice = data.beginingPrice,
                         QuantityReceipt = data.receipt,
                         PriceReceipt = data.priceReceipt,
+                        PriceExpend = data.expendPrice,
+                        QuantityExpend = data.expend,
                         BasicPrice = data.basicprice,
                         UomUnit = data.uomunit,
                         ProductCode = data.productCode,
@@ -329,6 +333,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                         BeginingbalancePrice = data.beginingPrice,
                         QuantityReceipt = data.receipt,
                         PriceReceipt = data.priceReceipt,
+                        QuantityExpend = data.expend,
+                        PriceExpend = data.expendPrice,
                         BasicPrice = data.basicprice,
                         UomUnit = data.uomunit,
                         ProductCode = data.productCode,
@@ -372,6 +378,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                     BeginingbalancePrice = data.beginingPrice,
                     QuantityReceipt = data.receipt,
                     PriceReceipt = data.priceReceipt,
+                    PriceExpend = data.expendPrice,
+                    QuantityExpend = data.expend,
                     BasicPrice = data.basicprice,
                     UomUnit = data.uomunit,
                     ProductCode = data.productcode,
@@ -414,8 +422,6 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
 
             //List<(string, Enum, Enum)> mergeCells = new List<(string, Enum, Enum)>() { };
             Dictionary<string, string> Rowcount = new Dictionary<string, string>();
-            int idx = 1;
-            var rCount = 0;
             if (Query.ToArray().Count() == 0)
                 result.Rows.Add("", "", "", 0, 0); // to allow column name to be generated properly for empty data as template
             else
