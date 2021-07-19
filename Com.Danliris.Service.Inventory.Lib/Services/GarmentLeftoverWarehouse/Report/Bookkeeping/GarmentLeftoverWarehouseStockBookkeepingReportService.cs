@@ -35,7 +35,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
         public List<GarmentLeftoverWarehouseStockBookkeepingReportViewModel> GetReportQuery(DateTime? dateTo, string type, int offset)
         {
             DateTimeOffset DateTo = dateTo == null ? DateTime.Now : (DateTimeOffset)dateTo;
-            DateTimeOffset DateFrom =new DateTime(1970, 1, 1);
+            DateTimeOffset DateFrom = new DateTime(1970, 1, 1);
 
             List<GarmentLeftoverWarehouseStockBookkeepingReportViewModel> GarmentLeftoverWarehouseStockBookkeepingReportViewModel = new List<GarmentLeftoverWarehouseStockBookkeepingReportViewModel>();
             var _productF = (from a in DbContext.GarmentLeftoverWarehouseReceiptFabricItems
@@ -46,7 +46,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                              select new Products { ProductCode = a.ProductCode, ProductName = a.ProductName, PONo = a.PONo }).Distinct();
             var _productA = (from a in DbContext.GarmentLeftoverWarehouseReceiptAccessoryItems
                              where a._IsDeleted == false
-                             select new Products { ProductCode = a.ProductCode, ProductName = a.ProductName, PONo=a.POSerialNumber }).Distinct();
+                             select new Products { ProductCode = a.ProductCode, ProductName = a.ProductName, PONo = a.POSerialNumber }).Distinct();
 
             var _product = _productF.Union(_productB).Union(_productA);
             if (type == "FABRIC")
@@ -68,8 +68,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                                        ProductName = b.ProductName,
                                        EndbalanceQty = 0,
                                        BasicPrice = b.BasicPrice,
-                                       PriceExpend=0,
-                                       QuantityExpend=0
+                                       PriceExpend = 0,
+                                       QuantityExpend = 0
                                    };
                 var QueryReceipt = from a in (from data in DbContext.GarmentLeftoverWarehouseReceiptFabrics
                                               where data._IsDeleted == false
@@ -107,8 +107,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                                            BasicPrice = b.BasicPrice,
                                            UomUnit = b.UomUnit,
 
-                                           QuantityExpend = a.ExpenditureDate.AddHours(offset).Date >= DateFrom.Date  ? b.Quantity : 0,
-                                           PriceExpend = (a.ExpenditureDate.AddHours(offset).Date >= DateFrom.Date  ? b.Quantity : 0) * b.BasicPrice,
+                                           QuantityExpend = a.ExpenditureDate.AddHours(offset).Date >= DateFrom.Date ? b.Quantity : 0,
+                                           PriceExpend = (a.ExpenditureDate.AddHours(offset).Date >= DateFrom.Date ? b.Quantity : 0) * b.BasicPrice,
 
                                            ProductCode = (from aa in _product where aa.PONo == b.PONo select aa.ProductCode).FirstOrDefault(),
                                            ProductName = (from aa in _product where aa.PONo == b.PONo select aa.ProductName).FirstOrDefault(),
@@ -139,13 +139,12 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                         BeginingbalancePrice = data.beginingPrice,
                         QuantityReceipt = data.receipt,
                         PriceReceipt = data.priceReceipt,
-                        PriceExpend = data.expendPrice,
-                        QuantityExpend = data.expend,
                         BasicPrice = data.basicprice,
                         UomUnit = data.uomunit,
                         ProductCode = data.productCode,
                         ProductName = data.productName,
-
+                        QuantityExpend = data.expend,
+                        PriceExpend = data.expendPrice,
                         EndbalanceQty = data.begining + data.receipt - data.expend,
                         EndbalancePrice = data.beginingPrice + data.priceReceipt - data.expendPrice
                     };
@@ -159,7 +158,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                                               where data._IsDeleted == false && data.TypeOfGoods.ToString() == "BARANG JADI"
                                               select new { data._CreatedUtc, data.Id })
                                    join b in DbContext.GarmentLeftoverWarehouseBalanceStocksItems on a.Id equals b.BalanceStockId
-                                   
+
                                    select new GarmentLeftoverWarehouseStockBookkeepingReportViewModel
                                    {
                                        BeginingbalanceQty = b.Quantity,
@@ -197,7 +196,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                                                         && data.ExpenditureDate.AddHours(offset).Date <= DateTo.Date
                                                   select new { data.ExpenditureDate, data.Id, data.ExpenditureTo })
                                        join b in (from expend in DbContext.GarmentLeftoverWarehouseExpenditureFinishedGoodItems
-                                                  select new { expend.BasicPrice, expend.FinishedGoodExpenditureId, expend.ExpenditureQuantity, expend.LeftoverComodityCode, expend.LeftoverComodityName}
+                                                  select new { expend.BasicPrice, expend.FinishedGoodExpenditureId, expend.ExpenditureQuantity, expend.LeftoverComodityCode, expend.LeftoverComodityName }
                                                   ) on a.Id equals b.FinishedGoodExpenditureId
                                        select new GarmentLeftoverWarehouseStockBookkeepingReportViewModel
                                        {
@@ -238,12 +237,12 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                         BeginingbalancePrice = data.beginingPrice,
                         QuantityReceipt = data.receipt,
                         PriceReceipt = data.priceReceipt,
-                        PriceExpend = data.expendPrice,
-                        QuantityExpend = data.expend,
                         BasicPrice = data.basicprice,
                         UomUnit = data.uomunit,
                         ProductCode = data.productCode,
                         ProductName = data.productName,
+                        QuantityExpend = data.expend,
+                        PriceExpend = data.expendPrice,
                         EndbalanceQty = data.begining + data.receipt - data.expend,
                         EndbalancePrice = data.beginingPrice + data.priceReceipt - data.expendPrice
                     };
@@ -333,12 +332,12 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                         BeginingbalancePrice = data.beginingPrice,
                         QuantityReceipt = data.receipt,
                         PriceReceipt = data.priceReceipt,
-                        QuantityExpend = data.expend,
-                        PriceExpend = data.expendPrice,
                         BasicPrice = data.basicprice,
                         UomUnit = data.uomunit,
                         ProductCode = data.productCode,
                         ProductName = data.productName,
+                        QuantityExpend = data.expend,
+                        PriceExpend = data.expendPrice,
                         EndbalanceQty = data.begining + data.receipt - data.expend,
                         EndbalancePrice = data.beginingPrice + data.priceReceipt - data.expendPrice
                     };
@@ -346,50 +345,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                 }
             }
 
-            var queryGroup = GarmentLeftoverWarehouseStockBookkeepingReportViewModel.GroupBy(x => new
-            {
-                x.ProductCode,
-                x.ProductName,
-                x.UomUnit
-            }, (key, group) => new
-            {
-                productcode = key.ProductCode,
-                productname = key.ProductName,
-                uomunit = key.UomUnit,
-                begining = group.Sum(s => s.BeginingbalanceQty),
-                beginingPrice = group.Sum(s => s.BeginingbalancePrice),
-                expend = group.Sum(s => s.QuantityExpend),
-                expendPrice = group.Sum(s => s.PriceExpend),
-                receipt = group.Sum(s => s.QuantityReceipt),
-                priceReceipt = group.Sum(s => s.PriceReceipt),
-                basicprice = group.Sum(s => s.BasicPrice),
-            });
-            
-            var query = queryGroup.OrderBy(s => s.productcode);
-            List<GarmentLeftoverWarehouseStockBookkeepingReportViewModel> stockMonitoringViewModels = new List<GarmentLeftoverWarehouseStockBookkeepingReportViewModel>();
-            
-            foreach (var data in query)
-            {
-
-                GarmentLeftoverWarehouseStockBookkeepingReportViewModel garmentLeftover = new GarmentLeftoverWarehouseStockBookkeepingReportViewModel
-                {
-
-                    BeginingbalanceQty = data.begining,
-                    BeginingbalancePrice = data.beginingPrice,
-                    QuantityReceipt = data.receipt,
-                    PriceReceipt = data.priceReceipt,
-                    PriceExpend = data.expendPrice,
-                    QuantityExpend = data.expend,
-                    BasicPrice = data.basicprice,
-                    UomUnit = data.uomunit,
-                    ProductCode = data.productcode,
-                    ProductName = data.productname,
-                    EndbalanceQty = data.begining + data.receipt - data.expend,
-                    EndbalancePrice = data.beginingPrice + data.priceReceipt - data.expendPrice
-                };
-                stockMonitoringViewModels.Add(garmentLeftover);
-            }
-            var stockdata = stockMonitoringViewModels.OrderBy(a => a.ProductCode).ToList();
+            var stockdata = GarmentLeftoverWarehouseStockBookkeepingReportViewModel.OrderBy(a => a.ProductCode).ToList();
             var Total = new GarmentLeftoverWarehouseStockBookkeepingReportViewModel
             {
                 BeginingbalanceQty = 0,
@@ -400,8 +356,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                 UomUnit = "",
                 ProductCode = "GRAND TOTAL",
                 ProductName = "",
-                EndbalanceQty = stockMonitoringViewModels.Sum(a => a.EndbalanceQty),
-                EndbalancePrice = stockMonitoringViewModels.Sum(a => a.EndbalancePrice)
+                EndbalanceQty = stockdata.Sum(a => a.EndbalanceQty),
+                EndbalancePrice = stockdata.Sum(a => a.EndbalancePrice)
             };
             stockdata.Add(Total);
             return stockdata;
@@ -422,6 +378,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
 
             //List<(string, Enum, Enum)> mergeCells = new List<(string, Enum, Enum)>() { };
             Dictionary<string, string> Rowcount = new Dictionary<string, string>();
+            int idx = 1;
+            var rCount = 0;
             if (Query.ToArray().Count() == 0)
                 result.Rows.Add("", "", "", 0, 0); // to allow column name to be generated properly for empty data as template
             else
