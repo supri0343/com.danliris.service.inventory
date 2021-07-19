@@ -47,7 +47,10 @@ using Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving.Reports.Repor
 using Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.Report.Stock;
 using Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving.Reports.BalanceReportPerGrade;
 using Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.Report.Mutation;
-
+using Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.Report.Bookkeeping;
+using Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving.Reports.ReportRecapStockGreigePerType;
+using Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving.Reports.ReportGreigeWeavingPerGrade;
+using Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving.Reports.ReportExpenseGreigeWeaving;
 
 namespace Com.Danliris.Service.Inventory.WebApi
 {
@@ -127,6 +130,12 @@ namespace Com.Danliris.Service.Inventory.WebApi
                 .AddTransient<IReportGreigeWeavingPerMonthService, ReportGreigeWeavingPerMonthService>()
                 .AddTransient<IReportGreigeWeavingPerTypeService, ReportGreigeWeavingPerTypeService>()
                 .AddTransient<IBalanceReportPerPieceService, BalanceReportPerPieceService>()
+                .AddTransient<IGarmentLeftoverWarehouseRecapStockReportService, GarmentLeftoverWarehouseRecapStockReportService>()
+                .AddTransient<IGarmentLeftoverWarehouseFlowStockReportService, GarmentLeftoverWarehouseFlowStockReportService>()
+                .AddTransient<IReportRecapStockGreigePerTypeService, ReportRecapStockGreigePerTypeService>()
+                .AddTransient<IReportGreigeWeavingPerGradeService, ReportGreigeWeavingPerGradeService>()
+                .AddTransient<IGarmentLeftoverWarehouseStockBookkeepingReportService, GarmentLeftoverWarehouseStockBookkeepingReportService>()
+                .AddTransient<IReportExpenseGreigeWeavingService, ReportExpenseGreigeWeavingService>()
                 .AddScoped<IIdentityService, IdentityService>()
                 .AddScoped<IValidateService, ValidateService>()
                 .AddScoped<IHttpService, HttpService>()
