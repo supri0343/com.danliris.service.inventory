@@ -20,32 +20,31 @@ namespace Com.Danliris.Service.Inventory.WebApi.Controllers.v1.WeavingInventory.
     public class ReportRecapStockGreigePerTypeController : Controller
     {
 
-        private string ApiVersion = "1.0.0";
-        private readonly IMapper mapper;
-        private readonly IReportRecapStockGreigePerTypeService service;
-        private readonly IServiceProvider serviceProvider;
-        private readonly IdentityService identityService;
-
-        public ReportRecapStockGreigePerTypeController(IReportRecapStockGreigePerTypeService service, IServiceProvider serviceProvider)
+        protected IIdentityService IdentityService;
+        protected readonly IValidateService ValidateService;
+        protected readonly IReportRecapStockGreigePerTypeService Service;
+        protected readonly string ApiVersion;
+        public ReportRecapStockGreigePerTypeController(IIdentityService identityService, IValidateService validateService, IReportRecapStockGreigePerTypeService service)
         {
-            this.service = service;
-            this.serviceProvider = serviceProvider;
-            identityService = (IdentityService)serviceProvider.GetService(typeof(IdentityService));
+            IdentityService = identityService;
+            ValidateService = validateService;
+            Service = service;
+            ApiVersion = "1.0.0";
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetReport( DateTime? dateTo, int page = 1, int size = 25, string Order = "{}")
+        public IActionResult GetReport( DateTime? dateTo, int page = 1, int size = 25, string Order = "{}")
         {
             try
             {
-                identityService.Username = User.Claims.Single(p => p.Type.Equals("username")).Value;
-                identityService.TimezoneOffset = int.Parse(Request.Headers["x-timezone-offset"].First());
-                identityService.Token = Request.Headers["Authorization"].First().Replace("Bearer ", "");
+                IdentityService.Username = User.Claims.Single(p => p.Type.Equals("username")).Value;
+                IdentityService.TimezoneOffset = int.Parse(Request.Headers["x-timezone-offset"].First());
+                IdentityService.Token = Request.Headers["Authorization"].First().Replace("Bearer ", "");
 
                 int offset = Convert.ToInt32(Request.Headers["x-timezone-offset"]);
                 string accept = Request.Headers["Accept"];
 
-                var data = await service.GetRecapStocktGreige( dateTo, offset,page, size, Order);
+                var data =  Service.GetRecapStocktGreige( dateTo, offset, page, size, Order);
 
 
 
@@ -68,7 +67,7 @@ namespace Com.Danliris.Service.Inventory.WebApi.Controllers.v1.WeavingInventory.
         }
 
         [HttpGet("download")]
-        public async Task<IActionResult> GetExcelAll([FromHeader(Name = "x-timezone-offset")] string timezone, DateTime? dateTo)
+        public IActionResult GetExcelAll([FromHeader(Name = "x-timezone-offset")] string timezone, DateTime? dateTo)
         {
             try
             {
@@ -78,7 +77,7 @@ namespace Com.Danliris.Service.Inventory.WebApi.Controllers.v1.WeavingInventory.
                 DateTime DateTo = dateTo == null ? DateTime.Now : (DateTime)dateTo;
                 string Tanggal = DateTo.ToString("dd MMM yyyy", new CultureInfo("id-ID"));
 
-                var Result = await service.GenerateExcel(dateTo, clientTimeZoneOffset);
+                var Result =  Service.GenerateExcel(dateTo, clientTimeZoneOffset);
                 string filename = "Saldo Akhir Gudang Grey per Piece- " + Tanggal + ".xlsx";
 
                 xlsInBytes = Result.ToArray();
