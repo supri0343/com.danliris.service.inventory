@@ -29,6 +29,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Models.GarmentLeftoverWarehouse.Exp
         public int LocalSalesNoteId { get; set; }
         public double QtyKG { get; set; }
 
+        public bool IsUsed { get; set; }
         public virtual ICollection<GarmentLeftoverWarehouseExpenditureFabricItem> Items { get; set; }
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)

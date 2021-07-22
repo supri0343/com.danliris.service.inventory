@@ -26,6 +26,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Models.GarmentLeftoverWarehouse.Exp
         public string EtcRemark { get; set; }
         public string Remark { get; set; }
 
+        public bool IsUsed { get; set; }
+
         public virtual ICollection<GarmentLeftoverWarehouseExpenditureAccessoriesItem> Items { get; set; }
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)

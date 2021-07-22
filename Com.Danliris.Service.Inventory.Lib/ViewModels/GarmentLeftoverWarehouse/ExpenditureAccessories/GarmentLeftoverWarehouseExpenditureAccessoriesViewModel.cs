@@ -20,6 +20,7 @@ namespace Com.Danliris.Service.Inventory.Lib.ViewModels.GarmentLeftoverWarehouse
         public string Remark { get; set; }
         public string LocalSalesNoteNo { get; set; }
         public int LocalSalesNoteId { get; set; }
+        public bool IsUsed { get; set; }
 
         public List<GarmentLeftoverWarehouseExpenditureAccessoriesItemViewModel> Items { get; set; }
 
