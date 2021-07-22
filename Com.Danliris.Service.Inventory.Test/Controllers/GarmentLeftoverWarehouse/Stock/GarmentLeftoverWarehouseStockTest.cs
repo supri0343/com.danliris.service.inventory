@@ -115,5 +115,37 @@ namespace Com.Danliris.Service.Inventory.Test.Controllers.GarmentLeftoverWarehou
             int statusCode = GetStatusCodeGetDistinct(mocks);
             Assert.Equal((int)HttpStatusCode.InternalServerError, statusCode);
         }
+
+        [Fact]
+        public async void Should_Success_Get_Data_By_Id()
+        {
+            var mocks = GetMocks();
+            mocks.Service
+                .Setup(x => x.ReadById(It.IsAny<int>()))
+                .Returns(It.IsAny<GarmentLeftoverWarehouseStock>);
+
+            mocks.Service
+                .Setup(f => f.MapToViewModel(It.IsAny<GarmentLeftoverWarehouseStock>()))
+                .Returns(new GarmentLeftoverWarehouseStockViewModel());
+
+            var response = await GetController(mocks).GetById(1);
+            Assert.NotNull(response);
+        }
+
+        [Fact]
+        public async void Should_Error_Get_Data_By_Id()
+        {
+            var mocks = GetMocks();
+            mocks.Service
+                .Setup(x => x.ReadById(It.IsAny<int>()))
+                .Throws(new Exception());
+
+            mocks.Service
+                .Setup(f => f.MapToViewModel(It.IsAny<GarmentLeftoverWarehouseStock>()))
+                .Throws(new Exception());
+
+            var response = await GetController(mocks).GetById(1);
+            Assert.NotNull(response);
+        }
     }
 }
