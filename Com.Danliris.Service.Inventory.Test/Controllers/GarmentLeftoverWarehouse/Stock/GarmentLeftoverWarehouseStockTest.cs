@@ -117,7 +117,7 @@ namespace Com.Danliris.Service.Inventory.Test.Controllers.GarmentLeftoverWarehou
         }
 
         [Fact]
-        public async void Should_Success_Get_Data_By_Id()
+        public async void Should_Success_Get_Data_By_Id_NullModel()
         {
             var mocks = GetMocks();
             mocks.Service
@@ -126,6 +126,27 @@ namespace Com.Danliris.Service.Inventory.Test.Controllers.GarmentLeftoverWarehou
 
             mocks.Service
                 .Setup(f => f.MapToViewModel(It.IsAny<GarmentLeftoverWarehouseStock>()))
+                .Returns(new GarmentLeftoverWarehouseStockViewModel());
+
+            var response = await GetController(mocks).GetById(1);
+            Assert.NotNull(response);
+        }
+
+        [Fact]
+        public async void Should_Success_Get_Data_By_Id()
+        {
+            GarmentLeftoverWarehouseStock Model = new GarmentLeftoverWarehouseStock
+            {
+                Id = 1,
+                PONo = "po"
+            };
+            var mocks = GetMocks();
+            mocks.Service
+                .Setup(x => x.ReadById(It.IsAny<int>()))
+                .Returns(Model);
+
+            mocks.Service
+                .Setup(f => f.MapToViewModel(Model))
                 .Returns(new GarmentLeftoverWarehouseStockViewModel());
 
             var response = await GetController(mocks).GetById(1);
@@ -145,7 +166,7 @@ namespace Com.Danliris.Service.Inventory.Test.Controllers.GarmentLeftoverWarehou
                 .Throws(new Exception());
 
             var response = await GetController(mocks).GetById(1);
-            Assert.NotNull(response);
+            Assert.Equal((int)HttpStatusCode.InternalServerError, GetStatusCode(response));
         }
     }
 }
