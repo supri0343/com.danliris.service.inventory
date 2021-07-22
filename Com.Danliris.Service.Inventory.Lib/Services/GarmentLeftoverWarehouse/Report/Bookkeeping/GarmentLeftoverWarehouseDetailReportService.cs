@@ -334,7 +334,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                         Unit1bPrice = data.unit1bprice,
                         Uom = "MT",
                         TotalQty = data.unit1aqty + data.unit1bqty + data.unit2aqty + data.unit2bqty + data.unit2cqty,
-                        TotalPrice = (data.unit1aqty * data.unit1aprice) + (data.unit1bqty * data.unit1bprice) + (data.unit2aqty * data.unit2aprice) + (data.unit2bqty * data.unit2bprice) + (data.unit2cqty * data.unit2cprice)
+                        TotalPrice = (data.unit1aprice) + (data.unit1bprice) + ( data.unit2aprice) + ( data.unit2bprice) + (data.unit2cprice)
 
                     };
                     reportViewModels.Add(garmentLeftover);
@@ -372,7 +372,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                         Unit1bPrice = data.unit1bprice,
                         Uom = "MT",
                         TotalQty = data.unit1aqty + data.unit1bqty + data.unit2aqty + data.unit2bqty + data.unit2cqty,
-                        TotalPrice = (data.unit1aqty * data.unit1aprice) + (data.unit1bqty * data.unit1bprice) + (data.unit2aqty * data.unit2aprice) + (data.unit2bqty * data.unit2bprice) + (data.unit2cqty * data.unit2cprice)
+                        TotalPrice = (data.unit1aprice) + (data.unit1bprice) + ( data.unit2aprice) + ( data.unit2bprice) + (data.unit2cprice)
 
                     };
                     reportViewModels.Add(garmentLeftover);
@@ -410,7 +410,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                         Unit1bPrice = data.unit1bprice,
                         Uom = "MT",
                         TotalQty = data.unit1aqty + data.unit1bqty + data.unit2aqty + data.unit2bqty + data.unit2cqty,
-                        TotalPrice = (data.unit1aqty * data.unit1aprice) + (data.unit1bqty * data.unit1bprice) + (data.unit2aqty * data.unit2aprice) + (data.unit2bqty * data.unit2bprice) + (data.unit2cqty * data.unit2cprice)
+                        TotalPrice = (data.unit1aprice) + (data.unit1bprice) + ( data.unit2aprice) + ( data.unit2bprice) + (data.unit2cprice)
 
                     };
                     reportViewModels.Add(garmentLeftover);
@@ -432,7 +432,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                         Unit1bPrice = data.unit1bprice,
                         Uom = "MT",
                         TotalQty = data.unit1aqty + data.unit1bqty + data.unit2aqty + data.unit2bqty + data.unit2cqty,
-                        TotalPrice = (data.unit1aqty * data.unit1aprice) + (data.unit1bqty * data.unit1bprice) + (data.unit2aqty * data.unit2aprice) + (data.unit2bqty * data.unit2bprice) + (data.unit2cqty * data.unit2cprice)
+                        TotalPrice = (data.unit1aprice) + (data.unit1bprice) + ( data.unit2aprice) + ( data.unit2bprice) + (data.unit2cprice)
 
                     };
                     reportViewModels.Add(garmentLeftover);
@@ -516,7 +516,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                         Unit1bPrice = data.unit1bprice,
                         Uom = "MT",
                         TotalQty = data.unit1aqty + data.unit1bqty + data.unit2aqty + data.unit2bqty + data.unit2cqty,
-                        TotalPrice = (data.unit1aqty * data.unit1aprice) + (data.unit1bqty * data.unit1bprice) + (data.unit2aqty * data.unit2aprice) + (data.unit2bqty * data.unit2bprice) + (data.unit2cqty * data.unit2cprice)
+                        TotalPrice = (data.unit1aprice) + (data.unit1bprice) + ( data.unit2aprice) + ( data.unit2bprice) + (data.unit2cprice)
 
                     };
                     reportViewModels.Add(garmentLeftover);
@@ -716,7 +716,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                         Unit1bPrice = data.unit1bprice,
                         Uom = "PCS",
                         TotalQty = data.unit1aqty + data.unit1bqty + data.unit2aqty + data.unit2bqty + data.unit2cqty,
-                        TotalPrice = (data.unit1aqty * data.unit1aprice) + (data.unit1bqty * data.unit1bprice) + (data.unit2aqty * data.unit2aprice) + (data.unit2bqty * data.unit2bprice) + (data.unit2cqty * data.unit2cprice)
+                        TotalPrice = (data.unit1aprice) + (data.unit1bprice) + ( data.unit2aprice) + ( data.unit2bprice) + (data.unit2cprice)
 
                     };
                     reportViewModels.Add(garmentLeftover);
@@ -754,7 +754,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                         Unit1bPrice = data.unit1bprice,
                         Uom = "PCS",
                         TotalQty = data.unit1aqty + data.unit1bqty + data.unit2aqty + data.unit2bqty + data.unit2cqty,
-                        TotalPrice = (data.unit1aqty * data.unit1aprice) + (data.unit1bqty * data.unit1bprice) + (data.unit2aqty * data.unit2aprice) + (data.unit2bqty * data.unit2bprice) + (data.unit2cqty * data.unit2cprice)
+                        TotalPrice = (data.unit1aprice) + (data.unit1bprice) + ( data.unit2aprice) + ( data.unit2bprice) + (data.unit2cprice)
 
                     };
                     reportViewModels.Add(garmentLeftover);
@@ -792,7 +792,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                         Unit1bPrice = data.unit1bprice,
                         Uom = "PCS",
                         TotalQty = data.unit1aqty + data.unit1bqty + data.unit2aqty + data.unit2bqty + data.unit2cqty,
-                        TotalPrice = (data.unit1aqty * data.unit1aprice) + (data.unit1bqty * data.unit1bprice) + (data.unit2aqty * data.unit2aprice) + (data.unit2bqty * data.unit2bprice) + (data.unit2cqty * data.unit2cprice)
+                        TotalPrice = (data.unit1aprice) + (data.unit1bprice) + ( data.unit2aprice) + ( data.unit2bprice) + (data.unit2cprice)
 
                     };
                     reportViewModels.Add(garmentLeftover);
@@ -814,7 +814,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                         Unit1bPrice = data.unit1bprice,
                         Uom = "PCS",
                         TotalQty = data.unit1aqty + data.unit1bqty + data.unit2aqty + data.unit2bqty + data.unit2cqty,
-                        TotalPrice = (data.unit1aqty * data.unit1aprice) + (data.unit1bqty * data.unit1bprice) + (data.unit2aqty * data.unit2aprice) + (data.unit2bqty * data.unit2bprice) + (data.unit2cqty * data.unit2cprice)
+                        TotalPrice = (data.unit1aprice) + (data.unit1bprice) + ( data.unit2aprice) + ( data.unit2bprice) + (data.unit2cprice)
 
                     };
                     reportViewModels.Add(garmentLeftover);
@@ -898,7 +898,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                         Unit1bPrice = data.unit1bprice,
                         Uom = "PCS",
                         TotalQty = data.unit1aqty + data.unit1bqty + data.unit2aqty + data.unit2bqty + data.unit2cqty,
-                        TotalPrice = (data.unit1aqty * data.unit1aprice) + (data.unit1bqty * data.unit1bprice) + (data.unit2aqty * data.unit2aprice) + (data.unit2bqty * data.unit2bprice) + (data.unit2cqty * data.unit2cprice)
+                        TotalPrice = (data.unit1aprice) + (data.unit1bprice) + ( data.unit2aprice) + ( data.unit2bprice) + (data.unit2cprice)
 
                     };
                     reportViewModels.Add(garmentLeftover);
@@ -1099,7 +1099,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                         Unit1bPrice = data.unit1bprice,
                         Uom = "",
                         TotalQty = data.unit1aqty + data.unit1bqty + data.unit2aqty + data.unit2bqty + data.unit2cqty,
-                        TotalPrice = (data.unit1aqty * data.unit1aprice) + (data.unit1bqty * data.unit1bprice) + (data.unit2aqty * data.unit2aprice) + (data.unit2bqty * data.unit2bprice) + (data.unit2cqty * data.unit2cprice)
+                        TotalPrice = (data.unit1aprice) + (data.unit1bprice) + ( data.unit2aprice) + ( data.unit2bprice) + (data.unit2cprice)
 
                     };
                     reportViewModels.Add(garmentLeftover);
@@ -1137,7 +1137,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                         Unit1bPrice = data.unit1bprice,
                         Uom = "",
                         TotalQty = data.unit1aqty + data.unit1bqty + data.unit2aqty + data.unit2bqty + data.unit2cqty,
-                        TotalPrice = (data.unit1aqty * data.unit1aprice) + (data.unit1bqty * data.unit1bprice) + (data.unit2aqty * data.unit2aprice) + (data.unit2bqty * data.unit2bprice) + (data.unit2cqty * data.unit2cprice)
+                        TotalPrice = (data.unit1aprice) + (data.unit1bprice) + ( data.unit2aprice) + ( data.unit2bprice) + (data.unit2cprice)
 
                     };
                     reportViewModels.Add(garmentLeftover);
@@ -1175,7 +1175,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                         Unit1bPrice = data.unit1bprice,
                         Uom = "",
                         TotalQty = data.unit1aqty + data.unit1bqty + data.unit2aqty + data.unit2bqty + data.unit2cqty,
-                        TotalPrice = (data.unit1aqty * data.unit1aprice) + (data.unit1bqty * data.unit1bprice) + (data.unit2aqty * data.unit2aprice) + (data.unit2bqty * data.unit2bprice) + (data.unit2cqty * data.unit2cprice)
+                        TotalPrice = (data.unit1aprice) + (data.unit1bprice) + ( data.unit2aprice) + ( data.unit2bprice) + (data.unit2cprice)
 
                     };
                     reportViewModels.Add(garmentLeftover);
@@ -1197,7 +1197,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                         Unit1bPrice = data.unit1bprice,
                         Uom = "",
                         TotalQty = data.unit1aqty + data.unit1bqty + data.unit2aqty + data.unit2bqty + data.unit2cqty,
-                        TotalPrice = (data.unit1aqty * data.unit1aprice) + (data.unit1bqty * data.unit1bprice) + (data.unit2aqty * data.unit2aprice) + (data.unit2bqty * data.unit2bprice) + (data.unit2cqty * data.unit2cprice)
+                        TotalPrice = (data.unit1aprice) + (data.unit1bprice) + ( data.unit2aprice) + ( data.unit2bprice) + (data.unit2cprice)
 
                     };
                     reportViewModels.Add(garmentLeftover);
@@ -1281,7 +1281,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                         Unit1bPrice = data.unit1bprice,
                         Uom = "",
                         TotalQty = data.unit1aqty + data.unit1bqty + data.unit2aqty + data.unit2bqty + data.unit2cqty,
-                        TotalPrice = (data.unit1aqty * data.unit1aprice) + (data.unit1bqty * data.unit1bprice) + (data.unit2aqty * data.unit2aprice) + (data.unit2bqty * data.unit2bprice) + (data.unit2cqty * data.unit2cprice)
+                        TotalPrice = (data.unit1aprice) + (data.unit1bprice) + ( data.unit2aprice) + ( data.unit2bprice) + (data.unit2cprice)
 
                     };
                     reportViewModels.Add(garmentLeftover);
