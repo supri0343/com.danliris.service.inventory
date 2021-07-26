@@ -42,7 +42,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
             public string PONo { get; internal set; }
         }
         #region REPORT
-        public IQueryable<GarmentLeftoverWarehouseFlowStockMonitoringViewModel> GetReportQuery(string category,DateTime? dateFrom, DateTime? dateTo, int UnitId,  int offset, string typeAval = "")
+        public List<GarmentLeftoverWarehouseFlowStockMonitoringViewModel> GetReportQuery(string category,DateTime? dateFrom, DateTime? dateTo, int UnitId,  int offset, string typeAval = "")
         {
 
             DateTimeOffset DateFrom = dateFrom == null ? new DateTime(1970, 1, 1) : (DateTimeOffset)dateFrom;
@@ -615,7 +615,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                 };
                 stockMonitoringViewModels.Add(garmentLeftover);
             }
-            return stockMonitoringViewModels.AsQueryable();
+            var result = stockMonitoringViewModels.OrderByDescending(b => b.PONo);
+            return result.ToList();
         }
 
      
@@ -623,7 +624,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
         {
             var Query = GetReportQuery(category,dateFrom, dateTo, unit, offset);
 
-            Dictionary<string, string> OrderDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(order);
+            /*Dictionary<string, string> OrderDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(order);
             if (OrderDictionary.Count.Equals(0))
             {
                 Query = Query.OrderByDescending(b => b.PONo);
@@ -637,15 +638,17 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
 
             Pageable<GarmentLeftoverWarehouseFlowStockMonitoringViewModel> pageable = new Pageable<GarmentLeftoverWarehouseFlowStockMonitoringViewModel>(Query, page - 1, size);
             List<GarmentLeftoverWarehouseFlowStockMonitoringViewModel> Data = pageable.Data.ToList<GarmentLeftoverWarehouseFlowStockMonitoringViewModel>();
+            */
 
-            int TotalData = pageable.TotalCount;
-            return Tuple.Create(Data, TotalData);
+            //int TotalData = pageable.TotalCount;
+            int TotalData = Query.Count();
+            return Tuple.Create(Query, TotalData);
         }
 
         public MemoryStream GenerateExcelFlowStock(string category, DateTime? dateFrom, DateTime? dateTo, int unit, int offset)
         {
             var Query = GetReportQuery(category, dateFrom, dateTo, unit, offset);
-            Query = Query.OrderByDescending(b => b.PONo);
+            //Query = Query.OrderByDescending(b => b.PONo);
 
 
 
