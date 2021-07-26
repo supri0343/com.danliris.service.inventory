@@ -143,8 +143,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                         UomUnit = data.uomunit,
                         ProductCode = data.productCode,
                         ProductName = data.productName,
-                        QuantityExpend = data.expend,
-                        PriceExpend = data.expendPrice,
+                        QuantityExpend=data.expend,
+                        PriceExpend=data.expendPrice,
                         EndbalanceQty = data.begining + data.receipt - data.expend,
                         EndbalancePrice = data.beginingPrice + data.priceReceipt - data.expendPrice
                     };

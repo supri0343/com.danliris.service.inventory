@@ -25,6 +25,7 @@ namespace Com.Danliris.Service.Inventory.Test.DataUtils.GarmentLeftoverWarehouse
                 ExpenditureDestination = "SAMPLE",
                 Remark = "Remark",
                 LocalSalesNoteNo = "LocalSalesNoteNo",
+                IsUsed=false,
                 Items = new List<GarmentLeftoverWarehouseExpenditureFabricItem>
                 {
                     new GarmentLeftoverWarehouseExpenditureFabricItem

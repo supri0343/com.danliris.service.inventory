@@ -707,6 +707,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Migrations
                         .IsRequired()
                         .HasMaxLength(25);
 
+                    b.Property<bool>("IsUsed");
+
                     b.Property<int>("LocalSalesNoteId");
 
                     b.Property<string>("LocalSalesNoteNo")
@@ -1031,6 +1033,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Migrations
                     b.Property<string>("ExpenditureNo")
                         .IsRequired()
                         .HasMaxLength(25);
+
+                    b.Property<bool>("IsUsed");
 
                     b.Property<int>("LocalSalesNoteId");
 

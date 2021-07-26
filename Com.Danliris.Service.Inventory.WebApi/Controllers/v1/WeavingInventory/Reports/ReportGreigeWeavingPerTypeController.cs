@@ -18,21 +18,20 @@ namespace Com.Danliris.Service.Inventory.WebApi.Controllers.v1.WeavingInventory.
     [Authorize]
     public class ReportGreigeWeavingPerTypeController : Controller
     {
-        private string ApiVersion = "1.0.0";
-        private readonly IMapper mapper;
-        private readonly IReportGreigeWeavingPerTypeService service;
-        private readonly IServiceProvider serviceProvider;
-        private readonly IdentityService identityService;
-
-        public ReportGreigeWeavingPerTypeController(IReportGreigeWeavingPerTypeService service, IServiceProvider serviceProvider)
+        protected IIdentityService IdentityService;
+        protected readonly IValidateService ValidateService;
+        protected readonly IReportGreigeWeavingPerTypeService Service;
+        protected readonly string ApiVersion;
+        public ReportGreigeWeavingPerTypeController(IIdentityService identityService, IValidateService validateService, IReportGreigeWeavingPerTypeService service)
         {
-            this.service = service;
-            this.serviceProvider = serviceProvider;
-            identityService = (IdentityService)serviceProvider.GetService(typeof(IdentityService));
+            IdentityService = identityService;
+            ValidateService = validateService;
+            Service = service;
+            ApiVersion = "1.0.0";
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetReport(DateTime? dateTo, int page = 1, int size = 25, string Order = "{}")
+        public IActionResult GetReport(DateTime? dateTo, int page = 1, int size = 25, string Order = "{}")
         {
             try
             {
@@ -40,7 +39,7 @@ namespace Com.Danliris.Service.Inventory.WebApi.Controllers.v1.WeavingInventory.
                 int offset = Convert.ToInt32(Request.Headers["x-timezone-offset"]);
                 string accept = Request.Headers["Accept"];
 
-                var data = await service.GetStockReport(dateTo, offset, page, size, Order);
+                var data =  Service.GetStockReport(dateTo, offset, page, size, Order);
 
 
 
@@ -63,14 +62,14 @@ namespace Com.Danliris.Service.Inventory.WebApi.Controllers.v1.WeavingInventory.
         }
 
         [HttpGet("download")]
-        public async Task<IActionResult> GetExcelAll([FromHeader(Name = "x-timezone-offset")] string timezone, DateTime? dateTo)
+        public IActionResult GetExcelAll([FromHeader(Name = "x-timezone-offset")] string timezone, DateTime? dateTo)
         {
             try
             {
                 //VerifyUser();
                 byte[] xlsInBytes;
                 int clientTimeZoneOffset = Convert.ToInt32(timezone);
-                var Result = await service.GenerateExcel(dateTo, clientTimeZoneOffset);
+                var Result =  Service.GenerateExcel(dateTo, clientTimeZoneOffset);
                 string filename = " Saldo Akhir Gudang Grey per Jenis.xlsx";
 
                 xlsInBytes = Result.ToArray();

@@ -9,7 +9,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving.Reports.R
 {
     public interface IReportRecapStockGreigePerTypeService
     {
-        Task<Tuple<List<InventoryWeavingInOutViewModel>, int>> GetRecapStocktGreige( DateTime? dateTo, int offset, int page, int size, string Order);
-        Task<MemoryStream> GenerateExcel(DateTime? dateTo, int offset);
+        Tuple<List<InventoryWeavingInOutViewModel>, int> GetRecapStocktGreige(DateTime? dateTo, int offset, int page, int size, string Order);
+        MemoryStream GenerateExcel(DateTime? dateTo, int offset);
     }
 }

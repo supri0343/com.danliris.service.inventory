@@ -30,6 +30,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
         public IIdentityService IdentityService;
         public readonly IServiceProvider ServiceProvider;
         public InventoryDbContext DbContext;
+        private readonly IInventoryWeavingMovementService movementService;
 
         public InventoryWeavingDocumentUploadService(IServiceProvider serviceProvider, InventoryDbContext dbContext)
         {
@@ -39,7 +40,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
             DbSet2 = dbContext.Set<InventoryWeavingMovement>();
             DbSet3 = dbContext.Set<InventoryWeavingDocumentItem>();
             IdentityService = serviceProvider.GetService<IIdentityService>();
-            //IdentityService = serviceProvider.GetService<IIdentityService>();
+            movementService = (IInventoryWeavingMovementService)serviceProvider.GetService(typeof(IInventoryWeavingMovementService));
+            //movementService = serviceProvider.GetService<IInventoryWeavingMovementService>();
         }
 
 
@@ -98,13 +100,13 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
                     Type = s.Type,
                     _LastModifiedUtc = s._LastModifiedUtc,
 
-                });
+                }).OrderByDescending(x => x.Date);
 
 
             #region OrderBy
 
             Dictionary<string, string> OrderDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(order);
-            Query = QueryHelper<InventoryWeavingDocument>.Order(Query, OrderDictionary);
+            //Query = QueryHelper<InventoryWeavingDocument>.Order(Query, OrderDictionary);
             #endregion OrderBy
 
             #region Paging
@@ -114,6 +116,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
             int TotalData = pageable.TotalCount;
 
             #endregion Paging
+            //Data = Data.OrderByDescending(x => x.Date).ToList();
 
             return new ReadResponse<InventoryWeavingDocument>(Data, TotalData, OrderDictionary, SelectedFields);
         }
@@ -312,7 +315,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
         public async Task UploadData(InventoryWeavingDocument data, string username)
         {
 
-            IInventoryWeavingMovementService movement = ServiceProvider.GetService<IInventoryWeavingMovementService>();
+            //IInventoryWeavingMovementService movement = ServiceProvider.GetService<IInventoryWeavingMovementService>();
             foreach (var i in data.Items)
             {
                 MoonlayEntityExtension.FlagForCreate(i, username, USER_AGENT);
@@ -332,7 +335,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
                     ReferenceNo = item.ReferenceNo,
                     Construction = item.Construction,
                     Grade = item.Grade,
-                    Piece = item.Piece,
+                    //Piece = item.Piece,
                     MaterialName = item.MaterialName,
                     WovenType = item.WovenType,
                     Width = item.Width,
@@ -391,7 +394,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
 
                     construction = constructonC,
                     grade = i.Grade,
-                    piece = i.Piece,
+                   // piece = i.Piece,
                     materialName = MaterialName,
                     wovenType = WovenType,
                     width = Width,
@@ -417,7 +420,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
                 date = date,
                 bonType = from == "PRODUKSI" ? "PRODUKSI" : from == "RETUR PACKING" ? "PACKING"
                           : from == "RETUR FINISHING" ? "FINISHING" : from == "RETUR PRINTING" ? "PRINTING"
-                          : from == "RECHEKING" ? "RECHEKING" : "LAIN-LAIN",
+                          : from == "RECHEKING" ? "RECHEKING" : from == "DEVELOPMENT" ? "DEVELOPMENT":"LAIN-LAIN",
                 storageId = 105,
                 storageCode = "DNWDX2GZ",
                 storageName = "WEAVING 2 (EX. WEAVING 3) / WEAVING",
@@ -459,7 +462,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
                     ReferenceNo = item.referenceNo,
                     Construction = item.construction,
                     Grade = item.grade,
-                    Piece = item.piece,
+                   // Piece = item.piece,
                     MaterialName = item.materialName,
                     WovenType = item.wovenType,
                     Width = item.width,
@@ -479,6 +482,70 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
                 }).ToList()
             };
             return model;
+ 
+        }
+
+        public async Task<InventoryWeavingDocument> MapToModelUpdate(InventoryWeavingDocumentDetailViewModel data)
+        {
+            List<InventoryWeavingDocumentItem> DocsItems = new List<InventoryWeavingDocumentItem>();
+            foreach (var i in data.Detail)
+            {
+                i.ListItems = i.ListItems.Where(s => s.IsSave).ToList();
+                foreach (var d in i.ListItems)
+                {
+                    DocsItems.Add(new InventoryWeavingDocumentItem
+                    {
+                        Id = d.Id,
+                        Active = d.Active,
+                        _CreatedBy = d._CreatedBy,
+                        _CreatedUtc = d._CreatedUtc,
+                        _CreatedAgent = d._CreatedAgent,
+                        _LastModifiedBy = d._LastModifiedBy,
+                        _LastModifiedUtc = d._LastModifiedUtc,
+                        _LastModifiedAgent = d._LastModifiedAgent,
+                        _IsDeleted = d._IsDeleted,
+                        ProductOrderName = i.ProductOrderNo,
+                        ReferenceNo = i.ReferenceNo,
+                        Construction = i.Construction,
+
+                        Grade = d.Grade,
+                        Piece = d.Piece == "BESAR" ? "1" : d.Piece == "KECIL" ? "2" : "3",
+                        MaterialName = d.MaterialName,
+                        WovenType = d.WovenType,
+                        Width = d.Width,
+                        Yarn1 = d.Yarn1,
+                        Yarn2 = d.Yarn2,
+                        YarnType1 = d.YarnType1,
+                        YarnType2 = d.YarnType2,
+                        YarnOrigin1 = d.YarnOrigin1,
+                        YarnOrigin2 = d.YarnOrigin2,
+
+                        UomId = 35,
+                        UomUnit = "MTR",
+                        Quantity = d.Quantity,
+                        QuantityPiece = d.QuantityPiece,
+                        ProductRemark = d.ProductRemark,
+                        //InventoryWeavingDocumentId = d.InventoryWeavingDocumentId
+                    });
+
+
+                }
+            }
+
+            InventoryWeavingDocument model = new InventoryWeavingDocument
+            {
+                BonNo = data.BonNo,
+                BonType = data.BonType,
+                Date = data.Date,
+                StorageId = data.Id,
+                StorageCode = data.StorageCode,
+                StorageName = data.StorageName,
+                Remark = "",
+                Type = data.Type,
+                Items = DocsItems
+
+            };
+            return model;
 
         }
 
@@ -487,7 +554,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
 
 
             var type = from == "PRODUKSI" ? "PR" : from == "RETUR PACKING" ? "PC" : from == "RETUR FINISHING" ? "RF"
-                      : from == "RETUR PRINTING" ? "RP" : from == "RECHEKING" ? "RC" : "LL";
+                      : from == "RETUR PRINTING" ? "RP" : from == "RECHEKING" ? "RC" : from == "DEVELOPMENT" ? "DV" : "LL";
 
             var totalData = DbSet.Count(s => s.BonNo.Substring(0, 2) == type && s._CreatedUtc.Year == date.Date.Year) + 1;
 
@@ -544,7 +611,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
                         _LastModifiedUtc = s._LastModifiedUtc,
 
                         Grade = s.Grade,
-                        Piece = s.Piece,
+                        //Piece = s.Piece,
                         MaterialName = s.MaterialName,
                         WovenType = s.WovenType,
                         Yarn1 = s.Yarn1,
@@ -668,7 +735,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
                              ReferenceNo = b.ReferenceNo,
                              Construction = b.Construction,
                              Grade = b.Grade,
-                             Piece = b.Piece,
+                             //Piece = b.Piece,
                              Quantity = b.Quantity,
                              QuantityPiece = b.QuantityPiece
                          })
@@ -707,7 +774,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
             dt.Columns.Add(new DataColumn() { ColumnName = "Nota", DataType = typeof(string) });
             dt.Columns.Add(new DataColumn() { ColumnName = "Construction", DataType = typeof(string) });
             dt.Columns.Add(new DataColumn() { ColumnName = "Grade", DataType = typeof(string) });
-            dt.Columns.Add(new DataColumn() { ColumnName = "Piece", DataType = typeof(string) });
+            //dt.Columns.Add(new DataColumn() { ColumnName = "Piece", DataType = typeof(string) });
             dt.Columns.Add(new DataColumn() { ColumnName = "Quantity", DataType = typeof(string) });
             dt.Columns.Add(new DataColumn() { ColumnName = "Quantity Piece", DataType = typeof(string) });
 
@@ -723,7 +790,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
                     string date = model.Date == null ? "-" : model.Date.ToOffset(new TimeSpan(offSet, 0, 0)).ToString("dd MMM yyyy", new CultureInfo("id-ID"));
                     //var dateIn = model.Date.Equals(DateTimeOffset.MinValue) ? "" : model.Date.ToOffset(new TimeSpan(offSet, 0, 0)).Date.ToString("d");
 
-                    dt.Rows.Add(date, model.BonNo, model.ReferenceNo, model.Construction, model.Grade, model.Piece, model.Quantity.ToString("N2", CultureInfo.InvariantCulture),
+                    dt.Rows.Add(date, model.BonNo, model.ReferenceNo, model.Construction, model.Grade, model.Quantity.ToString("N2", CultureInfo.InvariantCulture),
                         model.QuantityPiece.ToString("N2", CultureInfo.InvariantCulture));
 
                     //foreach (var item in model.DyeingPrintingAreaInputProductionOrders.Where(d => !d.HasOutputDocument).OrderBy(s => s.ProductionOrderNo))
@@ -738,6 +805,267 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
             }
 
             return Excel.CreateExcel(new List<KeyValuePair<DataTable, string>>() { new KeyValuePair<DataTable, string>(dt, "Territory") }, true);
+        }
+
+        public async Task<InventoryWeavingDocument> GetExistingModel(int[] Id)
+        {
+            var query = (from a in DbSet
+                         join b in DbSet3 on a.Id equals b.InventoryWeavingDocumentId
+                         where
+                         a._IsDeleted == false
+                         && b._IsDeleted == false
+                         && Id.Contains(b.Id)
+                         select new InventoryWeavingDocument
+                         {
+                             BonNo = a.BonNo,
+                             BonType = a.BonType,
+                             Date = a.Date,
+                             StorageId = a.StorageId,
+                             StorageCode = a.StorageCode,
+                             StorageName = a.StorageName,
+                             Remark = a.Remark,
+                             Type = a.Type,
+                             Items = a.Items.Select(item => new InventoryWeavingDocumentItem()
+                             {
+                                 Id = item.Id,
+                                 Active = item.Active,
+                                 _CreatedBy = item._CreatedBy,
+                                 _CreatedUtc = item._CreatedUtc,
+                                 _CreatedAgent = item._CreatedAgent,
+                                 _LastModifiedBy = item._LastModifiedBy,
+                                 _LastModifiedUtc = item._LastModifiedUtc,
+                                 _LastModifiedAgent = item._LastModifiedAgent,
+                                 _IsDeleted = item._IsDeleted,
+                                 ProductOrderName = item.ProductOrderName,
+                                 ReferenceNo = item.ReferenceNo,
+                                 Construction = item.Construction,
+                                 Grade = item.Grade,
+                                 Piece = item.Piece,
+                                 MaterialName = item.MaterialName,
+                                 WovenType = item.WovenType,
+                                 Width = item.Width,
+                                 Yarn1 = item.Yarn1,
+                                 Yarn2 = item.Yarn2,
+                                 YarnType1 = item.YarnType1,
+                                 YarnType2 = item.YarnType2,
+                                 YarnOrigin1 = item.YarnOrigin1,
+                                 YarnOrigin2 = item.YarnOrigin2,
+
+                                 UomId = item.UomId,
+                                 UomUnit = item.UomUnit,
+                                 Quantity = item.Quantity,
+                                 QuantityPiece = item.QuantityPiece,
+                                 ProductRemark = item.ProductRemark,
+                                 InventoryWeavingDocumentId = item.InventoryWeavingDocumentId
+                             }).ToList()
+
+                         }
+
+                         );
+            return query.FirstOrDefault();
+        }
+
+        //public async Task<InventoryWeavingDocument> GetExistingModel( InventoryWeavingDocument data)
+        //{
+        //    List<InventoryWeavingDocumentItem> DocsItems = new List<InventoryWeavingDocumentItem>();
+        //    foreach (var i in Id)
+        //    {
+        //        i.ListItems = i.ListItems.Where(s => s.IsSave).ToList();
+
+        //        data = data.Items.Where(s => s.Id ==  );
+        //        foreach (var d in i.ListItems)
+        //        {
+        //            DocsItems.Add(new InventoryWeavingDocumentItem
+        //            {
+        //                Id = d.Id,
+        //                Active = d.Active,
+        //                _CreatedBy = d._CreatedBy,
+        //                _CreatedUtc = d._CreatedUtc,
+        //                _CreatedAgent = d._CreatedAgent,
+        //                _LastModifiedBy = d._LastModifiedBy,
+        //                _LastModifiedUtc = d._LastModifiedUtc,
+        //                _LastModifiedAgent = d._LastModifiedAgent,
+        //                _IsDeleted = d._IsDeleted,
+        //                ProductOrderName = i.ProductOrderNo,
+        //                ReferenceNo = i.ReferenceNo,
+        //                Construction = i.Construction,
+
+        //                Grade = d.Grade,
+        //                Piece = d.Piece == "BESAR" ? "1" : d.Piece == "KECIL" ? "2" : "3",
+        //                MaterialName = d.MaterialName,
+        //                WovenType = d.WovenType,
+        //                Width = d.Width,
+        //                Yarn1 = d.Yarn1,
+        //                Yarn2 = d.Yarn2,
+        //                YarnType1 = d.YarnType1,
+        //                YarnType2 = d.YarnType2,
+        //                YarnOrigin1 = d.YarnOrigin1,
+        //                YarnOrigin2 = d.YarnOrigin2,
+
+        //                UomId = 35,
+        //                UomUnit = "MTR",
+        //                Quantity = d.Qty,
+        //                QuantityPiece = d.QtyPiece,
+        //                ProductRemark = d.ProductRemark,
+        //                //InventoryWeavingDocumentId = d.InventoryWeavingDocumentId
+        //            });
+
+
+        //        }
+        //    }
+
+        //    InventoryWeavingDocument model = new InventoryWeavingDocument
+        //    {
+        //        BonNo = data.BonNo,
+        //        BonType = data.BonType,
+        //        Date = data.Date,
+        //        StorageId = data.Id,
+        //        StorageCode = data.StorageCode,
+        //        StorageName = data.StorageName,
+        //        Remark = "",
+        //        Type = data.Type,
+        //        Items = DocsItems
+
+        //    };
+        //    return model;
+
+        //}
+
+        public async Task<int> UpdateAsync(int id, InventoryWeavingDocument model)
+        {
+            using (var transaction = DbContext.Database.CurrentTransaction ?? DbContext.Database.BeginTransaction())
+            {
+                try
+                {
+                    int Updated = 0;
+
+                    int[] Id = model.Items.Select(i => i.Id).ToArray();
+                    var existingModel = this.DbSet.Where(d => d.Id.Equals(id) && d._IsDeleted.Equals(false)).Include(p => p.Items).FirstOrDefault();
+                    //var existingModel = GetExistingModel(Id);
+
+                    //var modelExist = this.DbSet.Where(x => x.Items.Any(s => Id.Contains(s.Id))).ToList();
+                    //var existingModel = this.DbSet.Where(d => d.Id.Equals(id) && d._IsDeleted.Equals(false)).Include(p => p.Items.Any( s=> Id.Contains(s.Id))).FirstOrDefault();
+
+                    //existingModel = existingModel.Items.Any(s => Id.Contains(s.Id));
+
+
+                    //foreach (var existingItem in existingModel.Detail)
+                    //{
+                    //    GarmentLeftoverWarehouseStock stockIn = GenerateStock(existingItem);
+                    //    await StockService.StockIn(stockIn, model.ExpenditureNo, model.Id, existingItem.Id);
+                    //}
+
+                    foreach (var existingItem in existingModel.Items.Where(x => Id.Contains(x.Id))) 
+                    {
+                        var item = model.Items.FirstOrDefault(i => i.Id == existingItem.Id);
+                        
+                        if (item != null)
+                        {
+                            if (existingItem.Quantity != item.Quantity)
+                            {
+                                existingItem.Quantity = item.Quantity;
+                            }
+
+                            if (existingItem.QuantityPiece != item.QuantityPiece)
+                            {
+                                existingItem.QuantityPiece = item.QuantityPiece;
+                            }
+                            existingItem.FlagForUpdate(IdentityService.Username, UserAgent);
+                        }
+                        //else
+                        //{
+                        //    if (existingItem.Quantity != item.Quantity)
+                        //    {
+                        //        existingItem.Quantity = item.Quantity;
+                        //    }
+
+                        //    if (existingItem.QuantityPiece != item.QuantityPiece)
+                        //    {
+                        //        existingItem.QuantityPiece = item.QuantityPiece;
+                        //    }
+                        //    existingItem.FlagForUpdate(IdentityService.Username, UserAgent);
+                        //}
+                    }
+
+                    foreach (var item in model.Items.Where(i => i.Id == 0))
+                    {
+                        item.FlagForCreate(IdentityService.Username, UserAgent);
+                        item.FlagForUpdate(IdentityService.Username, UserAgent);
+                        existingModel.Items.Add(item);
+                    }
+
+                    Updated = await DbContext.SaveChangesAsync();
+
+                    foreach (var item in model.Items)
+                    {
+                        InventoryWeavingMovement movement = GenerateMovement(item);
+                        await movementService.UpdateAsync(movement);
+                    }
+
+
+
+                    transaction.Commit();
+
+                    return Updated;
+                }
+                catch (Exception e)
+                {
+                    transaction.Rollback();
+                    throw e;
+                }
+            }
+        }
+
+
+        private InventoryWeavingMovement GenerateMovement(InventoryWeavingDocumentItem item)
+        {
+            InventoryWeavingMovement movement = new InventoryWeavingMovement
+            {
+                Quantity = item.Quantity,
+                QuantityPiece =item.QuantityPiece,
+                InventoryWeavingDocumentItemId = item.Id
+                
+
+            };
+
+            return movement;
+        }
+
+        public async Task<int> UpdateAsyncMovement(InventoryWeavingMovement model)
+        {
+           
+                try
+                {
+                    int Updated = 0;
+
+                    var existingStock = DbSet2.Where( x => x.InventoryWeavingDocumentItemId == model.InventoryWeavingDocumentItemId).FirstOrDefault();
+
+
+                    if (existingStock.Quantity != model.Quantity)
+                    {
+                        existingStock.Quantity = model.Quantity;
+                    }
+                    if (existingStock.QuantityPiece != model.QuantityPiece)
+                    {
+                        existingStock.QuantityPiece = model.QuantityPiece;
+                    }
+                    //existingStock.Quantity -= model.Quantity;
+                    existingStock.FlagForUpdate(IdentityService.Username, UserAgent);
+
+                    Updated = await DbContext.SaveChangesAsync();
+
+
+
+                    //transaction.Commit();
+
+                    return Updated;
+                }
+                catch (Exception e)
+                {
+                    //transaction.Rollback();
+                    throw e;
+                }
+            
         }
 
     }   

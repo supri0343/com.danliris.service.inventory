@@ -31,10 +31,10 @@ namespace Com.Danliris.Service.Inventory.Lib.ViewModels.InventoryWeavingViewMode
                 yield return new ValidationResult("Destination is required", new List<string> { "destination" });
             }
 
-            if ( !(date >= DateTimeOffset.UtcNow || ((DateTimeOffset.UtcNow - date).TotalDays <= 1 && (DateTimeOffset.UtcNow - date).TotalDays >= 0)))
-            {
-                yield return new ValidationResult("Tanggal Harus Lebih Besar atau Sama Dengan Hari Ini", new List<string> { "Date" });
-            }
+            //if ( !(date >= DateTimeOffset.UtcNow || ((DateTimeOffset.UtcNow - date).TotalDays <= 1 && (DateTimeOffset.UtcNow - date).TotalDays >= 0)))
+            //{
+            //    yield return new ValidationResult("Tanggal Harus Lebih Besar atau Sama Dengan Hari Ini", new List<string> { "Date" });
+            //}
 
             int Count = 0;
             string DetailErrors = "[";
