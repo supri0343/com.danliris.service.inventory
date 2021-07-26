@@ -13,6 +13,7 @@ namespace Com.Danliris.Service.Inventory.Test.DataUtils.InventoryWeavingDataUtil
     public class ReportGreigeWeavingPerGradeDataUtil
     {
         private readonly ReportGreigeWeavingPerGradeService Service;
+        private readonly InventoryWeavingDocumentDataUtils dataDoc;
 
         public ReportGreigeWeavingPerGradeDataUtil(ReportGreigeWeavingPerGradeService service)
         {
@@ -21,6 +22,8 @@ namespace Com.Danliris.Service.Inventory.Test.DataUtils.InventoryWeavingDataUtil
 
         public InventoryWeavingMovement GetNewData()
         {
+            var invDoc = Task.Run(() => dataDoc.GetTestData());
+
             InventoryWeavingMovement TestData = new InventoryWeavingMovement
             {
                 
@@ -42,7 +45,7 @@ namespace Com.Danliris.Service.Inventory.Test.DataUtils.InventoryWeavingDataUtil
                 Quantity = 10,
                 Grade = "Grade",
                 Type = "IN",
-                InventoryWeavingDocumentId = 1,
+                InventoryWeavingDocumentId = invDoc.Result.Id,
             };
             return TestData;
         }

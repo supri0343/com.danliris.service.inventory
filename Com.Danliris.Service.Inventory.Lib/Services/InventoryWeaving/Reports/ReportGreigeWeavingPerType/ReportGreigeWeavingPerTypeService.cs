@@ -39,10 +39,10 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving.Reports.R
             //IdentityService = serviceProvider.GetService<IIdentityService>();
         }
 
-        public async Task<Tuple<List<ReportGreigeWeavingPerTypeViewModel>, int>> GetStockReport(DateTime? dateTo, int offset, int page, int size, string Order)
+        public Tuple<List<ReportGreigeWeavingPerTypeViewModel>, int> GetStockReport(DateTime? dateTo, int offset, int page, int size, string Order)
         {
 
-            List<ReportGreigeWeavingPerTypeViewModel> Query = await GetStockQuery(dateTo, offset);
+            List<ReportGreigeWeavingPerTypeViewModel> Query = GetStockQuery(dateTo, offset);
             Pageable<ReportGreigeWeavingPerTypeViewModel> pageable = new Pageable<ReportGreigeWeavingPerTypeViewModel>(Query, page - 1, size);
 
             List<ReportGreigeWeavingPerTypeViewModel> Data = pageable.Data.ToList();
@@ -50,7 +50,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving.Reports.R
             return Tuple.Create(Data, TotalData);
         }
 
-        public async Task<List<ReportGreigeWeavingPerTypeViewModel>> GetStockQuery(DateTime? dateto, int offset)
+        public List<ReportGreigeWeavingPerTypeViewModel> GetStockQuery(DateTime? dateto, int offset)
         {
             DateTime dateReport = dateto == null ? DateTime.Now : (DateTime)dateto;
             var startDate = new DateTime(dateReport.Year, dateReport.Month, 1);
@@ -450,9 +450,9 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving.Reports.R
 
         }
 
-        public async Task<MemoryStream> GenerateExcel(DateTime? dateTo, int offset)
+        public MemoryStream GenerateExcel(DateTime? dateTo, int offset)
         {
-            var Query = await GetStockQuery(dateTo, offset);
+            var Query =  GetStockQuery(dateTo, offset);
             DateTime DateTo = dateTo == null ? DateTime.Now : (DateTime)dateTo;
             //string Bulan = DateTo.ToString("MMM yyyy", new CultureInfo("id-ID"));
             string Tanggal = DateTo.ToString("dd MMM yyyy", new CultureInfo("id-ID"));
