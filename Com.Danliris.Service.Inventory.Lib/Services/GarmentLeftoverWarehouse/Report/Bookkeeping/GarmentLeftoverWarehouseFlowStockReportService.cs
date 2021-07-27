@@ -685,7 +685,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                     counter++;
                     //DateTimeOffset date = item.date ?? new DateTime(1970, 1, 1);
                     //string dateString = date == new DateTime(1970, 1, 1) ? "-" : date.ToOffset(new TimeSpan(offset, 0, 0)).ToString("dd MMM yyyy", new CultureInfo("id-ID"));
-                    result.Rows.Add(item.UnitName, item.ProductName, item.ProductCode, item.UomUnit, item.BeginingbalanceQty, item.BeginingbalancePrice, item.QuantityReceipt, item.PriceReceipt, item.QuantityUnitExpend, item.PriceUnitExpend, item.QuantitySampleExpend, item.PriceSampleExpend, item.QuantityLocalExpend, item.PriceLocalExpend, item.QuantityOtherExpend, item.PriceOtherExpend, item.EndbalanceQty, item.EndbalancePrice);
+                    result.Rows.Add(item.UnitName, item.ProductName, item.ProductCode, item.UomUnit, Math.Round(item.BeginingbalanceQty,2),Math.Round(item.BeginingbalancePrice,2),Math.Round( item.QuantityReceipt,2), Math.Round( item.PriceReceipt,2),Math.Round( item.QuantityUnitExpend,2),Math.Round( item.PriceUnitExpend,2),Math.Round( item.QuantitySampleExpend,2),Math.Round( item.PriceSampleExpend,2),Math.Round( item.QuantityLocalExpend,2),Math.Round( item.PriceLocalExpend,2),Math.Round( item.QuantityOtherExpend,2),Math.Round( item.PriceOtherExpend,2),Math.Round( item.EndbalanceQty,2),Math.Round( item.EndbalancePrice,2));
                 }
 
             }
@@ -731,7 +731,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                     }
                 }
 
-
+                worksheet.Cells["E" + 3 + ":R" + (counter + 2) + ""].Style.HorizontalAlignment= ExcelHorizontalAlignment.Right;
                 foreach (var cell in worksheet.Cells["E" + 3 + ":R" + (counter + 2) + ""])
                 {
                     cell.Value = Convert.ToDecimal(cell.Value);
