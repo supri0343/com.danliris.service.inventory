@@ -444,18 +444,32 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
             {
                 //var saldoawal = mm.SaldoAwal < 0 ? 0 : mm.SaldoAwal;
                 //var saldoakhir = mm.SaldoAkhir < 0 ? 0 : mm.SaldoAkhir;
-                
+
                 //mm.SaldoAwal = saldoawal;
                 //mm.SaldoAkhir = saldoakhir;
-                mm.ClassificationName = "Aval Tc Kecil";
+                mm.ClassificationName = (mm.ClassificationCode == "ZB05" ? "Aval Tc Kecil" : "Sampah Sapuan");
             }
 
             if (mutationScrap.Count == 0)
             {
                 mutationScrap.Add(new GarmentLeftoverWarehouseMutationReportViewModel
                 {
-                    ClassificationCode = "AVP01",
+                    ClassificationCode = "ZB05",
                     ClassificationName = "Aval Tc Kecil",
+                    SaldoAwal = 0,
+                    Pemasukan = 0,
+                    Pengeluaran = 0,
+                    Penyesuaian = 0,
+                    Selisih = 0,
+                    SaldoAkhir = 0,
+                    StockOpname = 0,
+                    UnitQtyName = "KG"
+                });
+
+                mutationScrap.Add(new GarmentLeftoverWarehouseMutationReportViewModel
+                {
+                    ClassificationCode = "ZA59",
+                    ClassificationName = "Sampah Sapuan",
                     SaldoAwal = 0,
                     Pemasukan = 0,
                     Pengeluaran = 0,
