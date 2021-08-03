@@ -13,6 +13,7 @@ namespace Com.Danliris.Service.Inventory.Lib.ViewModels.GarmentLeftoverWarehouse
         public string UnitFromCode { get; set; }
         public string ExpenditureGoodNo { get; set; }
         public string RONo { get; set; }
+        public string ComodityCode { get; set; }
         public string ComodityName { get; set; }
         public double Quantity { get; set; }
         public string UomUnit { get; set; }
