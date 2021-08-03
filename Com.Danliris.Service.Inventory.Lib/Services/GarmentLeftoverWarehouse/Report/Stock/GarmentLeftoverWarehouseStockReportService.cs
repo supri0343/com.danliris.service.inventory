@@ -182,7 +182,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                                        FabricRemark = "",
                                        EndbalanceQty = 0,
                                        index = 0,
-                                       Comodity= b.LeftoverComodityName
+                                       Comodity= b.LeftoverComodityName,
+                                       ComodityCode = b.LeftoverComodityCode
                                    };
                 var QueryReceipt = from a in (from data in DbContext.GarmentLeftoverWarehouseReceiptFinishedGoods
                                               where data._IsDeleted == false
@@ -204,7 +205,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                                        FabricRemark = "",
                                        EndbalanceQty = 0,
                                        index = 0,
-                                       Comodity= b.LeftoverComodityName
+                                       Comodity= b.LeftoverComodityName,
+                                       ComodityCode = b.LeftoverComodityCode
                                    };
                 var QueryExpenditure = from a in (from data in DbContext.GarmentLeftoverWarehouseExpenditureFinishedGoods
                                                   where data._IsDeleted == false
@@ -228,11 +230,12 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                                            FabricRemark = "",
                                            EndbalanceQty = 0,
                                            index = 0,
-                                           Comodity= b.LeftoverComodityName
+                                           Comodity= b.LeftoverComodityName,
+                                           ComodityCode = b.LeftoverComodityName
                                        };
                 var Query = QueryReceipt.Union(QueryExpenditure).Union(QueryBalance);
                 var querySum = Query.ToList()
-                    .GroupBy(x => new { x.RO, x.UnitCode, x.UomUnit, x.index, x.Comodity }, (key, group) => new
+                    .GroupBy(x => new { x.RO, x.UnitCode, x.UomUnit, x.index, x.Comodity, x.ComodityCode }, (key, group) => new
                     {
                         rono = key.RO,
                         begining = group.Sum(s => s.BeginingbalanceQty),
@@ -241,7 +244,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                         uomunit = key.UomUnit,
                         unit = key.UnitCode,
                         index = key.index,
-                        comodity= key.Comodity
+                        comodity= key.Comodity,
+                        comoditycode = key.ComodityCode
                     }).OrderBy(s => s.rono);
 
 
@@ -257,7 +261,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                         UomUnit = data.uomunit,
                         ProductRemark = (from aa in DbContext.GarmentLeftoverWarehouseReceiptFinishedGoodItems where aa.RONo == data.rono select aa.LeftoverComodityName).FirstOrDefault(),
                         EndbalanceQty = data.begining + data.receipt - data.expend,
-                        Comodity=data.comodity
+                        Comodity=data.comodity,
+                        ComodityCode = data.comoditycode
                     };
                     garmentLeftoverWarehouseStockMonitoringViewModel.Add(garmentLeftover);
                 }
@@ -685,6 +690,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
             result.Columns.Add(new DataColumn() { ColumnName = "No", DataType = typeof(String) });
             result.Columns.Add(new DataColumn() { ColumnName = "Unit", DataType = typeof(String) });
             result.Columns.Add(new DataColumn() { ColumnName = "Nomor RO", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Kode Komoditi Gudang Sisa", DataType = typeof(String) });
             result.Columns.Add(new DataColumn() { ColumnName = "Komoditi Gudang Sisa", DataType = typeof(String) });
             result.Columns.Add(new DataColumn() { ColumnName = "Saldo Awal", DataType = typeof(double) });
             result.Columns.Add(new DataColumn() { ColumnName = "Penerimaan", DataType = typeof(double) });
@@ -701,10 +707,10 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                     index++;
                     //DateTimeOffset date = item.date ?? new DateTime(1970, 1, 1);
                     //string dateString = date == new DateTime(1970, 1, 1) ? "-" : date.ToOffset(new TimeSpan(offset, 0, 0)).ToString("dd MMM yyyy", new CultureInfo("id-ID"));
-                    result.Rows.Add(index, item.UnitCode, item.RO, item.Comodity, item.BeginingbalanceQty, item.QuantityReceipt, item.QuantityExpend, item.EndbalanceQty, item.UomUnit);
+                    result.Rows.Add(index, item.UnitCode, item.RO, item.ComodityCode, item.Comodity, item.BeginingbalanceQty, item.QuantityReceipt, item.QuantityExpend, item.EndbalanceQty, item.UomUnit);
                 }
 
-                result.Rows.Add("", "", "T O T A L......", "", BeginingbalanceQtyTotal, QuantityReceiptTotal, QuantityExpendTotal, EndbalanceQtyTotal, "");
+                result.Rows.Add("", "", "T O T A L......", "", "", BeginingbalanceQtyTotal, QuantityReceiptTotal, QuantityExpendTotal, EndbalanceQtyTotal, "");
             }
 
             return Excel.CreateExcel(new List<KeyValuePair<DataTable, string>>() { new KeyValuePair<DataTable, string>(result, "Report Stock Gudang Sisa - Barang Jadi") }, true);

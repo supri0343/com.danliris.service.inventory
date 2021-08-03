@@ -463,19 +463,21 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
                             ReceiptDate = a.ReceiptDate,
                             UnitFromCode = a.UnitFromCode,
                             ExpenditureGoodNo = b.ExpenditureGoodNo,
-                            ComodityName = b.ComodityName,
+                            ComodityCode = b.LeftoverComodityCode,
+                            ComodityName = b.LeftoverComodityName,
                             Quantity = b.Quantity,
                             RONo = b.RONo,
                             UomUnit = b.UomUnit
                         };
             var querySum= Query
-                .GroupBy(x => new { x.ReceiptNoteNo, x.ReceiptDate, x.UnitFromCode, x.ExpenditureGoodNo, x.ComodityName, x.RONo,x.UomUnit }, (key, group) => new
+                .GroupBy(x => new { x.ReceiptNoteNo, x.ReceiptDate, x.UnitFromCode, x.ExpenditureGoodNo, x.ComodityCode, x.ComodityName, x.RONo,x.UomUnit }, (key, group) => new
             ReceiptFinishedGoodMonitoringViewModel
             {
                 ReceiptNoteNo = key.ReceiptNoteNo,
                 ReceiptDate = key.ReceiptDate,
                 UnitFromCode = key.UnitFromCode,
                 ExpenditureGoodNo = key.ExpenditureGoodNo,
+                ComodityCode = key.ComodityCode,
                 ComodityName = key.ComodityName,
                 Quantity = group.Sum(s=>s.Quantity),
                 RONo = key.RONo,
@@ -522,6 +524,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
                 vm.ReceiptDate = DateTimeOffset.MinValue;
                 vm.UnitFromCode = "";
                 vm.ExpenditureGoodNo = "";
+                vm.ComodityCode = "";
                 vm.ComodityName = "";
                 vm.Quantity = QtyTotal;
                 vm.RONo = "";
@@ -546,12 +549,13 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
             result.Columns.Add(new DataColumn() { ColumnName = "Asal barang", DataType = typeof(String) });
             result.Columns.Add(new DataColumn() { ColumnName = "No Bon Pengeluaran Barang", DataType = typeof(String) });
             result.Columns.Add(new DataColumn() { ColumnName = "RO", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Kode Komoditi", DataType = typeof(String) });
             result.Columns.Add(new DataColumn() { ColumnName = "Komoditi", DataType = typeof(String) });
             result.Columns.Add(new DataColumn() { ColumnName = "Qty", DataType = typeof(double) });
             result.Columns.Add(new DataColumn() { ColumnName = "Satuan", DataType = typeof(String) });
 
             if (Query.ToArray().Count() == 0)
-                result.Rows.Add("", "", "", "", "", "", "", 0, ""); // to allow column name to be generated properly for empty data as template
+                result.Rows.Add("", "", "", "", "", "", "", "", 0, ""); // to allow column name to be generated properly for empty data as template
             else
             {
                 int index = 0;
@@ -560,10 +564,10 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
                     index++;
                     //DateTimeOffset date = item.date ?? new DateTime(1970, 1, 1);
                     //string dateString = date == new DateTime(1970, 1, 1) ? "-" : date.ToOffset(new TimeSpan(offset, 0, 0)).ToString("dd MMM yyyy", new CultureInfo("id-ID"));
-                    result.Rows.Add(index, item.ReceiptNoteNo, item.ReceiptDate.AddHours(offset).ToString("dd MMM yyyy", new CultureInfo("id-ID")), item.UnitFromCode, item.ExpenditureGoodNo, item.RONo, item.ComodityName, item.Quantity, item.UomUnit);
+                    result.Rows.Add(index, item.ReceiptNoteNo, item.ReceiptDate.AddHours(offset).ToString("dd MMM yyyy", new CultureInfo("id-ID")), item.UnitFromCode, item.ExpenditureGoodNo, item.RONo, item.ComodityCode, item.ComodityName, item.Quantity, item.UomUnit);
                 }
 
-                result.Rows.Add("" , "T O T A L .......", "", "", "", "", "", QtyTotal, "");
+                result.Rows.Add("" , "T O T A L .......", "", "", "", "", "", "", QtyTotal, "");
             }
 
             return Excel.CreateExcel(new List<KeyValuePair<DataTable, string>>() { new KeyValuePair<DataTable, string>(result, "Report Pengeluaran Gudang Sisa Barang Jadi") }, true);

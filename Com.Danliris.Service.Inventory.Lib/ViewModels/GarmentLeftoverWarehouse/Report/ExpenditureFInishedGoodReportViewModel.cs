@@ -16,6 +16,7 @@ namespace Com.Danliris.Service.Inventory.Lib.ViewModels.GarmentLeftoverWarehouse
         public DateTimeOffset ExpenditureDate { get; set; }
 
         public string Consignment { get; set; }
+        public string LeftoverComodityCode { get; set; }
         public string LeftoverComodityName { get; set; }
         public string RONo { get; set; }
         public double ExpenditureQuantity { get; set; }
