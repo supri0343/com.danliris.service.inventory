@@ -93,8 +93,8 @@ namespace Com.Danliris.Service.Inventory.Test.Controllers.InventoryWeavingReport
         [Fact]
         public void UploadFile_WithoutException_ReturnOK()
         {
-            string header = "nota,benang,type,lusi,pakan,lebar,jlusi,jpakan,alusi,apakan,sp,grade,jenis,piece,meter";
-            string isi = "nota,benang,type,lusi,pakan,lebar,jlusi,jpakan,alusi,apakan,sp,grade,1,1,1";
+            string header = "nota,benang,type,lusi,pakan,lebar,jlusi,jpakan,alusi,apakan,sp,grade,jenis,piece,meter,barcode,tgl";
+            string isi = "nota,benang,type,lusi,pakan,lebar,jlusi,jpakan,alusi,apakan,sp,grade,1,1,1,barcode,"+Convert.ToString(DateTime.Now);
             var mockFacade = new Mock<IInventoryWeavingDocumentUploadService>();
             mockFacade.Setup(f => f.UploadData(It.IsAny<InventoryWeavingDocument>(), It.IsAny<string>())).Returns(Task.CompletedTask);
             mockFacade.Setup(f => f.CsvHeader).Returns(header.Split(',').ToList());
@@ -136,6 +136,8 @@ namespace Com.Danliris.Service.Inventory.Test.Controllers.InventoryWeavingReport
                     QuantityPiece =1,
                     ProductRemark = "",
                     InventoryWeavingDocumentId = 1,
+                    Barcode = "barcode",
+                    ProductionOrderDate = DateTime.Now,
                 } }
 
             };
@@ -178,7 +180,7 @@ namespace Com.Danliris.Service.Inventory.Test.Controllers.InventoryWeavingReport
         [Fact]
         public void UploadFile_WithException_FileNotFound()
         {
-            string header = "nota,benang,type,lusi,pakan,lebar,jlusi,jpakan,alusi,apakan,sp,grade,jenis,piece,panjang";
+            string header = "nota,benang,type,lusi,pakan,lebar,jlusi,jpakan,alusi,apakan,sp,grade,jenis,piece,panjang,barcode,tgl";
             //string isi = "nota,benang,type,lusi,pakan,lebar,jlusi,jpakan,alusi,apakan,sp,grade,1,1,1";
             var mockFacade = new Mock<IInventoryWeavingDocumentUploadService>();
             mockFacade.Setup(f => f.UploadData(It.IsAny<InventoryWeavingDocument>(), It.IsAny<string>())).Returns(Task.CompletedTask);
@@ -244,8 +246,8 @@ namespace Com.Danliris.Service.Inventory.Test.Controllers.InventoryWeavingReport
         [Fact]
         public void UploadFile_WithException_ErrorInFile()
         {
-            string header = "nota,benang,type,lusi,pakan,lebar,jlusi,jpakan,alusi,apakan,sp,grade,jenis,piece,meter";
-            string isi = "nota,benang,type,lusi,pakan,lebar,jlusi,jpakan,alusi,apakan,sp,grade,1,1,1";
+            string header = "nota,benang,type,lusi,pakan,lebar,jlusi,jpakan,alusi,apakan,sp,grade,jenis,piece,meter,barcode,tgl";
+            string isi = "nota,benang,type,lusi,pakan,lebar,jlusi,jpakan,alusi,apakan,sp,grade,1,1,1,barcode," + Convert.ToString(DateTime.Now);
             var mockFacade = new Mock<IInventoryWeavingDocumentUploadService>();
             mockFacade.Setup(f => f.UploadData(It.IsAny<InventoryWeavingDocument>(), It.IsAny<string>())).Verifiable();
             mockFacade.Setup(f => f.CsvHeader).Returns(header.Split(',').ToList());

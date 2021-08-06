@@ -128,7 +128,9 @@ namespace Com.Danliris.Service.Inventory.Test.Services.InventoryWeaving.Inventor
                     Width = "1",
                     Qty = "1",
                     QtyPiece = "1",
-                    ProductionOrderNo = "a"
+                    ProductionOrderNo = "a",
+                    Barcode = "barcode",
+                    ProductionOrderDate = DateTime.Now,
                 }
             };
 
@@ -165,7 +167,9 @@ namespace Com.Danliris.Service.Inventory.Test.Services.InventoryWeaving.Inventor
                     Width = "1",
                     Qty = "1",
                     QtyPiece = "1",
-                    ProductionOrderNo = "a"
+                    ProductionOrderNo = "a",
+                    Barcode = "barcode",
+                    ProductionOrderDate = DateTime.Now,
                 }
             };
 
@@ -232,7 +236,9 @@ namespace Com.Danliris.Service.Inventory.Test.Services.InventoryWeaving.Inventor
                     Width = "1",
                     Qty = "1",
                     QtyPiece = "1",
-                    ProductionOrderNo = "a"
+                    ProductionOrderNo = "a",
+                    Barcode = "barcode",
+                    ProductionOrderDate = DateTime.Now,
                 }
             };
 
@@ -314,6 +320,8 @@ namespace Com.Danliris.Service.Inventory.Test.Services.InventoryWeaving.Inventor
                 QuantityPiece = 2,
                 ProductRemark = "",
                 InventoryWeavingDocumentId = 1,
+                Barcode = "barcode",
+                ProductionOrderDate = DateTime.Now,
             });
 
             await service.Create(oldData);
