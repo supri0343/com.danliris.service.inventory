@@ -125,7 +125,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
             });
             if (size != 0)
             {
-                if (page == ((TotalCountReport / size) + 1) && TotalCountReport != 0)
+                if (TotalCountReport == page * size && TotalCountReport != 0)
                 {
                     var QtyTotal = items.Sum(x => x.Quantity);
                     var PriceTotal = Math.Round(items.Sum(x => x.BasicPrice), 2);
@@ -337,7 +337,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
             });
             if (size != 0)
             {
-                if (page == ((listData.Count() / size) + 1) && listData.Count() != 0)
+                if (TotalCountReport == page * size && listData.Count() != 0)
                 {
                     var QtyTotal = listData.Sum(x => x.Quantity);
                     var PriceTotal = Math.Round(listData.Sum(x => x.Price),2);

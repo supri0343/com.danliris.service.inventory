@@ -428,10 +428,14 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
 
             GarmentLeftoverWarehouseReceiptFinishedGoodService service = new GarmentLeftoverWarehouseReceiptFinishedGoodService(_dbContext(GetCurrentMethod()), serviceProvider.Object);
 
-            
-            var dataFinishedGood = await _dataUtilFinishedGood(service).GetTestData(); ;
 
-            var result = service.GetMonitoring( DateTime.Now, DateTime.Now, 1, 1, "{}", 7);
+            var dataFinishedGood = _dataUtilFinishedGood(service).GetNewData();
+
+            dataFinishedGood.ReceiptDate = dataFinishedGood.ReceiptDate.AddDays(-1);
+
+            await service.CreateAsync(dataFinishedGood);
+
+            var result = service.GetMonitoring(null, DateTime.Now, 1, 1, "{}", 7);
 
 
             Assert.NotNull(result);
@@ -462,9 +466,13 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
             GarmentLeftoverWarehouseReceiptFinishedGoodService service = new GarmentLeftoverWarehouseReceiptFinishedGoodService(_dbContext(GetCurrentMethod()), serviceProvider.Object);
 
 
-            var dataFinishedGood = await _dataUtilFinishedGood(service).GetTestData(); ;
+            var dataFinishedGood = _dataUtilFinishedGood(service).GetNewData();
 
-            var result = service.GenerateExcel(DateTime.Now, DateTime.Now, 7);
+            dataFinishedGood.ReceiptDate = dataFinishedGood.ReceiptDate.AddDays(-1);
+
+            await service.CreateAsync(dataFinishedGood);
+
+            var result = service.GenerateExcel(null, DateTime.Now, 7);
 
 
             Assert.NotNull(result);

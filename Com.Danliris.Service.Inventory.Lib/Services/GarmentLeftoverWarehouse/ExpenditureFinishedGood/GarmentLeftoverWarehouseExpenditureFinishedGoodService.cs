@@ -445,7 +445,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.E
 
             });
 
-            if (page == ((TotalData / size) + 1) && TotalData != 0)
+            if (TotalData == page * size && TotalData != 0)
             {
                 var QtyTotal = Query.Sum(x => x.ExpenditureQuantity);
                 var PriceTotal = Math.Round(Query.Sum(x => x.Price),2);
