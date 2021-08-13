@@ -17,5 +17,6 @@ namespace Com.Danliris.Service.Inventory.Lib.ViewModels.GarmentLeftoverWarehouse
         public string ComodityName { get; set; }
         public double Quantity { get; set; }
         public string UomUnit { get; set; }
+        public double Price { get; set; }
     }
 }
