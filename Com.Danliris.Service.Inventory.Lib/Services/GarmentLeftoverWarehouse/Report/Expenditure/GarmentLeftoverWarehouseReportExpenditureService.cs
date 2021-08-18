@@ -163,7 +163,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                                          Id = b.UnitId.ToString(),
                                          Name = b.UnitName
                                      },
-                                     Price = Math.Round(b.BasicPrice,2)
+                                     Price = Math.Round(b.BasicPrice * b.Quantity,2) 
                                     
                                 });
                 Query = QueryFabric;
@@ -206,7 +206,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                                      Id = b.UnitId.ToString(),
                                      Name = b.UnitName
                                  },
-                                 Price = Math.Round(b.BasicPrice,2)
+                                 Price = Math.Round(b.BasicPrice * b.Quantity,2)
                              });
                 Query = QueryAcc;
             } 
@@ -246,7 +246,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                                        Id = b.UnitId.ToString(),
                                        Name = b.UnitName
                                    },
-                                   Price = Math.Round(b.BasicPrice,2)
+                                   Price = Math.Round(b.BasicPrice * b.Quantity,2)
                                });
                 QueryAcc = (from a in DbContext.GarmentLeftoverWarehouseExpenditureAccessories
                             join b in DbContext.GarmentLeftoverWarehouseExpenditureAccessoriesItems on a.Id equals b.ExpenditureId
@@ -282,7 +282,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                                     Id = b.UnitId.ToString(),
                                     Name = b.UnitName
                                 },
-                                Price = Math.Round(b.BasicPrice,2)
+                                Price = Math.Round(b.BasicPrice * b.Quantity,2)
                             });
 
                 Query = QueryFabric.Concat(QueryAcc);
