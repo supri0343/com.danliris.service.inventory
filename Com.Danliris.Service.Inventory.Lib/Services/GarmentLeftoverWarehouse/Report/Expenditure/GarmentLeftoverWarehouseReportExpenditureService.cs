@@ -396,6 +396,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
 
                 result.Rows.Add(
                          "",
+                         "",
                          "T O T A L .......",
                          "",
                          "",
