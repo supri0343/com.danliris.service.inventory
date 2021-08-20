@@ -91,7 +91,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                 vm.UENNo = fabric.UENNo;
                 vm.FabricRemark = fabricItem.FabricRemark;
                 vm.Composition = fabricItem.Composition;
-                vm.Price = Math.Round(fabricItem.BasicPrice,2);
+                vm.Price = Math.Round(fabricItem.BasicPrice * fabricItem.Quantity,2);
 
                 listData.Add(vm);
                 i++;
@@ -128,7 +128,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                 if (TotalCountReport == page * size && TotalCountReport != 0)
                 {
                     var QtyTotal = items.Sum(x => x.Quantity);
-                    var PriceTotal = Math.Round(items.Sum(x => x.BasicPrice), 2);
+                    var PriceTotal = Math.Round(items.Sum(x => x.BasicPrice * x.Quantity), 2);
                     ReceiptMonitoringViewModel vm = new ReceiptMonitoringViewModel();
 
                     vm.ProductRemark = "";
@@ -303,7 +303,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                 vm.POSerialNumber = accItem.POSerialNumber;
                 vm.index = i;
                 vm.UENNo = acc.UENNo;
-                vm.Price = Math.Round(accItem.BasicPrice,2);
+                vm.Price = Math.Round(accItem.BasicPrice * accItem.Quantity,2);
 
                 listData.Add(vm);
                 i++;

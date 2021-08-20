@@ -413,7 +413,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.E
                             LeftoverComodityName = b.LeftoverComodityName,
                             ExpenditureQuantity = b.ExpenditureQuantity,
                             Uom ="PCS",
-                            Price = Math.Round(b.BasicPrice, 2)
+                            Price = Math.Round(b.BasicPrice * b.ExpenditureQuantity, 2)
                         };
             return Query;
         }
