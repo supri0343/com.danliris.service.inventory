@@ -416,19 +416,57 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
         }
 
         [Fact]
-        public void Excel_ReportAccessoriesSuccess()
+        public async Task Excel_ReportAccessoriesSuccess()
         {
             var serviceProvider21 = new Mock<IServiceProvider>();
 
             var httpClientService = new Mock<IHttpService>();
 
+            //httpClientService
+            //    .Setup(x => x.GetAsync(It.Is<string>(s => s.Contains("garment-shipping/local-cover-letters"))))
+            //    .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.InternalServerError) { Content = new StringContent(JsonConvert.SerializeObject(new List<Dictionary<string, Object>>())) });
+
+            //httpClientService
+            //    .Setup(x => x.GetAsync(It.Is<string>(s => s.Contains("master/garmentProducts"))))
+            //    .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.InternalServerError) { Content = new StringContent(JsonConvert.SerializeObject(new List<Dictionary<string, Object>>())) });
+
+
+            //serviceProvider21
+            //    .Setup(x => x.GetService(typeof(IIdentityService)))
+            //    .Returns(new IdentityService() { Token = "Token", Username = "Test" });
+
+            //serviceProvider21
+            //    .Setup(x => x.GetService(typeof(IHttpService)))
+            //    .Returns(httpClientService.Object);
+
+            //GarmentLeftoverWarehouseReportExpenditureService service = new GarmentLeftoverWarehouseReportExpenditureService(serviceProvider21.Object, _dbContext(GetCurrentMethod()));
+
+            HttpResponseMessage message = new HttpResponseMessage(System.Net.HttpStatusCode.OK);
+            message.Content = new StringContent("{\"apiVersion\":\"1.0\",\"statusCode\":200,\"message\":\"Ok\",\"data\":[{\"Id\":7,\"POSerialNumber\":\"PONo\",\"BeacukaiNo\":\"BC001\",\"CustomsType\":\"A\",\"BeacukaiDate\":\"2018/10/20\"}],\"info\":{\"count\":1,\"page\":1,\"size\":1,\"total\":2,\"order\":{\"date\":\"desc\"},\"select\":[\"Id\",\"CustomsType\",\"BeacukaiDate\",\"BeacukaiNo\",,\"POSerialNumber\"]}}");
+
+            HttpResponseMessage message2 = new HttpResponseMessage(System.Net.HttpStatusCode.OK);
+            message2.Content = new StringContent("{\"apiVersion\":\"1.0\",\"statusCode\":200,\"message\":\"Ok\",\"data\":{\"Id\":\"7\",\"Composition\":\"Composition\",\"Const\":\"Const\",\"Yarn\":\"Yarn\",\"Width\":\"Width\"},\"info\":{\"count\":1,\"page\":1,\"size\":1,\"total\":2,\"order\":{\"date\":\"desc\"},\"select\":[\"Id\",\"CustomsType\",\"BeacukaiDate\",\"BeacukaiNo\",,\"POSerialNumber\"]}}");
+
+            HttpResponseMessage message3 = new HttpResponseMessage(System.Net.HttpStatusCode.OK);
+            message3.Content = new StringContent("{\"apiVersion\":\"1.0\",\"statusCode\":200,\"message\":\"Ok\",\"data\":[{\"Id\":\"7\",\"bcNo\":\"bcNo\",\"bcDate\":\"2018/10/20\",\"noteNo\":\"LocalSalesNoteNo\"}],\"info\":{\"count\":1,\"page\":1,\"size\":1,\"total\":2,\"order\":{\"date\":\"desc\"},\"select\":[\"Id\",\"CustomsType\",\"BeacukaiDate\",\"BeacukaiNo\",,\"POSerialNumber\"]}}");
+
             httpClientService
-                .Setup(x => x.GetAsync(It.Is<string>(s => s.Contains("garment-shipping/local-cover-letters"))))
-                .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.InternalServerError) { Content = new StringContent(JsonConvert.SerializeObject(new List<Dictionary<string, Object>>())) });
+                .Setup(x => x.GetAsync(It.Is<string>(s => s.Contains("garment-beacukai/by-poserialnumber"))))
+                .ReturnsAsync(message);
 
             httpClientService
                 .Setup(x => x.GetAsync(It.Is<string>(s => s.Contains("master/garmentProducts"))))
                 .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.InternalServerError) { Content = new StringContent(JsonConvert.SerializeObject(new List<Dictionary<string, Object>>())) });
+
+            httpClientService
+                .Setup(x => x.GetAsync(It.Is<string>(s => s.Contains("garment-shipping/local-cover-letters"))))
+                .ReturnsAsync(message3);
+
+
+
+            httpClientService
+                .Setup(x => x.GetAsync(It.Is<string>(s => s.Contains("master/garmentProducts"))))
+                .ReturnsAsync(message2);
 
 
             serviceProvider21
@@ -439,7 +477,29 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
                 .Setup(x => x.GetService(typeof(IHttpService)))
                 .Returns(httpClientService.Object);
 
+            var stockServiceMock = new Mock<IGarmentLeftoverWarehouseStockService>();
+            stockServiceMock.Setup(s => s.StockOut(It.IsAny<GarmentLeftoverWarehouseStock>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>()))
+                .ReturnsAsync(1);
+
+            stockServiceMock.Setup(s => s.StockIn(It.IsAny<GarmentLeftoverWarehouseStock>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>()))
+              .ReturnsAsync(1);
+
+            serviceProvider21
+                .Setup(x => x.GetService(typeof(IGarmentLeftoverWarehouseStockService)))
+                .Returns(stockServiceMock.Object);
+
+            //serviceProvider21
+            //    .Setup(x => x.GetService(typeof(IHttpService)))
+            //    .Returns(new HttpTestService());
+
             GarmentLeftoverWarehouseReportExpenditureService service = new GarmentLeftoverWarehouseReportExpenditureService(serviceProvider21.Object, _dbContext(GetCurrentMethod()));
+
+            GarmentLeftoverWarehouseExpenditureAccessoriesService serviceexpend = new GarmentLeftoverWarehouseExpenditureAccessoriesService(_dbContext(GetCurrentMethod()), serviceProvider21.Object);
+
+
+            var dataFabric = _dataUtilAcc(serviceexpend).GetNewData();
+
+            await serviceexpend.CreateAsync(dataFabric);
 
             var result = service.GenerateExcel(DateTime.Now, DateTime.Now, "ACCESSORIES", 1);
 
@@ -474,7 +534,9 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
 
             GarmentLeftoverWarehouseReportExpenditureService service = new GarmentLeftoverWarehouseReportExpenditureService(serviceProvider21.Object, _dbContext(GetCurrentMethod()));
 
-            var result = service.GenerateExcel(DateTime.Now, DateTime.Now, "", 1);
+
+
+            var result = service.GenerateExcel(DateTime.Now.AddDays(-1), DateTime.Now, "", 1);
 
             Assert.IsType<MemoryStream>(result);
 
