@@ -3,7 +3,6 @@ using Com.Danliris.Service.Inventory.Lib.Helpers;
 using Com.Danliris.Service.Inventory.Lib.Models.InventoryWeavingModel;
 using Com.Danliris.Service.Inventory.Lib.ViewModels.InventoryWeavingViewModel.Report;
 using Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving;
-using Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving.Reports.ReportExpenseGreigeWeaving;
 using Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving.Reports.ReportGreigeWeavingPerGrade;
 using Com.Danliris.Service.Inventory.Test.DataUtils.InventoryWeavingDataUtils.ReportGreigeWeavingPerGradeDataUtil;
 using Com.Danliris.Service.Inventory.Test.DataUtils.InventoryWeavingDataUtils;
@@ -21,12 +20,14 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Xunit;
+using Com.Danliris.Service.Inventory.Lib.ViewModels.InventoryWeavingViewModel;
+using Microsoft.Extensions.Primitives;
 
-namespace Com.Danliris.Service.Inventory.Test.Services.InventoryWeaving
+namespace Com.Danliris.Service.Inventory.Test.Services.InventoryWeaving.Report.InventoryWeavingOut
 {
-    public class ReportExpenseGreigeWeavingTest
+    public class ReportInventoryWeavingOutTest
     {
-        private const string ENTITY = "ReportExpenseGreigeWeaving";
+        private const string ENTITY = "ReportGreigeWeavingOut";
         //private string username;
 
         [MethodImpl(MethodImplOptions.NoInlining)]
@@ -57,10 +58,10 @@ namespace Com.Danliris.Service.Inventory.Test.Services.InventoryWeaving
             return new ReportGreigeWeavingPerGradeDataUtil(service, dataDoc);
         }
 
-        private InventoryWeavingDocumentDataUtils _dataUtilDoc(InventoryWeavingDocumentUploadService service)
+        private InventoryWeavingDocumentOutDataUtil _dataUtilDoc(InventoryWeavingDocumentOutService service)
         {
             GetServiceProvider();
-            return new InventoryWeavingDocumentDataUtils(service);
+            return new InventoryWeavingDocumentOutDataUtil(service);
         }
 
         private Mock<IServiceProvider> GetServiceProvider()
@@ -91,39 +92,68 @@ namespace Com.Danliris.Service.Inventory.Test.Services.InventoryWeaving
         }
 
         [Fact]
-        public async Task Should_success_GetStock()
+        public async void Should_Succes_GetDistinctMaterialList()
         {
-            ReportGreigeWeavingPerGradeService service = new ReportGreigeWeavingPerGradeService(GetServiceProvider().Object, _dbContext(GetCurrentMethod()));
-            InventoryWeavingDocumentUploadService serviceDoc = new InventoryWeavingDocumentUploadService(GetServiceProvider().Object, _dbContext(GetCurrentMethod()));
-            InventoryWeavingDocumentDataUtils dataDoc1 = new InventoryWeavingDocumentDataUtils(serviceDoc);
+            InventoryWeavingDocumentOutService service = new InventoryWeavingDocumentOutService(GetServiceProvider().Object, _dbContext(GetCurrentMethod()));
 
-            var Utilservice = new ReportExpenseGreigeWeavingService(GetServiceProvider().Object, _dbContext(GetCurrentMethod()));
-            var data = _dataUtil(service, dataDoc1).GetTestData();
-            
-            var dataDoc = _dataUtilDoc(serviceDoc).GetTestData();
-            //var Responses =  Utilservice.Create(data);
-
-            var Service = new ReportExpenseGreigeWeavingService(GetServiceProvider().Object, _dbContext(GetCurrentMethod()));
-            var Response = Utilservice.GetReportExpense("PRODUKSI", DateTime.UtcNow, DateTime.UtcNow, 25, 1, "{}", 7);
+            var data = _dataUtilDoc(service).GetNewData();
+            var Response = service.GetDistinctMaterial(25, 1, "{}", "{}", "{}");
             Assert.NotNull(Response);
         }
 
         [Fact]
-        public async Task Should_success_GenerateExcel()
+        public async void Should_Success_GetMaterial()
         {
-            ReportGreigeWeavingPerGradeService service = new ReportGreigeWeavingPerGradeService(GetServiceProvider().Object, _dbContext(GetCurrentMethod()));
-            InventoryWeavingDocumentUploadService serviceDoc = new InventoryWeavingDocumentUploadService(GetServiceProvider().Object, _dbContext(GetCurrentMethod()));
-            InventoryWeavingDocumentDataUtils dataDoc1 = new InventoryWeavingDocumentDataUtils(serviceDoc);
+            InventoryWeavingDocumentOutService service = new InventoryWeavingDocumentOutService(GetServiceProvider().Object, _dbContext(GetCurrentMethod()));
 
-            var Utilservice = new ReportExpenseGreigeWeavingService(GetServiceProvider().Object, _dbContext(GetCurrentMethod()));
-            var data = _dataUtil(service, dataDoc1).GetTestData();
-            
-            var dataDoc = _dataUtilDoc(serviceDoc).GetTestData();
+            var data = _dataUtilDoc(service).GetNewData();
+            var Response = service.GetMaterialItemList("{}");
+            Assert.NotNull(Response);
+        }
+
+        [Fact]
+        public async Task Should_Success_MapToModel()
+        {
+            InventoryWeavingDocumentOutService service = new InventoryWeavingDocumentOutService(GetServiceProvider().Object, _dbContext(GetCurrentMethod()));
+
+            var data = _dataUtilDoc(service).GetNewData1();
+            var Response = service.MapToModel(data);
+            Assert.NotNull(Response);
+        }
+
+        [Fact]
+        public void Should_success_GetCsv()
+        {
+            InventoryWeavingDocumentOutService service = new InventoryWeavingDocumentOutService(GetServiceProvider().Object, _dbContext(GetCurrentMethod()));
+
+            var dataDoc = _dataUtilDoc(service).GetTestData();
             //var Responses =  Utilservice.Create(data);
 
-            var Service = new ReportGreigeWeavingPerGradeService(GetServiceProvider().Object, _dbContext(GetCurrentMethod()));
-            var Response = Utilservice.GenerateExcelExpense("PRODUKSI", DateTime.UtcNow, DateTime.UtcNow, 7);
+            // var Service = new ReportGreigeWeavingPerGradeService(GetServiceProvider().Object, _dbContext(GetCurrentMethod()));
+            var Response = service.DownloadCSVOut(DateTime.Now, DateTime.Now, 7, null);
             Assert.IsType<System.IO.MemoryStream>(Response);
+        }
+
+        [Fact]
+        public async Task Should_Success_ReadById()
+        {
+            InventoryWeavingDocumentOutService service = new InventoryWeavingDocumentOutService(GetServiceProvider().Object, _dbContext(GetCurrentMethod()));
+
+            var data = _dataUtilDoc(service).GetTestData();
+
+            var Response = service.ReadById(data.Result.Id);
+            Assert.NotNull(Response);
+        }
+
+        [Fact]
+        public async Task Should_Success_Read()
+        {
+            InventoryWeavingDocumentOutService service = new InventoryWeavingDocumentOutService(GetServiceProvider().Object, _dbContext(GetCurrentMethod()));
+
+            var data = _dataUtilDoc(service).GetTestData();
+
+            var Response = service.Read(1, 25, "{}", "", "");
+            Assert.NotNull(Response);
         }
     }
 }
