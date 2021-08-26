@@ -51,9 +51,10 @@ namespace Com.Danliris.Service.Inventory.Test.DataUtils.InventoryWeavingDataUtil
                     Quantity = 1,
                     QuantityPiece =1,
                     ProductRemark = "",
+                    Barcode = "15-09",
+                    ProductionOrderDate = Convert.ToDateTime("01/01/2020"),
                     InventoryWeavingDocumentId = 1,
-                    Barcode = "barcode",
-                    ProductionOrderDate = DateTime.Now,
+                    
                 } }
             };
         }
@@ -94,9 +95,9 @@ namespace Com.Danliris.Service.Inventory.Test.DataUtils.InventoryWeavingDataUtil
                         quantity = 1,
                         quantityPiece =1,
                         productRemark = "",
+                        barcode = "15-09",
+                        productionOrderDate = Convert.ToDateTime("01/01/2020"),
                         InventoryWeavingDocumentId = 1,
-                        barcode = "barcode",
-                        productionOrderDate = DateTime.Now,
                 } }
             };
         }
@@ -122,9 +123,9 @@ namespace Com.Danliris.Service.Inventory.Test.DataUtils.InventoryWeavingDataUtil
                     Width = "1",
                     Qty = 1,
                     QtyPiece = 1,
+                    Barcode = "15-09",
+                    ProductionOrderDate = Convert.ToDateTime("01/01/2020"),
                     ProductionOrderNo = "a",
-                    Barcode = "barcode",
-                    ProductionOrderDate = DateTime.Now,
              
             };
         }

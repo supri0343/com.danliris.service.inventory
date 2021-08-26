@@ -52,6 +52,8 @@ namespace Com.Danliris.Service.Inventory.Test.DataUtils.InventoryWeavingDataUtil
                     QuantityPiece =1,
                     ProductRemark = "",
                     InventoryWeavingDocumentId = 1,
+                    Barcode = "15-09",
+                    ProductionOrderDate = Convert.ToDateTime("01/01/2020")
                 } }
             };
         }
@@ -92,9 +94,51 @@ namespace Com.Danliris.Service.Inventory.Test.DataUtils.InventoryWeavingDataUtil
                             UomUnit = "MTR",
                             Quantity = 1,
                             QuantityPiece =1,
-                            ProductRemark = ""
+                            ProductRemark = "",
+                            Barcode = "15-09",
+                            ProductionOrderDate = Convert.ToDateTime("01/01/2020")
                         } }
 
+                } }
+            };
+        }
+
+        public InventoryWeavingDocumentOutUploadViewModel GetNewData2()
+        {
+            return new InventoryWeavingDocumentOutUploadViewModel
+            {
+
+                date = DateTimeOffset.Now,
+                bonNo = "test01",
+                bonType = "weaving",
+                storageCode = "test01",
+                storageId = 2,
+                storageName = "Test",
+
+                type = "IN",
+                remark = "Remark",
+                itemsOut = new List<InventoryWeavingDocumentOutItemViewModel> { new InventoryWeavingDocumentOutItemViewModel()
+                    {
+                        ProductOrderNo = "product",
+                        ReferenceNo = "referencce",
+                        Construction = "CD",
+                        Grade = "A",
+                        Piece = "1",
+                        MaterialName = "CD",
+                        WovenType = "",
+                        Yarn1 = "yarn1",
+                        Yarn2 = "yarn2",
+                        YarnType1 = "yt1",
+                        YarnType2 = "yt2",
+                        YarnOrigin1 = "yo1",
+                        YarnOrigin2 = "yo2",
+                        Width = "1",
+                        UomUnit = "MTR",
+                        Quantity = 1,
+                        QuantityPiece =1,
+                        ProductRemark = "",
+                        Barcode = "15-09",
+                        ProductionOrderDate = Convert.ToDateTime("01/01/2020")
                 } }
             };
         }

@@ -141,7 +141,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
                 Map(p => p.QtyPiece).Index(13).TypeConverter<StringConverter>();
                 Map(p => p.Qty).Index(14).TypeConverter<StringConverter>();
                 Map(p => p.Barcode).Index(15);
-                Map(p => p.ProductionOrderDate).Index(16);
+                Map(p => p.ProductionOrderDate).Index(16).TypeConverter<StringConverter>();
 
             }
         }
@@ -542,6 +542,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
                         Quantity = d.Quantity,
                         QuantityPiece = d.QuantityPiece,
                         ProductRemark = d.ProductRemark,
+                        Barcode = d.Barcode,
+                        ProductionOrderDate = d.ProductionOrderDate,
                         //InventoryWeavingDocumentId = d.InventoryWeavingDocumentId
                     });
 

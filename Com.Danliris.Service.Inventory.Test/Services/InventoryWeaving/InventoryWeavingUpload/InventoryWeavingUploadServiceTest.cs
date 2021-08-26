@@ -128,9 +128,10 @@ namespace Com.Danliris.Service.Inventory.Test.Services.InventoryWeaving.Inventor
                     Width = "1",
                     Qty = "1",
                     QtyPiece = "1",
+                    Barcode = "15-09",
+                    ProductionOrderDate = Convert.ToDateTime("01/01/2020"),
                     ProductionOrderNo = "a",
-                    Barcode = "barcode",
-                    ProductionOrderDate = DateTime.Now,
+                    
                 }
             };
 
@@ -167,9 +168,9 @@ namespace Com.Danliris.Service.Inventory.Test.Services.InventoryWeaving.Inventor
                     Width = "1",
                     Qty = "1",
                     QtyPiece = "1",
+                    Barcode = "15-09",
+                    ProductionOrderDate = Convert.ToDateTime("01/01/2020"),
                     ProductionOrderNo = "a",
-                    Barcode = "barcode",
-                    ProductionOrderDate = DateTime.Now,
                 }
             };
 
@@ -236,9 +237,10 @@ namespace Com.Danliris.Service.Inventory.Test.Services.InventoryWeaving.Inventor
                     Width = "1",
                     Qty = "1",
                     QtyPiece = "1",
+                    Barcode = "15-09",
+                    ProductionOrderDate = Convert.ToDateTime("01/01/2020"),
                     ProductionOrderNo = "a",
-                    Barcode = "barcode",
-                    ProductionOrderDate = DateTime.Now,
+                    
                 }
             };
 
@@ -319,9 +321,9 @@ namespace Com.Danliris.Service.Inventory.Test.Services.InventoryWeaving.Inventor
                 Quantity = 2,
                 QuantityPiece = 2,
                 ProductRemark = "",
+                Barcode = "15-09",
+                ProductionOrderDate = Convert.ToDateTime("01/01/2020"),
                 InventoryWeavingDocumentId = 1,
-                Barcode = "barcode",
-                ProductionOrderDate = DateTime.Now,
             });
 
             await service.Create(oldData);

@@ -288,7 +288,7 @@ namespace Com.Danliris.Service.Inventory.WebApi.Controllers.v1.WeavingInventory
                             }
                             else
                             {
-                                Dictionary<string, object> Result = new ResultFormatter(ApiVersion, General.INTERNAL_ERROR_STATUS_CODE, "Nota Sudah Pernah di Input").Fail();
+                                Dictionary<string, object> Result = new ResultFormatter(ApiVersion, General.INTERNAL_ERROR_STATUS_CODE, "Barcode Belum ada di penyimpanan!").Fail();
 
                                 return StatusCode(General.INTERNAL_ERROR_STATUS_CODE, Result);
                             }

@@ -155,5 +155,98 @@ namespace Com.Danliris.Service.Inventory.Test.Services.InventoryWeaving.Report.I
             var Response = service.Read(1, 25, "{}", "", "");
             Assert.NotNull(Response);
         }
+
+        [Fact]
+        public async Task Create_Success_Upload()
+        {
+            InventoryWeavingDocumentOutService service = new InventoryWeavingDocumentOutService(GetServiceProvider().Object, _dbContext(GetCurrentMethod()));
+
+            var data = _dataUtilDoc(service).GetNewData();
+
+            var Response = service.UploadData(data, "test");
+            Assert.NotNull(Response);
+        }
+
+        [Fact]
+        public async void Should_Success_UploadValidate()
+        {
+            InventoryWeavingDocumentOutService service = new InventoryWeavingDocumentOutService(GetServiceProvider().Object, _dbContext(GetCurrentMethod()));
+
+            List<InventoryWeavingUploadCsvOutViewModel> CSV = new List<InventoryWeavingUploadCsvOutViewModel>
+            {
+                new InventoryWeavingUploadCsvOutViewModel
+                {
+                    ReferenceNo = "reference",
+                    ProductionOrderNo = "a",
+                    Construction = "CD",
+                    MaterialName = "CD",
+                    WovenType = "a",
+                    Piece = "1",
+                    Width = "1",
+                    Yarn1 = "yarn1",
+                    Yarn2 = "yarn2",
+                    YarnType1 = "yt1",
+                    YarnType2 = "yt2",
+                    YarnOrigin1 = "yo1",
+                    YarnOrigin2 = "yo2",
+                    Grade = "a",
+                    Qty = "1",
+                    QtyPiece = "1",
+                    Barcode = "15-09",
+                    ProductionOrderDate = Convert.ToDateTime("01/01/2020")
+                }
+            };
+
+            List<KeyValuePair<string, StringValues>> body = new List<KeyValuePair<string, StringValues>>();
+            KeyValuePair<string, StringValues> keyValue = new KeyValuePair<string, StringValues>("date", "2020-01-10");
+            body.Add(keyValue);
+
+            var Response = service.UploadValidate(ref CSV, body);
+            Assert.NotNull(Response);
+        }
+
+        [Fact]
+        public async Task Should_Success_MapToViewModel()
+        {
+            InventoryWeavingDocumentOutService service = new InventoryWeavingDocumentOutService(GetServiceProvider().Object, _dbContext(GetCurrentMethod()));
+
+            List<InventoryWeavingUploadCsvOutViewModel> CSV = new List<InventoryWeavingUploadCsvOutViewModel>
+            {
+                new InventoryWeavingUploadCsvOutViewModel
+                {
+                    ReferenceNo = "reference",
+                    ProductionOrderNo = "a",
+                    Construction = "CD",
+                    MaterialName = "CD",
+                    WovenType = "a",
+                    Piece = "1",
+                    Width = "1",
+                    Yarn1 = "yarn1",
+                    Yarn2 = "yarn2",
+                    YarnType1 = "yt1",
+                    YarnType2 = "yt2",
+                    YarnOrigin1 = "yo1",
+                    YarnOrigin2 = "yo2",
+                    Grade = "a",
+                    Qty = "1",
+                    QtyPiece = "1",
+                    Barcode = "15-09",
+                    ProductionOrderDate = Convert.ToDateTime("01/01/2020")
+                }
+            };
+
+            var Response = service.MapToViewModel(CSV, DateTime.Now, "test");
+            Assert.NotNull(Response);
+        }
+
+        [Fact]
+        public async Task Should_Success_MapToModelUpload()
+        {
+            InventoryWeavingDocumentOutService service = new InventoryWeavingDocumentOutService(GetServiceProvider().Object, _dbContext(GetCurrentMethod()));
+
+            var data = _dataUtilDoc(service).GetNewData2();
+            var Response = await service.MapToModelUpload(data);
+            Assert.NotNull(Response);
+        }
     }
 }
