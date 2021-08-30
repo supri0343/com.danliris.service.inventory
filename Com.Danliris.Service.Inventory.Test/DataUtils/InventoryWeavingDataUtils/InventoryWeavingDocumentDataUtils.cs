@@ -24,12 +24,12 @@ namespace Com.Danliris.Service.Inventory.Test.DataUtils.InventoryWeavingDataUtil
                
                 Date = DateTimeOffset.Now,
                 BonNo = "test01",
-                BonType = "weaving",
+                BonType = "PRODUKSI",
                 StorageCode = "test01",
                 StorageId = 2,
                 StorageName = "Test",
              
-                Type = "IN",
+                Type = "OUT",
                 Remark = "Remark",
                 Items = new List<InventoryWeavingDocumentItem> { new InventoryWeavingDocumentItem(){
                     ProductOrderName = "product",
@@ -67,12 +67,12 @@ namespace Com.Danliris.Service.Inventory.Test.DataUtils.InventoryWeavingDataUtil
 
                 date = DateTimeOffset.Now,
                 bonNo = "test01",
-                bonType = "weaving",
+                bonType = "PRODUKSI",
                 storageCode = "test01",
                 storageId = 2,
                 storageName = "Test",
 
-                type = "IN",
+                type = "OUT",
                 remark = "Remark",
                 items = new List<InventoryWeavingDocumentItemViewModel> { new InventoryWeavingDocumentItemViewModel()
                     {
@@ -130,7 +130,53 @@ namespace Com.Danliris.Service.Inventory.Test.DataUtils.InventoryWeavingDataUtil
             };
         }
 
-
+        public InventoryWeavingDocumentDetailViewModel UpdateData()
+        {
+            return new InventoryWeavingDocumentDetailViewModel
+            {
+                Date = DateTimeOffset.Now,
+                BonNo = "test01",
+                BonType = "PRODUKSI",
+                StorageCode = "a",
+                StorageId = 2,
+                StorageName = "a",
+                Type = "OUT",
+                //Remark = "Remark",
+                Detail = new List<InventoryWeavingItemDetailViewModel>
+                {
+                    new InventoryWeavingItemDetailViewModel()
+                    {
+                        ProductOrderNo = "a",
+                        ReferenceNo = "reference",
+                        Construction = "CD",
+                        Year = "2020",
+                        ListItems = new List<ItemListDetailViewModel>
+                        {
+                            new ItemListDetailViewModel()
+                            {
+                                Grade = "A",
+                                Piece = "1",
+                                MaterialName = "CD",
+                                WovenType = "SLUB",
+                                Yarn1 = "yarn1",
+                                Yarn2 = "yarn2",
+                                YarnOrigin = "yarnOrigin",
+                                YarnOrigin1 = "yarnOrigin1",
+                                YarnOrigin2 = "yarnOrigin2",
+                                YarnType1 = "yarnType1",
+                                YarnType2 = "yarnType2",
+                                Width = "1",
+                                UomUnit = "MTR",
+                                Qty = 1,
+                                QtyPiece = 1,
+                                ProductRemark = "remark",
+                                IsSave = true,
+                            }
+                        }
+                    }
+                }
+            };
+        }
 
         public async Task<InventoryWeavingDocument> GetTestData()
         {

@@ -40,6 +40,11 @@ namespace Com.Danliris.Service.Inventory.Test.Controllers.InventoryWeavingReport
             get { return new InventoryWeavingDocumentOutViewModel(); }
         }
 
+        protected InventoryWeavingDocumentOutUploadViewModel viewModelUpload
+        {
+            get { return new InventoryWeavingDocumentOutUploadViewModel(); }
+        }
+
         protected ServiceValidationExeption GetServiceValidationExeption()
         {
             Mock<IServiceProvider> serviceProvider = new Mock<IServiceProvider>();

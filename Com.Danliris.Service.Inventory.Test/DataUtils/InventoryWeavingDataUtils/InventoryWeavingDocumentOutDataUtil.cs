@@ -24,12 +24,12 @@ namespace Com.Danliris.Service.Inventory.Test.DataUtils.InventoryWeavingDataUtil
 
                 Date = DateTimeOffset.Now,
                 BonNo = "test01",
-                BonType = "weaving",
+                BonType = "PRODUKSI",
                 StorageCode = "test01",
                 StorageId = 2,
                 StorageName = "Test",
 
-                Type = "IN",
+                Type = "OUT",
                 Remark = "Remark",
                 Items = new List<InventoryWeavingDocumentItem> { new InventoryWeavingDocumentItem(){
                     ProductOrderName = "product",
@@ -65,12 +65,12 @@ namespace Com.Danliris.Service.Inventory.Test.DataUtils.InventoryWeavingDataUtil
 
                 date = DateTimeOffset.Now,
                 bonNo = "test01",
-                bonType = "weaving",
+                bonType = "PRODUKSI",
                 storageCode = "test01",
                 storageId = 2,
                 storageName = "Test",
 
-                type = "IN",
+                type = "OUT",
                 remark = "Remark",
                 items = new List<InventoryWeavingItemDetailViewModel> { new InventoryWeavingItemDetailViewModel()
                     {
@@ -110,12 +110,12 @@ namespace Com.Danliris.Service.Inventory.Test.DataUtils.InventoryWeavingDataUtil
 
                 date = DateTimeOffset.Now,
                 bonNo = "test01",
-                bonType = "weaving",
+                bonType = "PRODUKSI",
                 storageCode = "test01",
                 storageId = 2,
                 storageName = "Test",
 
-                type = "IN",
+                type = "OUT",
                 remark = "Remark",
                 itemsOut = new List<InventoryWeavingDocumentOutItemViewModel> { new InventoryWeavingDocumentOutItemViewModel()
                     {
@@ -142,6 +142,75 @@ namespace Com.Danliris.Service.Inventory.Test.DataUtils.InventoryWeavingDataUtil
                 } }
             };
         }
+
+        public InventoryWeavingInOutViewModel GetMaterialList()
+        {
+            return new InventoryWeavingInOutViewModel
+            {
+                Nomor = 1,
+                Construction = "CD",
+                Grade = "a",
+                Piece = "1",
+                Type = "A",
+                MaterialName = "CD",
+                WovenType = "a",
+                Yarn1 = "yarn1",
+                Yarn2 = "yarn2",
+                YarnType1 = "yt1",
+                YarnType2 = "yt2",
+                YarnOrigin1 = "yo1",
+                YarnOrigin2 = "yo2",
+                Width = "1",
+                UomUnit = "MTR2",
+                Qty = 1,
+                QtyPiece = 1,
+                Barcode = "15-09",
+                ProductionOrderDate = Convert.ToDateTime("01/01/2020"),
+            };
+        }
+
+        public InventoryWeavingDocumentOutViewModel GetCSVDownloadOut()
+        {
+            return new InventoryWeavingDocumentOutViewModel
+            {
+                date = DateTimeOffset.Now,
+                bonNo = "test01",
+                bonType = "PRODUKSI",
+                storageCode = "test01",
+                storageId = 2,
+                storageName = "Test",
+
+                type = "OUT",
+                remark = "Remark",
+                items = new List<InventoryWeavingItemDetailViewModel> { new InventoryWeavingItemDetailViewModel()
+                    {
+                        ProductOrderNo = "product",
+                        ReferenceNo = "referencce",
+                        Construction = "CD",
+                        Year = "year",
+                        ListItems = new List<ItemListDetailViewModel> { new ItemListDetailViewModel()
+                        {
+                            Grade = "A",
+                            Piece = "1",
+                            MaterialName = "CD",
+                            WovenType = "",
+                            Yarn1 = "yarn1",
+                            Yarn2 = "yarn2",
+                            YarnType1 = "yt1",
+                            YarnType2 = "yt2",
+                            YarnOrigin1 = "yo1",
+                            YarnOrigin2 = "yo2",
+                            Width = "1",
+                            UomUnit = "MTR",
+                            Quantity = 1,
+                            QuantityPiece =1,
+                            ProductRemark = "",
+                            Barcode = "15-09",
+                            ProductionOrderDate = Convert.ToDateTime("01/01/2020")
+                        } }
+                } }
+            };
+    }
 
         public async Task<InventoryWeavingDocument> GetTestData()
         {

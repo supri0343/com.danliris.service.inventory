@@ -25,6 +25,7 @@ namespace Com.Danliris.Service.Inventory.WebApi.Controllers.v1.WeavingInventory
     public class WeavingInventoryOutController : Controller
     {
         protected IIdentityService IdentityService;
+        protected readonly IMapper Mapper;
         protected readonly IValidateService ValidateService;
         protected readonly IInventoryWeavingDocumentOutService Service;
         protected readonly string ApiVersion;
@@ -33,6 +34,7 @@ namespace Com.Danliris.Service.Inventory.WebApi.Controllers.v1.WeavingInventory
 
         public WeavingInventoryOutController(IIdentityService identityService, IValidateService validateService, IInventoryWeavingDocumentOutService service, IMapper mapper)
         {
+            Mapper = mapper;
             IdentityService = identityService;
             ValidateService = validateService;
             Service = service;

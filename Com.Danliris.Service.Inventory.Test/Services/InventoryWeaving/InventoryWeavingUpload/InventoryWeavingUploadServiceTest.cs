@@ -189,6 +189,15 @@ namespace Com.Danliris.Service.Inventory.Test.Services.InventoryWeaving.Inventor
             Assert.NotNull(Response);
         }
 
+        [Fact]
+        public async Task Should_Success_MapToModelUpdate()
+        {
+            InventoryWeavingDocumentUploadService service = new InventoryWeavingDocumentUploadService(GetServiceProvider().Object, _dbContext(GetCurrentMethod()));
+
+            var data = _dataUtilDoc(service).UpdateData();
+            var Response = await service.MapToModelUpdate(data);
+            //Assert.NotNull(Response);
+        }
 
         [Fact]
         public async Task Should_Success_ReadById()

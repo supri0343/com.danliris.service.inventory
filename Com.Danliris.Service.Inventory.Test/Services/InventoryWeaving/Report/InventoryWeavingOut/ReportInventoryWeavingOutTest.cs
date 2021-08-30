@@ -105,8 +105,8 @@ namespace Com.Danliris.Service.Inventory.Test.Services.InventoryWeaving.Report.I
         public async void Should_Success_GetMaterial()
         {
             InventoryWeavingDocumentOutService service = new InventoryWeavingDocumentOutService(GetServiceProvider().Object, _dbContext(GetCurrentMethod()));
-
-            var data = _dataUtilDoc(service).GetNewData();
+            
+            var data = _dataUtilDoc(service).GetMaterialList();
             var Response = service.GetMaterialItemList("{}");
             Assert.NotNull(Response);
         }
