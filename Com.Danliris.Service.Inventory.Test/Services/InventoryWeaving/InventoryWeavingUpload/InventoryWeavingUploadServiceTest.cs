@@ -129,7 +129,7 @@ namespace Com.Danliris.Service.Inventory.Test.Services.InventoryWeaving.Inventor
                     Qty = "1",
                     QtyPiece = "1",
                     Barcode = "15-09",
-                    ProductionOrderDate = Convert.ToDateTime("01/01/2020"),
+                    ProductionOrderDate = DateTime.Now,
                     ProductionOrderNo = "a",
                     
                 }
@@ -169,7 +169,7 @@ namespace Com.Danliris.Service.Inventory.Test.Services.InventoryWeaving.Inventor
                     Qty = "1",
                     QtyPiece = "1",
                     Barcode = "15-09",
-                    ProductionOrderDate = Convert.ToDateTime("01/01/2020"),
+                    ProductionOrderDate = DateTime.Now,
                     ProductionOrderNo = "a",
                 }
             };
@@ -247,7 +247,7 @@ namespace Com.Danliris.Service.Inventory.Test.Services.InventoryWeaving.Inventor
                     Qty = "1",
                     QtyPiece = "1",
                     Barcode = "15-09",
-                    ProductionOrderDate = Convert.ToDateTime("01/01/2020"),
+                    ProductionOrderDate = DateTime.Now,
                     ProductionOrderNo = "a",
                     
                 }
@@ -331,7 +331,7 @@ namespace Com.Danliris.Service.Inventory.Test.Services.InventoryWeaving.Inventor
                 QuantityPiece = 2,
                 ProductRemark = "",
                 Barcode = "15-09",
-                ProductionOrderDate = Convert.ToDateTime("01/01/2020"),
+                ProductionOrderDate = DateTime.Now,
                 InventoryWeavingDocumentId = 1,
             });
 
@@ -358,5 +358,22 @@ namespace Com.Danliris.Service.Inventory.Test.Services.InventoryWeaving.Inventor
             await Assert.ThrowsAnyAsync<Exception>(() => service.UpdateAsync(0, null));
         }
 
+        [Fact]
+        public async Task GetDataMonitoring()
+        {
+            InventoryWeavingDocumentUploadService service = new InventoryWeavingDocumentUploadService(GetServiceProvider().Object, _dbContext(GetCurrentMethod()));
+
+            var data = _dataUtilDoc(service).GetItemVM();
+            var response = service.GetDataMonitoring("", null, null, 7);
+        }
+
+        [Fact]
+        public async Task GetExistingModel()
+        {
+            InventoryWeavingDocumentUploadService service = new InventoryWeavingDocumentUploadService(GetServiceProvider().Object, _dbContext(GetCurrentMethod()));
+
+            var data = _dataUtilDoc(service).GetNewData();
+            var response = await service.GetExistingModel(new int[1]);
+        }
     }
 }

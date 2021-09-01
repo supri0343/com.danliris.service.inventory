@@ -52,13 +52,30 @@ namespace Com.Danliris.Service.Inventory.Test.DataUtils.InventoryWeavingDataUtil
                     QuantityPiece =1,
                     ProductRemark = "",
                     Barcode = "15-09",
-                    ProductionOrderDate = Convert.ToDateTime("01/01/2020"),
+                    ProductionOrderDate = DateTime.Now,
                     InventoryWeavingDocumentId = 1,
                     
                 } }
             };
         }
 
+        public InventoryWeavingItemViewModel GetItemVM()
+        {
+
+            return new InventoryWeavingItemViewModel
+            {
+                Date = DateTimeOffset.Now,
+                BonNo = "test01",
+                ReferenceNo = "referencce",
+                Construction = "CD",
+                Grade = "A",
+                Piece = "1",
+                Quantity = 1,
+                QuantityPiece = 1,
+                Barcode = "15-09",
+                ProductionOrderDate = DateTime.Now,
+            };
+        }
 
         public InventoryWeavingDocumentViewModel GetNewData1()
         {
@@ -96,7 +113,7 @@ namespace Com.Danliris.Service.Inventory.Test.DataUtils.InventoryWeavingDataUtil
                         quantityPiece =1,
                         productRemark = "",
                         barcode = "15-09",
-                        productionOrderDate = Convert.ToDateTime("01/01/2020"),
+                        productionOrderDate = DateTime.Now,
                         InventoryWeavingDocumentId = 1,
                 } }
             };
@@ -124,7 +141,7 @@ namespace Com.Danliris.Service.Inventory.Test.DataUtils.InventoryWeavingDataUtil
                     Qty = 1,
                     QtyPiece = 1,
                     Barcode = "15-09",
-                    ProductionOrderDate = Convert.ToDateTime("01/01/2020"),
+                    ProductionOrderDate = DateTime.Now,
                     ProductionOrderNo = "a",
              
             };
@@ -171,6 +188,8 @@ namespace Com.Danliris.Service.Inventory.Test.DataUtils.InventoryWeavingDataUtil
                                 QtyPiece = 1,
                                 ProductRemark = "remark",
                                 IsSave = true,
+                                Barcode = "15-09",
+                                ProductionOrderDate = DateTime.Now,
                             }
                         }
                     }

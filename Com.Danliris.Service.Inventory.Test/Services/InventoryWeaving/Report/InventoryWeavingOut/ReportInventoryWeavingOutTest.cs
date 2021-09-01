@@ -110,7 +110,7 @@ namespace Com.Danliris.Service.Inventory.Test.Services.InventoryWeaving.Report.I
             var Response = service.GetMaterialItemList("{}");
             Assert.NotNull(Response);
         }
-
+        
         [Fact]
         public async Task Should_Success_MapToModel()
         {
@@ -176,12 +176,10 @@ namespace Com.Danliris.Service.Inventory.Test.Services.InventoryWeaving.Report.I
             {
                 new InventoryWeavingUploadCsvOutViewModel
                 {
-                    ReferenceNo = "reference",
-                    ProductionOrderNo = "a",
+                    ReferenceNo = "",
                     Construction = "CD",
                     MaterialName = "CD",
                     WovenType = "a",
-                    Piece = "1",
                     Width = "1",
                     Yarn1 = "yarn1",
                     Yarn2 = "yarn2",
@@ -189,11 +187,13 @@ namespace Com.Danliris.Service.Inventory.Test.Services.InventoryWeaving.Report.I
                     YarnType2 = "yt2",
                     YarnOrigin1 = "yo1",
                     YarnOrigin2 = "yo2",
+                    ProductionOrderNo = "",
                     Grade = "a",
+                    Piece = "1",
                     Qty = "1",
                     QtyPiece = "1",
                     Barcode = "15-09",
-                    ProductionOrderDate = Convert.ToDateTime("01/01/2020")
+                    ProductionOrderDate = DateTime.Now,
                 }
             };
 
@@ -214,8 +214,8 @@ namespace Com.Danliris.Service.Inventory.Test.Services.InventoryWeaving.Report.I
             {
                 new InventoryWeavingUploadCsvOutViewModel
                 {
-                    ReferenceNo = "reference",
-                    ProductionOrderNo = "a",
+                    ReferenceNo = "",
+                    ProductionOrderNo = "",
                     Construction = "CD",
                     MaterialName = "CD",
                     WovenType = "a",
@@ -231,7 +231,7 @@ namespace Com.Danliris.Service.Inventory.Test.Services.InventoryWeaving.Report.I
                     Qty = "1",
                     QtyPiece = "1",
                     Barcode = "15-09",
-                    ProductionOrderDate = Convert.ToDateTime("01/01/2020")
+                    ProductionOrderDate = DateTime.Now,
                 }
             };
 

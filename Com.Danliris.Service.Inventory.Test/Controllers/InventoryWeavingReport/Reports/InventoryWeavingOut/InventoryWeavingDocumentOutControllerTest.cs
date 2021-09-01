@@ -49,7 +49,7 @@ namespace Com.Danliris.Service.Inventory.Test.Controllers.InventoryWeavingReport
         {
             Mock<IServiceProvider> serviceProvider = new Mock<IServiceProvider>();
             List<ValidationResult> validationResults = new List<ValidationResult>();
-            System.ComponentModel.DataAnnotations.ValidationContext validationContext = new System.ComponentModel.DataAnnotations.ValidationContext(viewModel, serviceProvider.Object, null);
+            System.ComponentModel.DataAnnotations.ValidationContext validationContext = new System.ComponentModel.DataAnnotations.ValidationContext(ViewModel, serviceProvider.Object, null);
             return new ServiceValidationExeption(validationContext, validationResults);
         }
 
@@ -106,7 +106,7 @@ namespace Com.Danliris.Service.Inventory.Test.Controllers.InventoryWeavingReport
             {
                 Date = DateTimeOffset.Now,
                 BonNo = "test01",
-                BonType = "weaving",
+                BonType = "PRODUKSI",
                 StorageCode = "test01",
                 StorageId = 2,
                 StorageName = "Test",

@@ -53,7 +53,7 @@ namespace Com.Danliris.Service.Inventory.Test.DataUtils.InventoryWeavingDataUtil
                     ProductRemark = "",
                     InventoryWeavingDocumentId = 1,
                     Barcode = "15-09",
-                    ProductionOrderDate = Convert.ToDateTime("01/01/2020")
+                    ProductionOrderDate = DateTime.Now,
                 } }
             };
         }
@@ -96,7 +96,7 @@ namespace Com.Danliris.Service.Inventory.Test.DataUtils.InventoryWeavingDataUtil
                             QuantityPiece =1,
                             ProductRemark = "",
                             Barcode = "15-09",
-                            ProductionOrderDate = Convert.ToDateTime("01/01/2020")
+                            ProductionOrderDate = DateTime.Now,
                         } }
 
                 } }
@@ -138,7 +138,7 @@ namespace Com.Danliris.Service.Inventory.Test.DataUtils.InventoryWeavingDataUtil
                         QuantityPiece =1,
                         ProductRemark = "",
                         Barcode = "15-09",
-                        ProductionOrderDate = Convert.ToDateTime("01/01/2020")
+                        ProductionOrderDate = DateTime.Now,
                 } }
             };
         }
@@ -165,7 +165,7 @@ namespace Com.Danliris.Service.Inventory.Test.DataUtils.InventoryWeavingDataUtil
                 Qty = 1,
                 QtyPiece = 1,
                 Barcode = "15-09",
-                ProductionOrderDate = Convert.ToDateTime("01/01/2020"),
+                ProductionOrderDate = DateTime.Now,
             };
         }
 
@@ -206,11 +206,59 @@ namespace Com.Danliris.Service.Inventory.Test.DataUtils.InventoryWeavingDataUtil
                             QuantityPiece =1,
                             ProductRemark = "",
                             Barcode = "15-09",
-                            ProductionOrderDate = Convert.ToDateTime("01/01/2020")
+                            ProductionOrderDate = DateTime.Now,
                         } }
                 } }
             };
-    }
+        }
+
+        public InventoryWeavingDocumentDetailViewModel GetModelDetail()
+        {
+            return new InventoryWeavingDocumentDetailViewModel
+            {
+                Date = DateTimeOffset.Now,
+                BonNo = "test01",
+                BonType = "PRODUKSI",
+                StorageCode = "test01",
+                StorageId = 2,
+                StorageName = "Test",
+
+                Type = "OUT",
+                Detail = new List<InventoryWeavingItemDetailViewModel>
+                {
+                    new InventoryWeavingItemDetailViewModel()
+                    {
+                        ProductOrderNo = "product",
+                        ReferenceNo = "referencce",
+                        Construction = "CD",
+                        Year = "year",
+                        ListItems = new List<ItemListDetailViewModel>
+                        {
+                            new ItemListDetailViewModel()
+                            {
+                                Grade = "A",
+                                Piece = "1",
+                                MaterialName = "CD",
+                                WovenType = "",
+                                Yarn1 = "yarn1",
+                                Yarn2 = "yarn2",
+                                YarnType1 = "yt1",
+                                YarnType2 = "yt2",
+                                YarnOrigin1 = "yo1",
+                                YarnOrigin2 = "yo2",
+                                Width = "1",
+                                UomUnit = "MTR",
+                                Quantity = 1,
+                                QuantityPiece =1,
+                                ProductRemark = "",
+                                Barcode = "15-09",
+                                ProductionOrderDate = DateTime.Now,
+                            }
+                        }
+                    }
+                }
+            };
+        }
 
         public async Task<InventoryWeavingDocument> GetTestData()
         {
