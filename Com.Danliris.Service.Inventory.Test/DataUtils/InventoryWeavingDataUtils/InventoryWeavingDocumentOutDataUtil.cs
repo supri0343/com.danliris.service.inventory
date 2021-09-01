@@ -260,6 +260,27 @@ namespace Com.Danliris.Service.Inventory.Test.DataUtils.InventoryWeavingDataUtil
             };
         }
 
+        public InventoryWeavingOutReportViewModel GetQueryReport()
+        {
+            return new InventoryWeavingOutReportViewModel
+            {
+                Number = 1,
+                Date = DateTimeOffset.Now,
+                BonNo = "test01",
+                Construction = "CD",
+                Grade = "A",
+                Piece = "1",
+                Quantity = 1,
+                QuantityPiece = 1,
+                QuantityTot = 1,
+                QuantityPieceTot = 1,
+                Remark = "",
+                Id = 1,
+                Barcode = "15-09",
+                ProductionOrderDate = DateTime.Now,
+            };
+        }
+
         public async Task<InventoryWeavingDocument> GetTestData()
         {
             InventoryWeavingDocument invWDoc = GetNewData();

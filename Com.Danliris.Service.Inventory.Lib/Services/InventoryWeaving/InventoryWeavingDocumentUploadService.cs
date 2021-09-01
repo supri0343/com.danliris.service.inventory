@@ -815,11 +815,11 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
                 foreach (var model in query)
                 {
                     string date = model.Date == null ? "-" : model.Date.ToOffset(new TimeSpan(offSet, 0, 0)).ToString("dd MMM yyyy", new CultureInfo("id-ID"));
-                    string tglProduksi = model.ProductionOrderDate == null ? "-" : model.ProductionOrderDate.ToString("dd MMM yyyy", new CultureInfo("id-ID"));
+                    //string tglProduksi = model.ProductionOrderDate == null ? "-" : model.ProductionOrderDate.ToString("dd MMM yyyy", new CultureInfo("id-ID"));
                     //var dateIn = model.Date.Equals(DateTimeOffset.MinValue) ? "" : model.Date.ToOffset(new TimeSpan(offSet, 0, 0)).Date.ToString("d");
 
                     dt.Rows.Add(date, model.BonNo, model.ReferenceNo, model.Construction, model.Grade, model.Quantity.ToString("N2", CultureInfo.InvariantCulture),
-                        model.QuantityPiece.ToString("N2", CultureInfo.InvariantCulture), model.Barcode, tglProduksi);
+                        model.QuantityPiece.ToString("N2", CultureInfo.InvariantCulture), model.Barcode, model.ProductionOrderDate.ToString("dd MMM yyyy", new CultureInfo("id-ID")));
 
                     //foreach (var item in model.DyeingPrintingAreaInputProductionOrders.Where(d => !d.HasOutputDocument).OrderBy(s => s.ProductionOrderNo))
                     //foreach (var item in model.DyeingPrintingAreaInputProductionOrders.OrderBy(s => s.ProductionOrderNo))

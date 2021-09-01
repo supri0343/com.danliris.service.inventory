@@ -1,50 +1,50 @@
-﻿using Com.Danliris.Service.Inventory.Lib.Services;
+﻿using AutoMapper;
 using Com.Danliris.Service.Inventory.Lib.Models.InventoryWeavingModel;
-using Com.Danliris.Service.Inventory.Lib.ViewModels.InventoryWeavingViewModel;
+using Com.Danliris.Service.Inventory.Lib.Services;
 using Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving;
+using Com.Danliris.Service.Inventory.Lib.ViewModels.InventoryWeavingViewModel;
 using Com.Danliris.Service.Inventory.WebApi.Controllers.v1.WeavingInventory;
 using Com.Moonlay.NetCore.Lib.Service;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Internal;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Primitives;
 using Moq;
 using System;
-using System.IO;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Net;
-using System.Security.Claims;
-using Xunit;
-using Com.Danliris.Service.Inventory.Lib.Helpers;
-using System.Threading.Tasks;
 using System.Linq;
-using Microsoft.Extensions.Primitives;
-using AutoMapper;
-using Microsoft.AspNetCore.Http.Internal;
+using System.Security.Claims;
 using System.Text;
+using System.Threading.Tasks;
+using Xunit;
+using System.IO;
+using System.Net;
 
-namespace Com.Danliris.Service.Inventory.Test.Controllers.InventoryWeavingReport.Reports.InventoryWeavingOut
+namespace Com.Danliris.Service.Inventory.Test.Controllers.InventoryWeavingReport
 {
-    public class InventoryWeavingDocumentOutControllerTest
+    public class InventoryWeavingOutUploadControllerTest
     {
-        //protected InventoryWeavingUploadCsvOutViewModel ViewModel
-        //{
-          //  get { return new InventoryWeavingUploadCsvOutViewModel(); }
-        //}
+        protected InventoryWeavingUploadCsvOutViewModel ViewModel
+        {
+            get { return new InventoryWeavingUploadCsvOutViewModel(); }
+        }
 
         protected InventoryWeavingDocument Model
         {
             get { return new InventoryWeavingDocument(); }
         }
-        protected InventoryWeavingDocumentOutViewModel viewModel
+
+        protected InventoryWeavingDocumentOutUploadViewModel viewmodel
         {
-            get { return new InventoryWeavingDocumentOutViewModel(); }
+            get { return new InventoryWeavingDocumentOutUploadViewModel(); }
         }
 
-        protected ServiceValidationExeption GetServiceValidationExeption()
+        protected ServiceValidationExeption GetServiceValidationException()
         {
             Mock<IServiceProvider> serviceProvider = new Mock<IServiceProvider>();
             List<ValidationResult> validationResults = new List<ValidationResult>();
-            System.ComponentModel.DataAnnotations.ValidationContext validationContext = new System.ComponentModel.DataAnnotations.ValidationContext(viewModel, serviceProvider.Object, null);
+            System.ComponentModel.DataAnnotations.ValidationContext validationContext = new System.ComponentModel.DataAnnotations.ValidationContext(viewmodel, serviceProvider.Object, null);
             return new ServiceValidationExeption(validationContext, validationResults);
         }
 
@@ -58,8 +58,9 @@ namespace Com.Danliris.Service.Inventory.Test.Controllers.InventoryWeavingReport
             var user = new Mock<ClaimsPrincipal>();
             var claims = new Claim[]
             {
-                new Claim("username", "unittestusername")
+                new Claim ("username", "unittestusername")
             };
+
             user.Setup(u => u.Claims).Returns(claims);
             WeavingInventoryOutController controller = (WeavingInventoryOutController)Activator.CreateInstance(typeof(WeavingInventoryOutController), mocks.IdentityService.Object, mocks.ValidateService.Object, mocks.service.Object, mocks.mapper.Object);
             controller.ControllerContext = new ControllerContext()
@@ -69,6 +70,7 @@ namespace Com.Danliris.Service.Inventory.Test.Controllers.InventoryWeavingReport
                     User = user.Object
                 }
             };
+
             controller.ControllerContext.HttpContext.Request.Headers["Authorization"] = "Bearer unittesttoken";
             controller.ControllerContext.HttpContext.Request.Headers["x-timezone-offset"] = "7";
             controller.ControllerContext.HttpContext.Request.Path = new PathString("/v1/unit-test");
@@ -80,10 +82,9 @@ namespace Com.Danliris.Service.Inventory.Test.Controllers.InventoryWeavingReport
             return (int)response.GetType().GetProperty("StatusCode").GetValue(response, null);
         }
 
-        //private const string URI = "v1/master/upload-garment-currencies";
-        //private const string currURI = "v1/master/upload-currencies";
+        private const string URI = "v1/master/upload-garment-currencies";
+        private const string currURI = "v1/master/upload-currencies";
 
-        /*
         [Fact]
         public void UploadUploadFile_WithoutException_ReturnOK()
         {
@@ -102,9 +103,9 @@ namespace Com.Danliris.Service.Inventory.Test.Controllers.InventoryWeavingReport
             {
                 Date = DateTimeOffset.Now,
                 BonNo = "test01",
-                BonType = "PRODUKSI",
+                BonType = "weaving",
                 StorageCode = "test01",
-                StorageId = 2,
+                StorageId = 2,  
                 StorageName = "Test",
 
                 Type = "OUT",
@@ -132,9 +133,9 @@ namespace Com.Danliris.Service.Inventory.Test.Controllers.InventoryWeavingReport
                         Quantity = 1,
                         QuantityPiece =1,
                         ProductRemark = "",
-                        Barcode = "15-09",
-                        ProductionOrderDate = Convert.ToDateTime("01/01/2020"),
                         InventoryWeavingDocumentId = 1,
+                        Barcode = "barcode",
+                        ProductionOrderDate = DateTime.Now,
                     }
                 }
             };
@@ -204,7 +205,7 @@ namespace Com.Danliris.Service.Inventory.Test.Controllers.InventoryWeavingReport
         public void UploadFile_WithException_CSVError()
         {
             string header = "bon,Benang,Anyaman,Lusi,Pakan,Lebar,JL,JP,AL,AP,Grade,Piece,Qty,QtyPiece";
-
+            
             var mockFacade = new Mock<IInventoryWeavingDocumentOutService>();
             mockFacade.Setup(f => f.UploadData(It.IsAny<InventoryWeavingDocument>(), It.IsAny<string>())).Verifiable();
             mockFacade.Setup(f => f.CsvHeaderUpload).Returns(header.Split(';').ToList());
@@ -248,158 +249,44 @@ namespace Com.Danliris.Service.Inventory.Test.Controllers.InventoryWeavingReport
             var response = controller.postCsvFileAsync("", DateTime.Now);
             Assert.NotNull(response.Result);
         }
-        */
-        [Fact]
-        public void Get_Report_Success_Read()
+        /*
+        private async Task<int> GetStatusCodePost((Mock<IIdentityService> IdentityService, Mock<IValidateService> ValidateService, Mock<IInventoryWeavingDocumentOutService> service, Mock<IMapper> mapper) mocks, int id, InventoryWeavingDocumentOutItemViewModel viewModel)
         {
-            var mocks = GetMocks();
-            mocks.service.Setup(f => f.Read(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
-                .Returns(new ListResult<InventoryWeavingDocument>(new List<InventoryWeavingDocument>(), 1, 25, 7));
-            var controller = GetController(mocks);
-            var response = controller.Get(null, 1, 25, "{}", "{}");
-            Assert.Equal((int)HttpStatusCode.OK, GetStatusCode(response));
-        }
+            WeavingInventoryOutController controller = GetController(mocks);
+            IActionResult response = await controller.Post(id, viewModel);
+        }*/
 
         [Fact]
-        public void Get_Report_Fail_Read()
+        public void GetCsv_Success_PostUpload()
         {
             var mocks = GetMocks();
-            mocks.service.Setup(f => f.Read(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
-                .Throws(new Exception());
+            mocks.service.Setup(f => f.MapToModelUpload(It.IsAny<InventoryWeavingDocumentOutUploadViewModel>()));
             var controller = GetController(mocks);
-            controller.ControllerContext.HttpContext.Request.Headers["Accept"] = "application/json";
-            var response = controller.Get(null, 1, 25, "{}", "{}");
-            Assert.Equal((int)HttpStatusCode.InternalServerError, GetStatusCode(response));
-        }
-
-        [Fact]
-        public void GetReport_Success_GetDistinctMaterialList()
-        {
-            var mocks = GetMocks();
-            mocks.service.Setup(f => f.GetDistinctMaterial(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()));
-            //.Returns(new ReadResponse<InventoryWeavingDocumentItem>.(new List<InventoryWeavingItemDetailViewModel>(), 1, Dictionary<"{}", "{}">, List<"{}">)));
-            var controller = GetController(mocks);
-            var response = controller.GetDistinctMaterial(null, 1, 25, "{}", "{}");
-            //Assert.Equal((int)HttpStatusCode.OK, GetStatusCode(response));
+            var response = controller.postCsvFileAsync("", DateTime.Now);
             Assert.NotNull(response);
         }
 
         [Fact]
-        public void GetReport_Fail_GetDistinctMaterialList()
+        public void GetCsv_Fail_PostUpload()
         {
             var mocks = GetMocks();
-            mocks.service.Setup(f => f.GetDistinctMaterial(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
-                .Throws(new Exception());
+            mocks.service.Setup(f => f.MapToModelUpload(It.IsAny<InventoryWeavingDocumentOutUploadViewModel>()));
             var controller = GetController(mocks);
             controller.ControllerContext.HttpContext.Request.Headers["Accept"] = "application/json";
-            var response = controller.GetDistinctMaterial(null, 1, 25, "{}", "{}");
-            Assert.Equal((int)HttpStatusCode.InternalServerError, GetStatusCode(response));
-        }
-
-        [Fact]
-        public void GetReport_Success_GetMaterialList()
-        {
-            var mocks = GetMocks();
-            mocks.service.Setup(f => f.GetMaterialItemList(It.IsAny<string>()))
-                .Returns(new List<InventoryWeavingItemDetailViewModel>());
-            var controller = GetController(mocks);
-            var response = controller.GetMaterial("{}");
-            //Assert.Equal((int)HttpStatusCode.OK, GetStatusCode(response));
+            var response = controller.postCsvFileAsync("", DateTime.Now);
             Assert.NotNull(response);
         }
 
         [Fact]
-        public void GetReport_Fail_GetMaterialList()
+        public void GetCsv_ValidatePost()
         {
             var mocks = GetMocks();
-            mocks.service.Setup(f => f.GetMaterialItemList(It.IsAny<String>()))
-                .Throws(new Exception());
+            mocks.ValidateService.Setup(f => f.Validate(It.IsAny<InventoryWeavingDocumentOutUploadViewModel>()));
+            mocks.service.Setup(f =>f.MapToModelUpload(It.IsAny<InventoryWeavingDocumentOutUploadViewModel>())).ReturnsAsync(Model);
             var controller = GetController(mocks);
             controller.ControllerContext.HttpContext.Request.Headers["Accept"] = "application/json";
-            var response = controller.GetMaterial(null);
-            Assert.Equal((int)HttpStatusCode.InternalServerError, GetStatusCode(response));
-        }
-
-        [Fact]
-        public void GetReport_Success_Post()
-        {
-            var mocks = GetMocks();
-            mocks.service.Setup(f => f.MapToModel(It.IsAny<InventoryWeavingDocumentOutViewModel>()));
-            var controller = GetController(mocks);
-            var response = controller.Post(viewModel);
+            var response = controller.postCsvFileAsync("PRODUKSI", DateTime.Now);
             Assert.NotNull(response);
-        }
-
-        [Fact]
-        public void GetReport_Fail_Post()
-        {
-            var mocks = GetMocks();
-            mocks.service.Setup(f => f.MapToModel(It.IsAny<InventoryWeavingDocumentOutViewModel>()))
-                .Throws(new Exception());
-            var controller = GetController(mocks);
-            controller.ControllerContext.HttpContext.Request.Headers["Accept"] = "application/json";
-            var response = controller.Post(viewModel);
-            //Assert.Equal((int)HttpStatusCode.InternalServerError, GetStatusCode(response));
-            Assert.NotNull(response);
-        }
-
-        [Fact]
-        public void GetReport_Validate_Post()
-        {
-            var mocks = GetMocks();
-            mocks.ValidateService.Setup(f => f.Validate(It.IsAny<InventoryWeavingDocumentOutViewModel>())).Throws(GetServiceValidationExeption());
-            mocks.service.Setup(f => f.MapToModel(It.IsAny<InventoryWeavingDocumentOutViewModel>())).ReturnsAsync(Model);
-            var controller = GetController(mocks);
-            controller.ControllerContext.HttpContext.Request.Headers["Accept"] = "application/json";
-            var response = controller.Post(viewModel);
-            //Assert.Equal((int)HttpStatusCode.InternalServerError, GetStatusCode(response));
-            Assert.NotNull(response);
-        }
-
-        [Fact]
-        public void GetReport_Success_ReportById()
-        {
-            var mocks = GetMocks();
-            mocks.service.Setup(f => f.ReadById(It.IsAny<int>()))
-                .Returns(new InventoryWeavingDocumentDetailViewModel());
-            var controller = GetController(mocks);
-            var response = controller.GetById(1);
-            Assert.NotNull(response);
-        }
-
-        [Fact]
-        public void GetReport_Fail_ReportById()
-        {
-            var mocks = GetMocks();
-            mocks.service.Setup(f => f.ReadById(It.IsAny<int>()))
-                .Throws(new Exception());
-            var controller = GetController(mocks);
-            controller.ControllerContext.HttpContext.Request.Headers["Accept"] = "application/json";
-            var response = controller.GetById(1);
-            Assert.Equal((int)HttpStatusCode.InternalServerError, GetStatusCode(response));
-        }
-
-        [Fact]
-        public void GetCsv_Success_GetDownloadTemplate()
-        {
-            var mocks = GetMocks();
-            mocks.service.Setup(f => f.DownloadCSVOut(It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<int>(), It.IsAny<string>()))
-                .Returns(new MemoryStream());
-            var controller = GetController(mocks);
-            var response = controller.DownloadTemplate(DateTime.MinValue, DateTime.Now, null, null);
-            Assert.NotNull(response);
-        }
-
-        [Fact]
-        public void GetCsv_Fail_GetDownloadTemplate()
-        {
-            var mocks = GetMocks();
-            mocks.service.Setup(f => f.DownloadCSVOut(It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<int>(), It.IsAny<string>()))
-                .Throws(new Exception());
-            var controller = GetController(mocks);
-            controller.ControllerContext.HttpContext.Request.Headers["Accept"] = "application/json";
-            var response = controller.DownloadTemplate(DateTime.MinValue, DateTime.Now, "{}", "{}");
-            Assert.Equal((int)HttpStatusCode.InternalServerError, GetStatusCode(response));
         }
     }
 }

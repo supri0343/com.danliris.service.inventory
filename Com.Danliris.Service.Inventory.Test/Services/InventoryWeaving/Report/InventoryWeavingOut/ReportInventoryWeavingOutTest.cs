@@ -240,6 +240,39 @@ namespace Com.Danliris.Service.Inventory.Test.Services.InventoryWeaving.Report.I
         }
 
         [Fact]
+        public void Should_Success_CheckCsv()
+        {
+            InventoryWeavingDocumentOutService service = new InventoryWeavingDocumentOutService(GetServiceProvider().Object, _dbContext(GetCurrentMethod()));
+
+            List<InventoryWeavingUploadCsvOutViewModel> CSV = new List<InventoryWeavingUploadCsvOutViewModel>
+            {
+                new InventoryWeavingUploadCsvOutViewModel
+                {
+                    ReferenceNo = "referencce",
+                    Construction = "CD",
+                    Grade = "a",
+                    Piece = "1",
+                    MaterialName = "CD",
+                    WovenType = "a",
+                    Yarn1 = "yarn1",
+                    Yarn2 = "yarn2",
+                    YarnType1 = "yt1",
+                    YarnType2 = "yt2",
+                    YarnOrigin1 = "yo1",
+                    YarnOrigin2 = "yo2",
+                    Width = "1",
+                    Qty = "1",
+                    QtyPiece = "1",
+                    Barcode = "15-09",
+                    ProductionOrderDate = DateTime.Now,
+                    ProductionOrderNo = "a",
+                }
+            };
+
+            var response = service.checkCsv(CSV);
+        }
+
+        [Fact]
         public async Task Should_Success_MapToModelUpload()
         {
             InventoryWeavingDocumentOutService service = new InventoryWeavingDocumentOutService(GetServiceProvider().Object, _dbContext(GetCurrentMethod()));
@@ -247,6 +280,16 @@ namespace Com.Danliris.Service.Inventory.Test.Services.InventoryWeaving.Report.I
             var data = _dataUtilDoc(service).GetNewData2();
             var Response = await service.MapToModelUpload(data);
             Assert.NotNull(Response);
+        }
+
+        [Fact]
+        public async void GetQueryReport()
+        {
+            InventoryWeavingDocumentOutService service = new InventoryWeavingDocumentOutService(GetServiceProvider().Object, _dbContext(GetCurrentMethod()));
+
+            var data = _dataUtilDoc(service).GetQueryReport();
+            var response = service.GetQueryReport("", null, null, 7);
+            Assert.NotNull(response);
         }
     }
 }
