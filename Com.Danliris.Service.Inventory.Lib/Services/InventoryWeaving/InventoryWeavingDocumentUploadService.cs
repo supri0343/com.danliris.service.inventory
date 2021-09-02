@@ -140,8 +140,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
                 Map(p => p.Piece).Index(12).TypeConverter<StringConverter>();
                 Map(p => p.QtyPiece).Index(13).TypeConverter<StringConverter>();
                 Map(p => p.Qty).Index(14).TypeConverter<StringConverter>();
-                
-
+                Map(p => p.Barcode).Index(15);
+                Map(p => p.ProductionOrderDate).Index(16).TypeConverter<StringConverter>();
 
             }
         }
@@ -150,7 +150,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
         {
            // "BonNo", "Benang", "Anyaman", "Lusi", "Pakan", "Lebar", "JL", "JP", "AL", "AP", "SP", "Grade", "Piece", "Qty", "QtyPiece"
 
-            "nota","benang","type","lusi","pakan","lebar","jlusi","jpakan","alusi","apakan","sp","grade","jenis","piece","meter"
+            "nota","benang","type","lusi","pakan","lebar","jlusi","jpakan","alusi","apakan","sp","grade","jenis","piece","meter","barcode","tgl"
         };
 
         public Tuple<bool, List<object>> UploadValidate(ref List<InventoryWeavingDocumentCsvViewModel> Data, List<KeyValuePair<string, StringValues>> Body)
@@ -269,6 +269,15 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
                     ErrorMessage = string.Concat(ErrorMessage, "Quantity Piece harus lebih besar dari 0, ");
                 }
 
+                if (string.IsNullOrWhiteSpace(productVM.Barcode))
+                {
+                    ErrorMessage = string.Concat(ErrorMessage, "Barcode tidak boleh kosong");
+                }
+
+                //if (string.IsNullOrWhiteSpace(productVM.ProductionOrderDate.ToString()))
+                //{
+                  //  ErrorMessage = string.Concat(ErrorMessage, "Tanggal produksi order tidak boleh kosong");
+                //}
 
                 if (string.IsNullOrEmpty(ErrorMessage))
                 {
@@ -352,7 +361,10 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
                     ProductRemark = item.ProductRemark,
                     Type = data.Type,
                     InventoryWeavingDocumentId = data.Id,
-                    InventoryWeavingDocumentItemId = item.Id
+                    InventoryWeavingDocumentItemId = item.Id,
+                    Barcode = item.Barcode,
+                    ProductionOrderDate = item.ProductionOrderDate,
+
                     //await BulkInsert(data, username);
                 };
                 MoonlayEntityExtension.FlagForCreate(movementModel, username, USER_AGENT);
@@ -407,7 +419,9 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
                     uomId = 35,
                     uomUnit = "MTR",
                     quantity = Convert.ToDouble(i.Qty),
-                    quantityPiece = Convert.ToDouble(i.QtyPiece)
+                    quantityPiece = Convert.ToDouble(i.QtyPiece),
+                    barcode = i.Barcode,
+                    productionOrderDate = i.ProductionOrderDate,
 
                 });
 
@@ -478,7 +492,10 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
                     Quantity = item.quantity,
                     QuantityPiece = item.quantityPiece,
                     ProductRemark = item.productRemark,
-                    InventoryWeavingDocumentId = item.InventoryWeavingDocumentId
+                    InventoryWeavingDocumentId = item.InventoryWeavingDocumentId,
+                    Barcode = item.barcode,
+                    ProductionOrderDate = item.productionOrderDate,
+
                 }).ToList()
             };
             return model;
@@ -525,6 +542,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
                         Quantity = d.Quantity,
                         QuantityPiece = d.QuantityPiece,
                         ProductRemark = d.ProductRemark,
+                        Barcode = d.Barcode,
+                        ProductionOrderDate = d.ProductionOrderDate,
                         //InventoryWeavingDocumentId = d.InventoryWeavingDocumentId
                     });
 
@@ -625,7 +644,11 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
                         UomUnit = s.UomUnit,
                         Quantity = s.Quantity,
                         QuantityPiece = s.QuantityPiece,
-                        ProductRemark = s.ProductRemark
+                        ProductRemark = s.ProductRemark,
+                        Barcode = s.Barcode,
+                        ProductionOrderDate = s.ProductionOrderDate,
+                        //DateTime.ParseExact(s.ProductionOrderDate.Date.ToShortDateString(), "yyyy/MM/dd hh:mm:ss", CultureInfo.CreateSpecificCulture("en-US")),
+                        //DateTime.ParseExact(Convert.ToString(s.ProductionOrderDate.Date), "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture),
                     }).ToList()
                 }).ToList()
             };
@@ -676,7 +699,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
 
             List<string> SelectedFields = new List<string>()
                    {
-                      "date", "bonNo", "referenceNo", "construction", "grade", "piece", "quantity", "quantityPiece"
+                      "date", "bonNo", "referenceNo", "construction", "grade", "piece", "quantity", "quantityPiece", "barcode", "productionOrderDate"
                    };
 
             //DateTimeOffset DateFrom = dateFrom == null ? new DateTime(1970, 1, 1) : (DateTimeOffset)dateFrom;
@@ -737,7 +760,9 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
                              Grade = b.Grade,
                              //Piece = b.Piece,
                              Quantity = b.Quantity,
-                             QuantityPiece = b.QuantityPiece
+                             QuantityPiece = b.QuantityPiece,
+                             Barcode = b.Barcode,
+                             ProductionOrderDate = b.ProductionOrderDate,
                          })
                          ;
             return query;
@@ -777,6 +802,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
             //dt.Columns.Add(new DataColumn() { ColumnName = "Piece", DataType = typeof(string) });
             dt.Columns.Add(new DataColumn() { ColumnName = "Quantity", DataType = typeof(string) });
             dt.Columns.Add(new DataColumn() { ColumnName = "Quantity Piece", DataType = typeof(string) });
+            dt.Columns.Add(new DataColumn() { ColumnName = "Barcode", DataType = typeof(string) });
+            dt.Columns.Add(new DataColumn() { ColumnName = "Tgl Order Produksi", DataType = typeof(string) });
 
 
             if (query.Count() == 0)
@@ -788,10 +815,11 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
                 foreach (var model in query)
                 {
                     string date = model.Date == null ? "-" : model.Date.ToOffset(new TimeSpan(offSet, 0, 0)).ToString("dd MMM yyyy", new CultureInfo("id-ID"));
+                    //string tglProduksi = model.ProductionOrderDate == null ? "-" : model.ProductionOrderDate.ToString("dd MMM yyyy", new CultureInfo("id-ID"));
                     //var dateIn = model.Date.Equals(DateTimeOffset.MinValue) ? "" : model.Date.ToOffset(new TimeSpan(offSet, 0, 0)).Date.ToString("d");
 
                     dt.Rows.Add(date, model.BonNo, model.ReferenceNo, model.Construction, model.Grade, model.Quantity.ToString("N2", CultureInfo.InvariantCulture),
-                        model.QuantityPiece.ToString("N2", CultureInfo.InvariantCulture));
+                        model.QuantityPiece.ToString("N2", CultureInfo.InvariantCulture), model.Barcode, model.ProductionOrderDate.ToString("dd MMM yyyy", new CultureInfo("id-ID")));
 
                     //foreach (var item in model.DyeingPrintingAreaInputProductionOrders.Where(d => !d.HasOutputDocument).OrderBy(s => s.ProductionOrderNo))
                     //foreach (var item in model.DyeingPrintingAreaInputProductionOrders.OrderBy(s => s.ProductionOrderNo))
@@ -856,7 +884,9 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
                                  Quantity = item.Quantity,
                                  QuantityPiece = item.QuantityPiece,
                                  ProductRemark = item.ProductRemark,
-                                 InventoryWeavingDocumentId = item.InventoryWeavingDocumentId
+                                 InventoryWeavingDocumentId = item.InventoryWeavingDocumentId,
+                                 Barcode = item.Barcode,
+                                 ProductionOrderDate = item.ProductionOrderDate,
                              }).ToList()
 
                          }

@@ -4,14 +4,17 @@ using Com.Danliris.Service.Inventory.Lib.ViewModels.InventoryWeavingViewModel;
 using Com.Moonlay.Models;
 using Com.Moonlay.NetCore.Lib;
 using CsvHelper;
+using CsvHelper.TypeConversion;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json;
 using OfficeOpenXml;
 using OfficeOpenXml.Style;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Dynamic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -162,7 +165,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
                Type = s.Key.Type,
                Qty = s.Sum( d => d.Quantity),
                QtyPiece = s.Sum(d => d.QuantityPiece),
-
+               Barcode = s.FirstOrDefault().Barcode,
+               ProductionOrderDate = s.FirstOrDefault().ProductionOrderDate,
                //QtyOut = 0,
                //QtyPieceOut = 0
 
@@ -192,7 +196,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
                 s.YarnOrigin1,
                 s.YarnOrigin2,
                 s.YarnType1,
-                s.YarnType2
+                s.YarnType2,
             }).Select(s => new InventoryWeavingItemDetailViewModel()
             {
 
@@ -213,6 +217,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
                     YarnType2 = item.FirstOrDefault().YarnType2,
                     //Width = item.FirstOrDefault().Width,
                     UomUnit = item.FirstOrDefault().UomUnit,
+                    Barcode = item.FirstOrDefault().Barcode,
+                    ProductionOrderDate = item.FirstOrDefault().ProductionOrderDate,
 
                     //Quantity = 0,
                     //QuantityPiece = 0,
@@ -286,6 +292,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
                         Quantity = d.Qty,
                         QuantityPiece = d.QtyPiece,
                         ProductRemark = d.ProductRemark,
+                        Barcode = d.Barcode,
+                        ProductionOrderDate = d.ProductionOrderDate,
                         //InventoryWeavingDocumentId = d.InventoryWeavingDocumentId
                     });
 
@@ -359,7 +367,10 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
                         ProductRemark = item.ProductRemark,
                         Type = model.Type,
                         InventoryWeavingDocumentId = model.Id,
-                        InventoryWeavingDocumentItemId = item.Id
+                        InventoryWeavingDocumentItemId = item.Id,
+                        Barcode = item.Barcode,
+                        ProductionOrderDate = item.ProductionOrderDate,
+
                     };
 
                     movement.FlagForCreate(IdentityService.Username, UserAgent);
@@ -535,7 +546,9 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
                         UomUnit = s.UomUnit,
                         Quantity = s.Quantity,
                         QuantityPiece = s.QuantityPiece,
-                        ProductRemark = s.ProductRemark
+                        ProductRemark = s.ProductRemark,
+                        Barcode = s.Barcode,
+                        ProductionOrderDate = s.ProductionOrderDate,
                     }).ToList()
                 }).ToList()
             };
@@ -575,11 +588,12 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
             }
         }
 
+        /* Download Csv */
         public List<string> CsvHeader { get; } = new List<string>()
         {
            // "BonNo", "Benang", "Anyaman", "Lusi", "Pakan", "Lebar", "JL", "JP", "AL", "AP", "SP", "Grade", "Piece", "Qty", "QtyPiece"
 
-            "BonNo","Tanggal","Benang","Anyaman","Lusi","Pakan","Lebar","JL","JP","AL","AP","Grade","Piece","Qty","QtyPiece"
+            "BonNo","Tanggal","Benang","Anyaman","Lusi","Pakan","Lebar","JL","JP","AL","AP","Grade","Piece","Qty","QtyPiece","Barcode","ProductionOrderDate"
         };
 
         public IQueryable<InventoryWeavingDocumentCsvOutViewModel> GetQuery(DateTime? dateFrom, DateTime? dateTo, int offset, string bonType)
@@ -616,7 +630,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
                             //Piece = b.Piece,
                             Qty = b.Quantity,
                             QtyPiece = b.QuantityPiece,
-
+                            Barcode = b.Barcode,
+                            ProductionOrderDate = b.ProductionOrderDate,
                         });
 
 
@@ -648,7 +663,9 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
                              //Piece = b.Piece,
                              Quantity = b.Quantity,
                              QuantityPiece = b.QuantityPiece,
-                             Remark = b.ProductRemark
+                             Remark = b.ProductRemark,
+                             Barcode = b.Barcode,
+                             ProductionOrderDate = b.ProductionOrderDate,
                          })
                          ;
 
@@ -673,7 +690,9 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
                               QuantityPiece = a.QuantityPiece,
                               QuantityTot = b.QuantityTot,
                               QuantityPieceTot = b.QuantityPieceTot,
-                              Remark = a.Remark
+                              Remark = a.Remark,
+                              Barcode = a.Barcode,
+                              ProductionOrderDate = a.ProductionOrderDate,
                           }
 
 
@@ -739,7 +758,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
             Query = q.AsQueryable();
 
             DataTable result = new DataTable();
-            var headers = new string[] { "No", "Nomor Bon", "Konstruksi", "Grade", "Piece", "Jumlah Meter", "Jumlah Piece", "Total", "Total1", "Keterangan" };
+            var headers = new string[] { "No", "Nomor Bon", "Konstruksi", "Grade", "Piece", "Jumlah Meter", "Jumlah Piece", "Total", "Total1", "Keterangan", "Barcode", "Tanggal Produksi" };
             var subheaders = new string[] { "Meter", "Piece" };
             for (int i = 0; i < 5; i++)
             {
@@ -751,6 +770,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
             result.Columns.Add(new DataColumn() { ColumnName = headers[7], DataType = typeof(Double) });
             result.Columns.Add(new DataColumn() { ColumnName = headers[8], DataType = typeof(Double) });
             result.Columns.Add(new DataColumn() { ColumnName = headers[9], DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = headers[10], DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = headers[11], DataType = typeof(String) });
 
             var index = 1;
             double TotalQuantity = 0;
@@ -760,6 +781,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
             {
                 TotalQuantity+= item.Quantity;
                 TotalQuantityPiece += item.QuantityPiece;
+                string tglProduksi = item.ProductionOrderDate == null ? "-" : item.ProductionOrderDate.ToString("dd MMM yyyy", new CultureInfo("id-ID"));
 
                 //result.Rows.Add(index++, item.ProductCode, item.RO, item.PlanPo, item.NoArticle, item.ProductName, item.Information, item.Buyer,
 
@@ -770,7 +792,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
 
                 result.Rows.Add(item.Number, item.BonNo, item.Construction, item.Grade, item.Piece, item.Quantity, item.QuantityPiece,
 
-                    item.QuantityTot, item.QuantityPieceTot, item.Remark);
+                    item.QuantityTot, item.QuantityPieceTot, item.Remark, item.Barcode, tglProduksi);
 
             }
 
@@ -972,6 +994,357 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
             return stream;
 
 
+        }
+
+        /* Upload Csv */
+
+        public sealed class WeavingInventoryOutMap : CsvHelper.Configuration.ClassMap<InventoryWeavingUploadCsvOutViewModel>
+        {
+            public WeavingInventoryOutMap()
+            {
+                Map(p => p.Construction).Index(0);
+                Map(p => p.MaterialName).Index(1);
+                Map(p => p.WovenType).Index(2);
+                Map(p => p.Yarn1).Index(3);
+                Map(p => p.Yarn2).Index(4);
+                Map(p => p.Width).Index(5);
+                Map(p => p.YarnType1).Index(6);
+                Map(p => p.YarnType2).Index(7);
+                Map(p => p.YarnOrigin1).Index(8);
+                Map(p => p.YarnOrigin2).Index(9);
+                Map(p => p.Grade).Index(10);
+                Map(p => p.Piece).Index(11).TypeConverter<StringConverter>();
+                Map(p => p.Qty).Index(12).TypeConverter<StringConverter>();
+                Map(p => p.QtyPiece).Index(13).TypeConverter<StringConverter>();
+                Map(p => p.Barcode).Index(14);
+                Map(p => p.ProductionOrderDate).Index(15).TypeConverter<StringConverter>();
+            }
+        }
+
+        public List<string> CsvHeaderUpload { get; } = new List<string>()
+        {
+           "Konstruksi","Benang","Anyaman","Lusi","Pakan","Lebar","JL","JP","AL","AP","Grade","Piece","Qty","QtyPiece","Barcode","ProductionOrderDate"
+
+            //"BonNo","Tanggal","Benang","Anyaman","Lusi","Pakan","Lebar","JL","JP","AL","AP","Grade","Piece","Qty","QtyPiece","Barcode","ProductionOrderDate"
+        };
+
+        public Tuple<bool, List<object>> UploadValidate (ref List<InventoryWeavingUploadCsvOutViewModel> Data, List<KeyValuePair<string, StringValues>> Body)
+        {
+            List<object> ErrorList = new List<object>();
+            string ErrorMessage;
+            bool Valid = true;
+
+            foreach (InventoryWeavingUploadCsvOutViewModel productVM in Data)
+            {
+                ErrorMessage = "";
+
+                if (string.IsNullOrWhiteSpace(productVM.Construction))
+                {
+                    ErrorMessage = string.Concat(ErrorMessage, "Konstruksi tidak boleh kosong, ");
+                }
+
+                if (string.IsNullOrWhiteSpace(productVM.MaterialName))
+                {
+                    ErrorMessage = string.Concat(ErrorMessage, "Benang tidak boleh kosong, ");
+                }
+
+                if (string.IsNullOrWhiteSpace(productVM.Width))
+                {
+                    ErrorMessage = string.Concat(ErrorMessage, "Lebar tidak boleh kosong, ");
+                }
+
+                if (string.IsNullOrWhiteSpace(productVM.Yarn1))
+                {
+                    ErrorMessage = string.Concat(ErrorMessage, "Lusi tidak boleh kosong, ");
+                }
+                
+                if (string.IsNullOrWhiteSpace(productVM.Yarn2))
+                {
+                    ErrorMessage = string.Concat(ErrorMessage, "Pakan tidak boleh kosong, ");
+                }
+
+                if (string.IsNullOrWhiteSpace(productVM.YarnType1))
+                {
+                    ErrorMessage = string.Concat(ErrorMessage, "Jenis Lusi tidak boleh kosong, ");
+                }
+
+                if (string.IsNullOrWhiteSpace(productVM.YarnType2))
+                {
+                    ErrorMessage = string.Concat(ErrorMessage, "Jenis Pakan tidak boleh kosong, ");
+                }
+
+                if (string.IsNullOrWhiteSpace(productVM.YarnOrigin1))
+                {
+                    ErrorMessage = string.Concat(ErrorMessage, "Asal Lusi tidak boleh kosong, ");
+                }
+
+                if (string.IsNullOrWhiteSpace(productVM.YarnOrigin2))
+                {
+                    ErrorMessage = string.Concat(ErrorMessage, "Asal Pakan tidak boleh kosong, ");
+                }
+
+                if (string.IsNullOrWhiteSpace(productVM.Grade))
+                {
+                    ErrorMessage = string.Concat(ErrorMessage, "Grade tidak boleh kosong, ");
+                }
+
+                double Qty = 0;
+                if (string.IsNullOrWhiteSpace(productVM.Qty))
+                {
+                    ErrorMessage = string.Concat(ErrorMessage, "Qty tidak boleh kosong, ");
+                }
+                else if (!double.TryParse(productVM.Qty, out Qty))
+                {
+                    ErrorMessage = string.Concat(ErrorMessage, "Qty harus numerik, ");
+                }
+                else if (Qty < 0)
+                {
+                    ErrorMessage = string.Concat(ErrorMessage, "Qty harus lebih besar dari 0, ");
+                }
+                else
+                {
+                    string[] QtySplit = productVM.Qty.Split('.');
+                    if (QtySplit.Count().Equals(2) && QtySplit[1].Length > 2)
+                    {
+                        ErrorMessage = string.Concat(ErrorMessage, "Qty maksimal memiliki 2 digit dibelakang koma, ");
+                    }
+                }
+
+                double QtyPiece = 0;
+                if (string.IsNullOrWhiteSpace(productVM.QtyPiece))
+                {
+                    ErrorMessage = string.Concat(ErrorMessage, "Quantity Piece tidak boleh kosong, ");
+                }
+                else if (!double.TryParse(productVM.QtyPiece, out QtyPiece))
+                {
+                    ErrorMessage = string.Concat(ErrorMessage, "Quantity Piece numerik, ");
+                }
+                else if (QtyPiece < 0)
+                {
+                    ErrorMessage = string.Concat(ErrorMessage, "Quantity Piece harus lebih besar dari 0, ");
+                }
+
+                if (string.IsNullOrWhiteSpace(productVM.Barcode))
+                {
+                    ErrorMessage = string.Concat(ErrorMessage, "Barcode tidak boleh kosong");
+                }
+
+                
+                if (string.IsNullOrEmpty(ErrorMessage))
+                {
+
+                }
+
+                if (string.IsNullOrEmpty(ErrorMessage))
+                {
+                    productVM.Qty = Qty;
+                    productVM.QtyPiece = QtyPiece;
+
+                }
+                else
+                {
+                    ErrorMessage = ErrorMessage.Remove(ErrorMessage.Length - 2);
+                    var Error = new ExpandoObject() as IDictionary<string, object>;
+
+                    Error.Add("Konstruksi", productVM.Construction);
+                    Error.Add("Benang", productVM.MaterialName);
+                    Error.Add("Lebar", productVM.Width);
+                    Error.Add("Grade", productVM.Grade);
+                    Error.Add("Lusi", productVM.Yarn1);
+                    Error.Add("Pakan", productVM.Yarn2);
+                    Error.Add("JL", productVM.YarnType1);
+                    Error.Add("JP", productVM.YarnType2);
+                    Error.Add("AL", productVM.YarnOrigin1);
+                    Error.Add("AP", productVM.YarnOrigin2);
+
+                    ErrorList.Add(Error);
+                }
+            }
+            if (ErrorList.Count > 0)
+            {
+                Valid = false;
+            }
+
+            return Tuple.Create(Valid, ErrorList);
+        }
+
+        public async Task UploadData(InventoryWeavingDocument data, string username)
+        {
+            foreach (var i in data.Items)
+            {
+                i.FlagForCreate(IdentityService.Username, UserAgent);
+                i.FlagForUpdate(IdentityService.Username, UserAgent);
+            }
+            data.FlagForCreate(IdentityService.Username, UserAgent);
+            data.FlagForUpdate(IdentityService.Username, UserAgent);
+            DbSetDoc.Add(data);
+
+            var result = await DbContext.SaveChangesAsync();
+            foreach (var item in data.Items)
+            {
+                InventoryWeavingMovement movementModel = new InventoryWeavingMovement
+                {
+                    ProductOrderName = item.ProductOrderName,
+                    BonNo = data.BonNo,
+                    ReferenceNo = item.ReferenceNo,
+                    Construction = item.Construction,
+                    Grade = item.Grade,
+                    MaterialName = item.MaterialName,
+                    WovenType = item.WovenType,
+                    Width = item.Width,
+                    Yarn1 = item.Yarn1,
+                    Yarn2 = item.Yarn2,
+                    YarnType1 = item.YarnType1,
+                    YarnType2 = item.YarnType2,
+                    YarnOrigin1 = item.YarnOrigin1,
+                    YarnOrigin2 = item.YarnOrigin2,
+                    UomId = item.UomId,
+                    UomUnit = item.UomUnit,
+                    Quantity = item.Quantity,
+                    QuantityPiece = item.QuantityPiece,
+                    ProductRemark = item.ProductRemark,
+                    Type = data.Type,
+                    InventoryWeavingDocumentId = data.Id,
+                    InventoryWeavingDocumentItemId = item.Id,
+                    Barcode = item.Barcode,
+                    ProductionOrderDate = item.ProductionOrderDate,
+
+                };
+
+                movementModel.FlagForCreate(IdentityService.Username, UserAgent);
+                movementModel.FlagForUpdate(IdentityService.Username, UserAgent);
+                DbSetMovement.Add(movementModel);
+            }
+            var result2 = await DbContext.SaveChangesAsync();
+        }
+        
+        public async Task<InventoryWeavingDocumentOutUploadViewModel> MapToViewModel(List<InventoryWeavingUploadCsvOutViewModel> csv, DateTimeOffset date, string from)
+        {
+            List<InventoryWeavingDocumentOutItemViewModel> DocsOutItems = new List<InventoryWeavingDocumentOutItemViewModel>();
+            
+            //foreach (var d in csv)
+            //{
+                //foreach (var k in DocsOutItems)
+                //{
+                    //var query = k.ListItems.Where(s => s.IsSave).ToList();
+
+                    foreach (var i in csv)
+                    {
+                        DocsOutItems.Add(new InventoryWeavingDocumentOutItemViewModel()
+                        {
+                            ProductOrderNo = i.ProductionOrderNo,
+                            ReferenceNo = i.ReferenceNo,
+                            Construction = i.Construction,
+                            Grade = i.Grade,
+                            MaterialName = i.MaterialName,
+                            WovenType = i.WovenType,
+                            Yarn1 = i.Yarn1,
+                            Yarn2 = i.Yarn2,
+                            YarnType1 = i.YarnType1,
+                            YarnType2 = i.YarnType2,
+                            YarnOrigin1 = i.YarnOrigin1,
+                            YarnOrigin2 = i.YarnOrigin2,
+                            Width = i.Width,
+                            UomUnit = "MTR",
+                            UomId = 35,
+                            Piece = i.Piece,
+                            Quantity = Convert.ToDouble(i.Qty),
+                            QuantityPiece = Convert.ToDouble(i.QtyPiece),
+                            Barcode = i.Barcode,
+                            ProductionOrderDate = i.ProductionOrderDate ,
+                        });
+                    }
+            //}
+            //}
+
+            InventoryWeavingDocumentOutUploadViewModel sPKDocView = new InventoryWeavingDocumentOutUploadViewModel
+            {
+                bonNo = GenerateBon(from, date),
+                date = date,
+                bonType = from == "PACKING" ? "PACKING" : from == "FINISHING" ? "FINISHING" :
+                           from == "PRINTING" ? "PRINTING" : from == "KOTOR" ? "KOTOR" : 
+                           from == "INSPECTING WEAVING" ? "INSPECTING WEAVING" : "LAIN-LAIN",
+                storageId = 105,
+                storageCode = "DNWDX2GZ",
+                storageName = "WEAVING 2 (EX. WEAVING 3) / WEAVING",
+                remark = "",
+                type = "OUT",
+
+                itemsOut = DocsOutItems,
+            };
+
+            return sPKDocView;
+        } 
+        
+        public async Task<InventoryWeavingDocument> MapToModelUpload(InventoryWeavingDocumentOutUploadViewModel data)
+        {
+            InventoryWeavingDocument model = new InventoryWeavingDocument
+            {
+                BonNo = data.bonNo,
+                BonType = data.bonType,
+                Date = data.date,
+                StorageId = data.storageId,
+                StorageCode = data.storageCode,
+                StorageName = data.storageName,
+                Remark = data.remark,
+                Type = data.type,
+                Items = data.itemsOut.Select(item => new InventoryWeavingDocumentItem()
+                {
+                    Id = item.Id,
+                    Active = item.Active,
+                    _CreatedUtc = item._CreatedUtc,
+                    _CreatedBy = item._CreatedBy,
+                    _CreatedAgent = item._CreatedAgent,
+                    _LastModifiedUtc = item._LastModifiedUtc,
+                    _LastModifiedBy = item._LastModifiedBy,
+                    _LastModifiedAgent = item._LastModifiedAgent,
+                    _IsDeleted = item._IsDeleted,
+                    ProductOrderName = item.ProductOrderNo,
+                    ReferenceNo = item.ReferenceNo,
+                    Construction = item.Construction,
+                    Grade = item.Grade,
+                    // Piece = item.piece,
+                    MaterialName = item.MaterialName,
+                    WovenType = item.WovenType,
+                    Width = item.Width,
+                    Yarn1 = item.Yarn1,
+                    Yarn2 = item.Yarn2,
+                    YarnType1 = item.YarnType1,
+                    YarnType2 = item.YarnType2,
+                    YarnOrigin1 = item.YarnOrigin1,
+                    YarnOrigin2 = item.YarnOrigin2,
+
+                    UomId = item.UomId,
+                    UomUnit = item.UomUnit,
+                    Quantity = item.Quantity,
+                    QuantityPiece = item.QuantityPiece,
+                    ProductRemark = item.ProductRemark,
+                    InventoryWeavingDocumentId = item.InventoryWeavingDocumentId,
+                    Barcode = item.Barcode,
+                    ProductionOrderDate = item.ProductionOrderDate,
+                }).ToList()
+            };
+            return model;
+        }
+
+        public int checkCsv(List<InventoryWeavingUploadCsvOutViewModel> data)
+        {
+            var index = 0;
+            var query = data.GroupBy(s => new { s.Barcode }).Select(x => new { x.FirstOrDefault().Barcode });
+
+            //InventoryWeavingDocumentOutUploadViewModel check = new InventoryWeavingDocumentOutUploadViewModel();
+            //List<InventoryWeavingDocumentOutItemViewModel> checkItem = new List<InventoryWeavingDocumentOutItemViewModel>();
+            foreach (var i in query)
+            {
+                var result = this.DbSetMovement.Where(s => s.Barcode.Equals(i.Barcode) && s.Type == "IN").Count();
+
+                if (result == 0)
+                {
+                    index++;
+                }
+            }
+
+            return index;
         }
     }
 }

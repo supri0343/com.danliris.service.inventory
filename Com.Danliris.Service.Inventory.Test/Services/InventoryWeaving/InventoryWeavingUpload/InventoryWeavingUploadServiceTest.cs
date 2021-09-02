@@ -52,10 +52,10 @@ namespace Com.Danliris.Service.Inventory.Test.Services.InventoryWeaving.Inventor
             return dbContext;
         }
 
-        private ReportGreigeWeavingPerGradeDataUtil _dataUtil(ReportGreigeWeavingPerGradeService service)
+        private ReportGreigeWeavingPerGradeDataUtil _dataUtil(ReportGreigeWeavingPerGradeService service, InventoryWeavingDocumentDataUtils dataDoc)
         {
             GetServiceProvider();
-            return new ReportGreigeWeavingPerGradeDataUtil(service);
+            return new ReportGreigeWeavingPerGradeDataUtil(service, dataDoc);
         }
 
         private InventoryWeavingDocumentDataUtils _dataUtilDoc(InventoryWeavingDocumentUploadService service)
@@ -128,7 +128,10 @@ namespace Com.Danliris.Service.Inventory.Test.Services.InventoryWeaving.Inventor
                     Width = "1",
                     Qty = "1",
                     QtyPiece = "1",
-                    ProductionOrderNo = "a"
+                    Barcode = "barcode",
+                    ProductionOrderDate = DateTime.Now,
+                    ProductionOrderNo = "a",
+                    
                 }
             };
 
@@ -140,7 +143,44 @@ namespace Com.Danliris.Service.Inventory.Test.Services.InventoryWeaving.Inventor
             Assert.NotNull(Response);
         }
 
+        [Fact]
+        public async void Should_Error_UploadValidate()
+        {
+            InventoryWeavingDocumentUploadService service = new InventoryWeavingDocumentUploadService(GetServiceProvider().Object, _dbContext(GetCurrentMethod()));
+            //Models.GarmentCurrency model = await DataUtil.GetTestDataAsync();
+            List<InventoryWeavingDocumentCsvViewModel> CSV = new List<InventoryWeavingDocumentCsvViewModel>
+            {
+                new InventoryWeavingDocumentCsvViewModel
+                {
+                    ReferenceNo = "",
+                    Construction = "",
+                    Grade = "",
+                    Piece = "",
+                    MaterialName = "",
+                    WovenType = "",
+                    Yarn1 = "",
+                    Yarn2 = "",
+                    YarnType1 = "",
+                    YarnType2 = "",
+                    YarnOrigin1 = "",
+                    YarnOrigin2 = "",
+                    Width = "",
+                    Qty = "",
+                    QtyPiece = "",
+                    Barcode = "",
+                    //ProductionOrderDate = DateTime.Now,
+                    ProductionOrderNo = "",
 
+                }
+            };
+
+            List<KeyValuePair<string, StringValues>> body = new List<KeyValuePair<string, StringValues>>();
+            KeyValuePair<string, StringValues> keyValue = new KeyValuePair<string, StringValues>("date", "2020-01-10");
+            body.Add(keyValue);
+
+            var Response = service.UploadValidate(ref CSV, body);
+            Assert.NotNull(Response);
+        }
         [Fact]
         public async Task Should_Success_MapToViewModel()
         {
@@ -165,7 +205,9 @@ namespace Com.Danliris.Service.Inventory.Test.Services.InventoryWeaving.Inventor
                     Width = "1",
                     Qty = "1",
                     QtyPiece = "1",
-                    ProductionOrderNo = "a"
+                    Barcode = "barcode",
+                    ProductionOrderDate = DateTime.Now,
+                    ProductionOrderNo = "a",
                 }
             };
 
@@ -184,6 +226,15 @@ namespace Com.Danliris.Service.Inventory.Test.Services.InventoryWeaving.Inventor
             Assert.NotNull(Response);
         }
 
+        [Fact]
+        public async Task Should_Success_MapToModelUpdate()
+        {
+            InventoryWeavingDocumentUploadService service = new InventoryWeavingDocumentUploadService(GetServiceProvider().Object, _dbContext(GetCurrentMethod()));
+
+            var data = _dataUtilDoc(service).UpdateData();
+            var Response = await service.MapToModelUpdate(data);
+            //Assert.NotNull(Response);
+        }
 
         [Fact]
         public async Task Should_Success_ReadById()
@@ -232,7 +283,10 @@ namespace Com.Danliris.Service.Inventory.Test.Services.InventoryWeaving.Inventor
                     Width = "1",
                     Qty = "1",
                     QtyPiece = "1",
-                    ProductionOrderNo = "a"
+                    Barcode = "barcode",
+                    ProductionOrderDate = DateTime.Now,
+                    ProductionOrderNo = "a",
+                    
                 }
             };
 
@@ -313,6 +367,8 @@ namespace Com.Danliris.Service.Inventory.Test.Services.InventoryWeaving.Inventor
                 Quantity = 2,
                 QuantityPiece = 2,
                 ProductRemark = "",
+                Barcode = "barcode",
+                ProductionOrderDate = DateTime.Now,
                 InventoryWeavingDocumentId = 1,
             });
 
@@ -339,5 +395,22 @@ namespace Com.Danliris.Service.Inventory.Test.Services.InventoryWeaving.Inventor
             await Assert.ThrowsAnyAsync<Exception>(() => service.UpdateAsync(0, null));
         }
 
+        [Fact]
+        public async Task GetDataMonitoring()
+        {
+            InventoryWeavingDocumentUploadService service = new InventoryWeavingDocumentUploadService(GetServiceProvider().Object, _dbContext(GetCurrentMethod()));
+
+            var data = _dataUtilDoc(service).GetItemVM();
+            var response = service.GetDataMonitoring("", null, null, 7);
+        }
+
+        [Fact]
+        public async Task GetExistingModel()
+        {
+            InventoryWeavingDocumentUploadService service = new InventoryWeavingDocumentUploadService(GetServiceProvider().Object, _dbContext(GetCurrentMethod()));
+
+            var data = _dataUtilDoc(service).GetNewData();
+            var response = await service.GetExistingModel(new int[1]);
+        }
     }
 }
