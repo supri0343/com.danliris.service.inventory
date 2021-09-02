@@ -115,7 +115,7 @@ namespace Com.Danliris.Service.Inventory.Test.Services.InventoryWeaving.Report.I
         public async Task Should_Success_MapToModel()
         {
             InventoryWeavingDocumentOutService service = new InventoryWeavingDocumentOutService(GetServiceProvider().Object, _dbContext(GetCurrentMethod()));
-
+            
             var data = _dataUtilDoc(service).GetNewData1();
             var Response = service.MapToModel(data);
             Assert.NotNull(Response);
@@ -194,6 +194,44 @@ namespace Com.Danliris.Service.Inventory.Test.Services.InventoryWeaving.Report.I
                     QtyPiece = "1",
                     Barcode = "barcode",
                     ProductionOrderDate = DateTime.Now,
+                }
+            };
+
+            List<KeyValuePair<string, StringValues>> body = new List<KeyValuePair<string, StringValues>>();
+            KeyValuePair<string, StringValues> keyValue = new KeyValuePair<string, StringValues>("date", "2020-01-10");
+            body.Add(keyValue);
+
+            var Response = service.UploadValidate(ref CSV, body);
+            Assert.NotNull(Response);
+        }
+
+        [Fact]
+        public async void Should_Error_UploadValidate()
+        {
+            InventoryWeavingDocumentOutService service = new InventoryWeavingDocumentOutService(GetServiceProvider().Object, _dbContext(GetCurrentMethod()));
+
+            List<InventoryWeavingUploadCsvOutViewModel> CSV = new List<InventoryWeavingUploadCsvOutViewModel>
+            {
+                new InventoryWeavingUploadCsvOutViewModel
+                {
+                    ReferenceNo = "",
+                    Construction = "",
+                    MaterialName = "",
+                    WovenType = "",
+                    Width = "",
+                    Yarn1 = "",
+                    Yarn2 = "",
+                    YarnType1 = "",
+                    YarnType2 = "",
+                    YarnOrigin1 = "",
+                    YarnOrigin2 = "",
+                    ProductionOrderNo = "",
+                    Grade = "",
+                    Piece = "",
+                    Qty = "",
+                    QtyPiece = "",
+                    Barcode = "",
+                    //ProductionOrderDate = Convert.ToDateTime(""),
                 }
             };
 

@@ -274,10 +274,10 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
                     ErrorMessage = string.Concat(ErrorMessage, "Barcode tidak boleh kosong");
                 }
 
-                if (string.IsNullOrWhiteSpace(productVM.ProductionOrderDate.ToString()))
-                {
-                    ErrorMessage = string.Concat(ErrorMessage, "Tanggal produksi order tidak boleh kosong");
-                }
+                //if (string.IsNullOrWhiteSpace(productVM.ProductionOrderDate.ToString()))
+                //{
+                  //  ErrorMessage = string.Concat(ErrorMessage, "Tanggal produksi order tidak boleh kosong");
+                //}
 
                 if (string.IsNullOrEmpty(ErrorMessage))
                 {

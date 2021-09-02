@@ -143,7 +143,44 @@ namespace Com.Danliris.Service.Inventory.Test.Services.InventoryWeaving.Inventor
             Assert.NotNull(Response);
         }
 
+        [Fact]
+        public async void Should_Error_UploadValidate()
+        {
+            InventoryWeavingDocumentUploadService service = new InventoryWeavingDocumentUploadService(GetServiceProvider().Object, _dbContext(GetCurrentMethod()));
+            //Models.GarmentCurrency model = await DataUtil.GetTestDataAsync();
+            List<InventoryWeavingDocumentCsvViewModel> CSV = new List<InventoryWeavingDocumentCsvViewModel>
+            {
+                new InventoryWeavingDocumentCsvViewModel
+                {
+                    ReferenceNo = "",
+                    Construction = "",
+                    Grade = "",
+                    Piece = "",
+                    MaterialName = "",
+                    WovenType = "",
+                    Yarn1 = "",
+                    Yarn2 = "",
+                    YarnType1 = "",
+                    YarnType2 = "",
+                    YarnOrigin1 = "",
+                    YarnOrigin2 = "",
+                    Width = "",
+                    Qty = "",
+                    QtyPiece = "",
+                    Barcode = "",
+                    //ProductionOrderDate = DateTime.Now,
+                    ProductionOrderNo = "",
 
+                }
+            };
+
+            List<KeyValuePair<string, StringValues>> body = new List<KeyValuePair<string, StringValues>>();
+            KeyValuePair<string, StringValues> keyValue = new KeyValuePair<string, StringValues>("date", "2020-01-10");
+            body.Add(keyValue);
+
+            var Response = service.UploadValidate(ref CSV, body);
+            Assert.NotNull(Response);
+        }
         [Fact]
         public async Task Should_Success_MapToViewModel()
         {

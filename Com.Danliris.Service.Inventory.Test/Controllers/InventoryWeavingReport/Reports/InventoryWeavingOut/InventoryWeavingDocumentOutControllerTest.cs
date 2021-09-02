@@ -80,10 +80,9 @@ namespace Com.Danliris.Service.Inventory.Test.Controllers.InventoryWeavingReport
             return (int)response.GetType().GetProperty("StatusCode").GetValue(response, null);
         }
 
-        //private const string URI = "v1/master/upload-garment-currencies";
-        //private const string currURI = "v1/master/upload-currencies";
-
-        /*
+        private const string URI = "v1/master/upload-garment-currencies";
+        private const string currURI = "v1/master/upload-currencies";
+        
         [Fact]
         public void UploadUploadFile_WithoutException_ReturnOK()
         {
@@ -248,7 +247,7 @@ namespace Com.Danliris.Service.Inventory.Test.Controllers.InventoryWeavingReport
             var response = controller.postCsvFileAsync("", DateTime.Now);
             Assert.NotNull(response.Result);
         }
-        */
+
         [Fact]
         public void Get_Report_Success_Read()
         {

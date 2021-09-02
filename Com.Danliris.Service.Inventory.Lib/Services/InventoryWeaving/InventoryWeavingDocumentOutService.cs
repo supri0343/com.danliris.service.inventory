@@ -1252,7 +1252,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
                             Quantity = Convert.ToDouble(i.Qty),
                             QuantityPiece = Convert.ToDouble(i.QtyPiece),
                             Barcode = i.Barcode,
-                            ProductionOrderDate = i.ProductionOrderDate,
+                            ProductionOrderDate = i.ProductionOrderDate ,
                         });
                     }
             //}
