@@ -1152,7 +1152,6 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
                     Error.Add("Grade", productVM.Grade);
                     Error.Add("Lusi", productVM.Yarn1);
                     Error.Add("Pakan", productVM.Yarn2);
-                    Error.Add("Lebar", productVM.Width);
                     Error.Add("JL", productVM.YarnType1);
                     Error.Add("JP", productVM.YarnType2);
                     Error.Add("AL", productVM.YarnOrigin1);
