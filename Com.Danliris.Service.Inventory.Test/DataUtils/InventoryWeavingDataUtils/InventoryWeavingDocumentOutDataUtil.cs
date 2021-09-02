@@ -81,7 +81,7 @@ namespace Com.Danliris.Service.Inventory.Test.DataUtils.InventoryWeavingDataUtil
                         ListItems = new List<ItemListDetailViewModel> { new ItemListDetailViewModel()
                         {
                             Grade = "A",
-                            Piece = "1",
+                            //Piece = "1",
                             MaterialName = "CD",
                             WovenType = "",
                             Yarn1 = "yarn1",

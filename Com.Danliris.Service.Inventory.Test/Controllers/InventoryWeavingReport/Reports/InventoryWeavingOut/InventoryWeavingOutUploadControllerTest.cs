@@ -21,7 +21,7 @@ using Xunit;
 using System.IO;
 using System.Net;
 
-namespace Com.Danliris.Service.Inventory.Test.Controllers.InventoryWeavingReport
+namespace Com.Danliris.Service.Inventory.Test.Controllers.InventoryWeavingReport.Reports.InventoryWeavingOut
 {
     public class InventoryWeavingOutUploadControllerTest
     {
