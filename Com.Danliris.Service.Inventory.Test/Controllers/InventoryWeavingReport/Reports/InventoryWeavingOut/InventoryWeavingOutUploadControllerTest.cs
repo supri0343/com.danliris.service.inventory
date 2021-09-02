@@ -44,7 +44,7 @@ namespace Com.Danliris.Service.Inventory.Test.Controllers.InventoryWeavingReport
         {
             Mock<IServiceProvider> serviceProvider = new Mock<IServiceProvider>();
             List<ValidationResult> validationResults = new List<ValidationResult>();
-            System.ComponentModel.DataAnnotations.ValidationContext validationContext = new System.ComponentModel.DataAnnotations.ValidationContext(viewmodel, serviceProvider.Object, null);
+            System.ComponentModel.DataAnnotations.ValidationContext validationContext = new System.ComponentModel.DataAnnotations.ValidationContext(ViewModel, serviceProvider.Object, null);
             return new ServiceValidationExeption(validationContext, validationResults);
         }
 
@@ -89,7 +89,7 @@ namespace Com.Danliris.Service.Inventory.Test.Controllers.InventoryWeavingReport
         public void UploadUploadFile_WithoutException_ReturnOK()
         {
             string header = "Konstruksi,Benang,Anyaman,Lusi,Pakan,Lebar,JL,JP,AL,AP,Grade,Piece,Qty,QtyPiece,Barcode,ProductionOrderDate";
-            string isi = "Konstruksi,Benang,Anyaman,Lusi,Pakan,Lebar,JL,JP,AL,AP,Grade,1,1,1,15-09,01/01/2020";
+            string isi = "Konstruksi,Benang,Anyaman,Lusi,Pakan,Lebar,JL,JP,AL,AP,Grade,1,1,1,barcode,01/01/2020";
 
             //---continue
             var mockFacade = new Mock<IInventoryWeavingDocumentOutService>();
@@ -229,7 +229,7 @@ namespace Com.Danliris.Service.Inventory.Test.Controllers.InventoryWeavingReport
         public void UploadFile_WithException_ErrorInFile()
         {
             string header = "Konstruksi,Benang,Anyaman,Lusi,Pakan,Lebar,JL,JP,AL,AP,Grade,Piece,Qty,QtyPiece,Barcode,ProductionOrderDate";
-            string isi = "Konstruksi,Benang,Anyaman,Lusi,Pakan,Lebar,JL,JP,AL,AP,Grade,1,1,1,15-09,01/01/2020";
+            string isi = "Konstruksi,Benang,Anyaman,Lusi,Pakan,Lebar,JL,JP,AL,AP,Grade,1,1,1,barcode,01/01/2020";
 
             var mockFacade = new Mock<IInventoryWeavingDocumentOutService>();
             mockFacade.Setup(f => f.UploadData(It.IsAny<InventoryWeavingDocument>(), It.IsAny<string>())).Verifiable();

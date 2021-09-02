@@ -128,7 +128,7 @@ namespace Com.Danliris.Service.Inventory.Test.Services.InventoryWeaving.Inventor
                     Width = "1",
                     Qty = "1",
                     QtyPiece = "1",
-                    Barcode = "15-09",
+                    Barcode = "barcode",
                     ProductionOrderDate = DateTime.Now,
                     ProductionOrderNo = "a",
                     
@@ -168,7 +168,7 @@ namespace Com.Danliris.Service.Inventory.Test.Services.InventoryWeaving.Inventor
                     Width = "1",
                     Qty = "1",
                     QtyPiece = "1",
-                    Barcode = "15-09",
+                    Barcode = "barcode",
                     ProductionOrderDate = DateTime.Now,
                     ProductionOrderNo = "a",
                 }
@@ -246,7 +246,7 @@ namespace Com.Danliris.Service.Inventory.Test.Services.InventoryWeaving.Inventor
                     Width = "1",
                     Qty = "1",
                     QtyPiece = "1",
-                    Barcode = "15-09",
+                    Barcode = "barcode",
                     ProductionOrderDate = DateTime.Now,
                     ProductionOrderNo = "a",
                     
@@ -330,7 +330,7 @@ namespace Com.Danliris.Service.Inventory.Test.Services.InventoryWeaving.Inventor
                 Quantity = 2,
                 QuantityPiece = 2,
                 ProductRemark = "",
-                Barcode = "15-09",
+                Barcode = "barcode",
                 ProductionOrderDate = DateTime.Now,
                 InventoryWeavingDocumentId = 1,
             });

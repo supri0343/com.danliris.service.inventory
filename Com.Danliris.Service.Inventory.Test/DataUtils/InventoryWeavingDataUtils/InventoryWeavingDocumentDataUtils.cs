@@ -51,7 +51,7 @@ namespace Com.Danliris.Service.Inventory.Test.DataUtils.InventoryWeavingDataUtil
                     Quantity = 1,
                     QuantityPiece =1,
                     ProductRemark = "",
-                    Barcode = "15-09",
+                    Barcode = "barcode",
                     ProductionOrderDate = DateTime.Now,
                     InventoryWeavingDocumentId = 1,
                     
@@ -72,7 +72,7 @@ namespace Com.Danliris.Service.Inventory.Test.DataUtils.InventoryWeavingDataUtil
                 Piece = "1",
                 Quantity = 1,
                 QuantityPiece = 1,
-                Barcode = "15-09",
+                Barcode = "barcode",
                 ProductionOrderDate = DateTime.Now,
             };
         }
@@ -112,7 +112,7 @@ namespace Com.Danliris.Service.Inventory.Test.DataUtils.InventoryWeavingDataUtil
                         quantity = 1,
                         quantityPiece =1,
                         productRemark = "",
-                        barcode = "15-09",
+                        barcode = "barcode",
                         productionOrderDate = DateTime.Now,
                         InventoryWeavingDocumentId = 1,
                 } }
@@ -140,7 +140,7 @@ namespace Com.Danliris.Service.Inventory.Test.DataUtils.InventoryWeavingDataUtil
                     Width = "1",
                     Qty = 1,
                     QtyPiece = 1,
-                    Barcode = "15-09",
+                    Barcode = "barcode",
                     ProductionOrderDate = DateTime.Now,
                     ProductionOrderNo = "a",
              
@@ -188,7 +188,7 @@ namespace Com.Danliris.Service.Inventory.Test.DataUtils.InventoryWeavingDataUtil
                                 QtyPiece = 1,
                                 ProductRemark = "remark",
                                 IsSave = true,
-                                Barcode = "15-09",
+                                Barcode = "barcode",
                                 ProductionOrderDate = DateTime.Now,
                             }
                         }
