@@ -315,15 +315,34 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
         private Dictionary<string, Object> GetProductFromCore(string productId)
         {
             var httpService = (IHttpService)ServiceProvider.GetService(typeof(IHttpService));
-            var responseGarmentProduct = httpService.GetAsync($"{GarmentCoreProductUri}/" + productId).Result.Content.ReadAsStringAsync();
+            var responseGarmentProduct = httpService.GetAsync($"{GarmentCoreProductUri}/" + productId).Result;//.Content.ReadAsStringAsync();
+            if (responseGarmentProduct.IsSuccessStatusCode) {
+                var content = responseGarmentProduct.Content.ReadAsStringAsync().Result;
+                Dictionary<string, object> resultGarmentProduct = JsonConvert.DeserializeObject<Dictionary<string, object>>(content);
 
-            Dictionary<string, object> resultGarmentProduct = JsonConvert.DeserializeObject<Dictionary<string, object>>(responseGarmentProduct.Result);
-            var jsonLocalCoverLetter = resultGarmentProduct.Single(p => p.Key.Equals("data")).Value;
-            var a = JsonConvert.DeserializeObject<Dictionary<string, object>>(jsonLocalCoverLetter.ToString());
-            //if (a.Count > 0)
-            //{
+                var jsonLocalCoverLetter = resultGarmentProduct.Single(p => p.Key.Equals("data")).Value;
+
+                var a = JsonConvert.DeserializeObject<Dictionary<string, object>>(jsonLocalCoverLetter.ToString());
+                //if (a.Count > 0)
+                //{
                 Dictionary<string, object> dataLocalCoverLetter = JsonConvert.DeserializeObject<Dictionary<string, object>>(jsonLocalCoverLetter.ToString());
                 return dataLocalCoverLetter;
+            }
+            //Dictionary<string, object> resultGarmentProduct = JsonConvert.DeserializeObject<Dictionary<string, object>>(responseGarmentProduct.Result);
+            //if (resultGarmentProduct.Single(p => p.Key.Equals("data")).Value != null)
+            //{
+            //    var jsonLocalCoverLetter = resultGarmentProduct.Single(p => p.Key.Equals("data")).Value;
+
+            //    var a = JsonConvert.DeserializeObject<Dictionary<string, object>>(jsonLocalCoverLetter.ToString());
+            //    //if (a.Count > 0)
+            //    //{
+            //    Dictionary<string, object> dataLocalCoverLetter = JsonConvert.DeserializeObject<Dictionary<string, object>>(jsonLocalCoverLetter.ToString());
+            //    return dataLocalCoverLetter;
+            //}
+            else
+            {
+                return null;
+            }
             //}
            // return null;
 
