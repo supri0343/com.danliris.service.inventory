@@ -140,5 +140,18 @@ namespace Com.Danliris.Service.Inventory.Test.Controllers.InventoryWeavingReport
             //Assert.Equal((int)HttpStatusCode.InternalServerError, GetStatusCode(response));
             Assert.NotNull(response);
         }
+
+        [Fact]
+        public void GetReport_Validate_Post()
+        {
+            var mocks = GetMocks();
+            mocks.ValidateService.Setup(f => f.Validate(It.IsAny<InventoryWeavingDocumentOutViewModel>())).Throws(GetServiceValidationExeption());
+            mocks.service.Setup(f => f.MapToModel(It.IsAny<InventoryWeavingDocumentOutViewModel>())).ReturnsAsync(Model);
+            var controller = GetController(mocks);
+            controller.ControllerContext.HttpContext.Request.Headers["Accept"] = "application/json";
+            var response = controller.Post(viewModel);
+            //Assert.Equal((int)HttpStatusCode.InternalServerError, GetStatusCode(response));
+            Assert.NotNull(response);
+        }
     }
 }
