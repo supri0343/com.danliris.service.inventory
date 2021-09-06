@@ -9,8 +9,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving.Reports.R
 {
     public interface IReportGreigeWeavingPerMonthService
     {
-        Task<Tuple<List<ReportGreigeWeavingPerMonthViewModel>, int>> GetStockReportGreige(DateTime? dateTo, int offset,int page, int size, string Order );
-        Task<MemoryStream> GenerateExcel(DateTime? dateTo, int offset);
+        Tuple<List<ReportGreigeWeavingPerMonthViewModel>, int> GetStockReportGreige(DateTime? dateTo, int offset,int page, int size, string Order );
+        MemoryStream GenerateExcel(DateTime? dateTo, int offset);
 
         //Task<Tuple<List<ReportGreigeWeavingAllDataViewModel>, int>> GetStockReportGreige(DateTime? dateTo, int offset, int page, int size, string Order);
 

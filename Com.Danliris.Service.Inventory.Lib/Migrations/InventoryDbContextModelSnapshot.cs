@@ -2504,6 +2504,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Migrations
 
                     b.Property<bool>("Active");
 
+                    b.Property<string>("Barcode");
+
                     b.Property<string>("Construction")
                         .HasMaxLength(255);
 
@@ -2520,6 +2522,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Migrations
                         .HasMaxLength(255);
 
                     b.Property<string>("ProductRemark");
+
+                    b.Property<DateTime>("ProductionOrderDate");
 
                     b.Property<double>("Quantity");
 
@@ -2597,6 +2601,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Migrations
 
                     b.Property<bool>("Active");
 
+                    b.Property<string>("Barcode");
+
                     b.Property<string>("BonNo");
 
                     b.Property<string>("Construction")
@@ -2618,6 +2624,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Migrations
                         .HasMaxLength(255);
 
                     b.Property<string>("ProductRemark");
+
+                    b.Property<DateTime>("ProductionOrderDate");
 
                     b.Property<double>("Quantity");
 
