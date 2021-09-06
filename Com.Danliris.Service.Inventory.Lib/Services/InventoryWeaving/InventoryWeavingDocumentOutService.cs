@@ -1017,7 +1017,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
                 Map(p => p.Qty).Index(12).TypeConverter<StringConverter>();
                 Map(p => p.QtyPiece).Index(13).TypeConverter<StringConverter>();
                 Map(p => p.Barcode).Index(14);
-                Map(p => p.ProductionOrderDate).Index(15).TypeConverter<StringConverter>();
+                Map(p => p.ProductionOrderDate).Index(15);
             }
         }
 
