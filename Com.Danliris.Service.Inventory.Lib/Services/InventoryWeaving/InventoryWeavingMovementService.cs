@@ -20,6 +20,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
     public class InventoryWeavingMovementService : IInventoryWeavingMovementService
     {
         private string USER_AGENT = "Service";
+        private const string UserAgent = "inventory-service";
         //private const string UserAgent = "inventory-service";
         protected DbSet<InventoryWeavingMovement> DbSet;
         protected DbSet<InventoryWeavingMovement> DbSetMovement;
@@ -63,6 +64,44 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
             }
 
             return Created;
+        }
+
+
+        public async Task<int> UpdateAsync(InventoryWeavingMovement model)
+        {
+            
+                try
+                {
+                    int Updated = 0;
+
+                    var existingStock = DbSetMovement.Where(x => x.InventoryWeavingDocumentItemId == model.InventoryWeavingDocumentItemId).FirstOrDefault();
+
+
+                    if (existingStock.Quantity != model.Quantity)
+                    {
+                        existingStock.Quantity = model.Quantity;
+                    }
+                    if (existingStock.QuantityPiece != model.QuantityPiece)
+                    {
+                        existingStock.QuantityPiece = model.QuantityPiece;
+                    }
+                    //existingStock.Quantity -= model.Quantity;
+                    existingStock.FlagForUpdate(IdentityService.Username, UserAgent);
+
+                    Updated = await DbContext.SaveChangesAsync();
+
+
+
+                    //transaction.Commit();
+
+                    return Updated;
+                }
+                catch (Exception e)
+                {
+                    //transaction.Rollback();
+                    throw e;
+                }
+            
         }
 
 
@@ -211,11 +250,11 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
             dt.Columns.Add(new DataColumn() { ColumnName = "No", DataType = typeof(String) });
             dt.Columns.Add(new DataColumn() { ColumnName = "Konstruksi", DataType = typeof(String) });
             dt.Columns.Add(new DataColumn() { ColumnName = "Grade", DataType = typeof(String) });
-            dt.Columns.Add(new DataColumn() { ColumnName = "Piece", DataType = typeof(double) });
+           // dt.Columns.Add(new DataColumn() { ColumnName = "Piece", DataType = typeof(double) });
             dt.Columns.Add(new DataColumn() { ColumnName = "Meter", DataType = typeof(double) });
             dt.Columns.Add(new DataColumn() { ColumnName = "Keterangan", DataType = typeof(String) });
             if (query.ToArray().Count() == 0)
-                dt.Rows.Add("", "", "", 0, 0, ""); // to allow column name to be generated properly for empty data as template
+                dt.Rows.Add("", "", "", 0, ""); // to allow column name to be generated properly for empty data as template
             else
             {
                 int index = 0;
@@ -351,8 +390,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
             dt.Columns.Add(new DataColumn() { ColumnName = "Konstruksi", DataType = typeof(String) });
             dt.Columns.Add(new DataColumn() { ColumnName = "Kg", DataType = typeof(String) });
             dt.Columns.Add(new DataColumn() { ColumnName = "Ball", DataType = typeof(String) });
-            dt.Columns.Add(new DataColumn() { ColumnName = "Piece", DataType = typeof(double) });
-            dt.Columns.Add(new DataColumn() { ColumnName = "Meter", DataType = typeof(double) });
+            dt.Columns.Add(new DataColumn() { ColumnName = "Jml. Piece", DataType = typeof(double) });
+            dt.Columns.Add(new DataColumn() { ColumnName = "Jml. Meter", DataType = typeof(double) });
             dt.Columns.Add(new DataColumn() { ColumnName = "Ket", DataType = typeof(String) });
             if (Query.ToArray().Count() == 0)
                 dt.Rows.Add("", "", "", "", 0, 0, ""); // to allow column name to be generated properly for empty data as template
