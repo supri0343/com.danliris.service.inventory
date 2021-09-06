@@ -197,6 +197,47 @@ namespace Com.Danliris.Service.Inventory.Test.DataUtils.InventoryWeavingDataUtil
             };
         }
 
+        public InventoryWeavingDocument GetNewDataAdj()
+        {
+            return new InventoryWeavingDocument
+            {
+
+                Date = DateTimeOffset.Now,
+                BonNo = "test01",
+                BonType = "PRODUKSI",
+                StorageCode = "test01",
+                StorageId = 2,
+                StorageName = "Test",
+
+                Type = "ADJ_IN",
+                Remark = "Remark",
+                Items = new List<InventoryWeavingDocumentItem> { new InventoryWeavingDocumentItem(){
+                    ProductOrderName = "product",
+                    ReferenceNo = "referencce",
+                    Construction = "CD",
+                    Grade = "A",
+                    Piece = "1",
+                    MaterialName = "CD",
+                    WovenType = "",
+                    Yarn1 = "yarn1",
+                    Yarn2 = "yarn2",
+                    YarnType1 = "yt1",
+                    YarnType2 = "yt2",
+                    YarnOrigin1 = "yo1",
+                    YarnOrigin2 = "yo2",
+                    Width = "1",
+                    UomUnit = "MTR",
+                    UomId = 1,
+                    Quantity = 1,
+                    QuantityPiece =1,
+                    ProductRemark = "",
+                    InventoryWeavingDocumentId = 1,
+                    Barcode = "barcode",
+                    ProductionOrderDate = DateTime.Now,
+                } }
+            };
+        }
+
         public async Task<InventoryWeavingDocument> GetTestData()
         {
             InventoryWeavingDocument invWDoc = GetNewData();

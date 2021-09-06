@@ -140,6 +140,7 @@ namespace Com.Danliris.Service.Inventory.WebApi
                 .AddTransient<IGarmentLeftoverWarehouseStockBookkeepingReportService, GarmentLeftoverWarehouseStockBookkeepingReportService>()
                 .AddTransient<IReportExpenseGreigeWeavingService, ReportExpenseGreigeWeavingService>()
                 .AddTransient<IReportExpenseRecapGreigeWeavingService, ReportExpenseRecapGreigeWeavingService>()
+                .AddTransient<IInventoryWeavingDocumentAdjService, InventoryWeavingDocumentAdjService>()
                 .AddScoped<IIdentityService, IdentityService>()
                 .AddScoped<IValidateService, ValidateService>()
                 .AddScoped<IHttpService, HttpService>()
