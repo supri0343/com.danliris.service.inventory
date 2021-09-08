@@ -498,7 +498,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
 
             });
 
-            if (page == ((TotalData / size) + 1 ) && TotalData != 0)
+            if (TotalData == ((TotalData / size) + 1 ) && TotalData != 0)
             {
                 var BeginingbalanceQtyTotal = Math.Round(Query.Sum(x => x.BeginingbalanceQty), MidpointRounding.AwayFromZero);
                 var QuantityReceiptTotal = Math.Round(Query.Sum(x => x.QuantityReceipt), MidpointRounding.AwayFromZero);
