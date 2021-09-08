@@ -153,8 +153,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                         UomUnit = data.uomunit,
                         ProductCode = Product.ProductCode,
                         ProductName = Product.ProductName,
-                        ProductRemark = remarkReceipt !=null ? remarkReceipt.ProductRemark : remarkBalance.ProductRemark,
-                        FabricRemark = remarkReceipt != null ? remarkReceipt.FabricRemark : remarkBalance.FabricRemark,
+                        ProductRemark = remarkReceipt !=null ? remarkReceipt.ProductRemark : remarkBalance != null ? remarkBalance.ProductRemark : "-",
+                        FabricRemark = remarkReceipt != null ? remarkReceipt.FabricRemark : remarkBalance != null ? remarkBalance.FabricRemark : "-",
                         EndbalanceQty = data.begining + data.receipt - data.expend
                     };
                     garmentLeftoverWarehouseStockMonitoringViewModel.Add(garmentLeftover);
