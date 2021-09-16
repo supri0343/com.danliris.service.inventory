@@ -237,8 +237,10 @@ namespace Com.Danliris.Service.Inventory.WebApi.Controllers.v1.WeavingInventory
         }
         
         [HttpPost("upload-output")]
-        public async Task<IActionResult> postCsvFileAsync (string destination, DateTime date)
+        public async Task<IActionResult> postCsvFileAsync(DateTime date)
         {
+            //public async Task<IActionResult> postCsvFileAsync (string destination, DateTime date)
+
             try
             {
                 //VerifyUser();
@@ -264,8 +266,8 @@ namespace Com.Danliris.Service.Inventory.WebApi.Controllers.v1.WeavingInventory
                         Csv.Configuration.HeaderValidated = null;
 
                         List<InventoryWeavingUploadCsvOutViewModel> Data = Csv.GetRecords<InventoryWeavingUploadCsvOutViewModel>().ToList();
+                        InventoryWeavingDocumentOutUploadViewModel Data1 = await Service.MapToViewModel(Data, date);
 
-                        InventoryWeavingDocumentOutUploadViewModel Data1 = await Service.MapToViewModel(Data, date, destination);
 
                         ValidateService.Validate(Data1);
 
@@ -275,7 +277,10 @@ namespace Com.Danliris.Service.Inventory.WebApi.Controllers.v1.WeavingInventory
 
                         if (Validated.Item1)
                         {
-                            var CheckCsv = Service.checkCsv(Data);
+
+                            List<InventoryWeavingDocumentOutItemViewModel> DataCheck = Data1.itemsOut.ToList();
+                            var CheckCsv = Service.checkCsv(DataCheck);
+
 
                             if (CheckCsv == 0)
                             {

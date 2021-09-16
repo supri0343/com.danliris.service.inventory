@@ -82,20 +82,61 @@ namespace Com.Danliris.Service.Inventory.Test.Controllers.InventoryWeavingReport
             return (int)response.GetType().GetProperty("StatusCode").GetValue(response, null);
         }
 
+        public InventoryWeavingDocumentOutUploadViewModel Vm()
+        {
+            return new InventoryWeavingDocumentOutUploadViewModel
+            {
+
+                date = DateTimeOffset.Now,
+                bonNo = "test01",
+                bonType = "PRODUKSI",
+                storageCode = "test01",
+                storageId = 2,
+                storageName = "Test",
+
+                type = "OUT",
+                remark = "Remark",
+                itemsOut = new List<InventoryWeavingDocumentOutItemViewModel> { new InventoryWeavingDocumentOutItemViewModel()
+                    {
+                        ProductOrderNo = "product",
+                        ReferenceNo = "referencce",
+                        Construction = "CD",
+                        Grade = "A",
+                        Piece = "1",
+                        MaterialName = "CD",
+                        WovenType = "",
+                        Yarn1 = "yarn1",
+                        Yarn2 = "yarn2",
+                        YarnType1 = "yt1",
+                        YarnType2 = "yt2",
+                        YarnOrigin1 = "yo1",
+                        YarnOrigin2 = "yo2",
+                        Width = "1",
+                        UomUnit = "MTR",
+                        Quantity = 1,
+                        QuantityPiece =1,
+                        ProductRemark = "",
+                        Barcode = "barcode",
+                        ProductionOrderDate = DateTime.Now,
+                } }
+            };
+        }
+
         private const string URI = "v1/master/upload-garment-currencies";
         private const string currURI = "v1/master/upload-currencies";
 
         [Fact]
         public void UploadUploadFile_WithoutException_ReturnOK()
         {
-            string header = "Konstruksi,Benang,Anyaman,Lusi,Pakan,Lebar,JL,JP,AL,AP,Grade,Piece,Qty,QtyPiece,Barcode,ProductionOrderDate";
-            string isi = "Konstruksi,Benang,Anyaman,Lusi,Pakan,Lebar,JL,JP,AL,AP,Grade,1,1,1,barcode,01/01/2020";
+            string header = "nota,nmtujuan,benang,type,lusi,pakan,lebar,jlusi,jpakan,alusi,apakan,sp,grade,jenis,piece,meter";
+            string isi = "nota,nmtujuan,benang,type,lusi,pakan,lebar,jlusi,jpakan,alusi,apakan,sp,grade,1,1,1";
 
             //---continue
             var mockFacade = new Mock<IInventoryWeavingDocumentOutService>();
             mockFacade.Setup(f => f.UploadData(It.IsAny<InventoryWeavingDocument>(), It.IsAny<string>())).Returns(Task.CompletedTask);
             mockFacade.Setup(f => f.CsvHeaderUpload).Returns(header.Split(',').ToList());
             mockFacade.Setup(f => f.UploadValidate(ref It.Ref<List<InventoryWeavingUploadCsvOutViewModel>>.IsAny, It.IsAny<List<KeyValuePair<string, StringValues>>>())).Returns(new Tuple<bool, List<object>>(true, new List<object>()));
+            mockFacade.Setup(f => f.MapToViewModel(It.IsAny<List<InventoryWeavingUploadCsvOutViewModel>>(), It.IsAny<DateTimeOffset>())).ReturnsAsync(Vm);
 
             var MockMapper = new Mock<IMapper>();
 
@@ -153,7 +194,7 @@ namespace Com.Danliris.Service.Inventory.Test.Controllers.InventoryWeavingReport
             var file = new FormFile(new MemoryStream(Encoding.UTF8.GetBytes(header + "\n" + isi)), 0, Encoding.UTF8.GetBytes(header + "\n" + isi).LongLength, "Data", "test.csv");
             controller.ControllerContext.HttpContext.Request.Form = new FormCollection(new Dictionary<string, StringValues>(), new FormFileCollection { file });
 
-            var response = controller.postCsvFileAsync("PRODUKSI", DateTime.Now);
+            var response = controller.postCsvFileAsync(DateTime.Now);
             Assert.NotNull(response.Result);
         }
 
@@ -170,7 +211,7 @@ namespace Com.Danliris.Service.Inventory.Test.Controllers.InventoryWeavingReport
             var controller = GetController((mockIdentityService, mockValidateService, mockFacade, mockMapper));
             controller.ControllerContext.HttpContext.Request.Headers["x-timezone-offset"] = $"{It.IsAny<int>()}";
 
-            var response = controller.postCsvFileAsync("", DateTime.Now);
+            var response = controller.postCsvFileAsync(DateTime.Now);
             Assert.Equal((int)HttpStatusCode.InternalServerError, GetStatusCode(response.Result));
 
         }
@@ -197,7 +238,7 @@ namespace Com.Danliris.Service.Inventory.Test.Controllers.InventoryWeavingReport
             var file = new FormFile(new MemoryStream(Encoding.UTF8.GetBytes(header + "\n" + header)), 0, Encoding.UTF8.GetBytes(header + "\n" + header).LongLength, "Data", "test.csv");
             controller.ControllerContext.HttpContext.Request.Form = new FormCollection(new Dictionary<string, StringValues>(), new FormFileCollection { });
 
-            var response = controller.postCsvFileAsync("PRODUKSI", DateTime.Now);
+            var response = controller.postCsvFileAsync(DateTime.Now);
             Assert.Equal((int)HttpStatusCode.BadRequest, GetStatusCode(response.Result));
         }
 
@@ -221,7 +262,7 @@ namespace Com.Danliris.Service.Inventory.Test.Controllers.InventoryWeavingReport
             var file = new FormFile(new MemoryStream(Encoding.UTF8.GetBytes(header + "\n" + header)), 0, Encoding.UTF8.GetBytes(header + "\n" + header).LongLength, "Data", "test.csv");
             controller.ControllerContext.HttpContext.Request.Form = new FormCollection(new Dictionary<string, StringValues>(), new FormFileCollection { file });
 
-            var response = controller.postCsvFileAsync("", DateTime.Now);
+            var response = controller.postCsvFileAsync(DateTime.Now);
             Assert.Equal((int)HttpStatusCode.NotFound, GetStatusCode(response.Result));
         }
 
@@ -246,7 +287,7 @@ namespace Com.Danliris.Service.Inventory.Test.Controllers.InventoryWeavingReport
             var file = new FormFile(new MemoryStream(Encoding.UTF8.GetBytes(header + "\n" + isi)), 0, Encoding.UTF8.GetBytes(header + "\n" + isi).LongLength, "Data", "test.csv");
             controller.ControllerContext.HttpContext.Request.Form = new FormCollection(new Dictionary<string, StringValues>(), new FormFileCollection { file });
 
-            var response = controller.postCsvFileAsync("", DateTime.Now);
+            var response = controller.postCsvFileAsync(DateTime.Now);
             Assert.NotNull(response.Result);
         }
         /*
@@ -262,7 +303,7 @@ namespace Com.Danliris.Service.Inventory.Test.Controllers.InventoryWeavingReport
             var mocks = GetMocks();
             mocks.service.Setup(f => f.MapToModelUpload(It.IsAny<InventoryWeavingDocumentOutUploadViewModel>()));
             var controller = GetController(mocks);
-            var response = controller.postCsvFileAsync("", DateTime.Now);
+            var response = controller.postCsvFileAsync(DateTime.Now);
             Assert.NotNull(response);
         }
 
@@ -273,7 +314,7 @@ namespace Com.Danliris.Service.Inventory.Test.Controllers.InventoryWeavingReport
             mocks.service.Setup(f => f.MapToModelUpload(It.IsAny<InventoryWeavingDocumentOutUploadViewModel>()));
             var controller = GetController(mocks);
             controller.ControllerContext.HttpContext.Request.Headers["Accept"] = "application/json";
-            var response = controller.postCsvFileAsync("", DateTime.Now);
+            var response = controller.postCsvFileAsync(DateTime.Now);
             Assert.NotNull(response);
         }
 
@@ -285,8 +326,11 @@ namespace Com.Danliris.Service.Inventory.Test.Controllers.InventoryWeavingReport
             mocks.service.Setup(f =>f.MapToModelUpload(It.IsAny<InventoryWeavingDocumentOutUploadViewModel>())).ReturnsAsync(Model);
             var controller = GetController(mocks);
             controller.ControllerContext.HttpContext.Request.Headers["Accept"] = "application/json";
-            var response = controller.postCsvFileAsync("PRODUKSI", DateTime.Now);
+            var response = controller.postCsvFileAsync(DateTime.Now);
             Assert.NotNull(response);
         }
+
+
+
     }
 }

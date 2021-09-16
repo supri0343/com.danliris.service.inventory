@@ -516,6 +516,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
                 {
                 
                     Construction = item.First().Construction,
+                    ReferenceNo = item.First().ReferenceNo,
                   
 
                     ListItems = item.Where( s=> s._IsDeleted.Equals(false)).Select(s => new ItemListDetailViewModel()
@@ -792,7 +793,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
 
                 result.Rows.Add(item.Number, item.BonNo, item.Construction, item.Grade, item.Piece, item.Quantity, item.QuantityPiece,
 
-                    item.QuantityTot, item.QuantityPieceTot, item.Remark, item.Barcode, tglProduksi);
+                    item.QuantityTot, item.QuantityPieceTot, item.Remark, "", "");
 
             }
 
@@ -1002,28 +1003,36 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
         {
             public WeavingInventoryOutMap()
             {
-                Map(p => p.Construction).Index(0);
-                Map(p => p.MaterialName).Index(1);
-                Map(p => p.WovenType).Index(2);
-                Map(p => p.Yarn1).Index(3);
-                Map(p => p.Yarn2).Index(4);
-                Map(p => p.Width).Index(5);
-                Map(p => p.YarnType1).Index(6);
-                Map(p => p.YarnType2).Index(7);
-                Map(p => p.YarnOrigin1).Index(8);
-                Map(p => p.YarnOrigin2).Index(9);
-                Map(p => p.Grade).Index(10);
-                Map(p => p.Piece).Index(11).TypeConverter<StringConverter>();
-                Map(p => p.Qty).Index(12).TypeConverter<StringConverter>();
-                Map(p => p.QtyPiece).Index(13).TypeConverter<StringConverter>();
-                Map(p => p.Barcode).Index(14);
-                Map(p => p.ProductionOrderDate).Index(15);
+                Map(p => p.ReferenceNo).Index(0);
+                Map(p => p.DestinationArea).Index(1);
+                Map(p => p.MaterialName).Index(2);
+                Map(p => p.WovenType).Index(3);
+                Map(p => p.Yarn1).Index(4);
+                Map(p => p.Yarn2).Index(5);
+                Map(p => p.Width).Index(6);
+                Map(p => p.YarnType1).Index(7);
+                Map(p => p.YarnType2).Index(8);
+                Map(p => p.YarnOrigin1).Index(9);
+                Map(p => p.YarnOrigin2).Index(10);
+                Map(p => p.ProductionOrderNo).Index(11);
+                Map(p => p.Grade).Index(12);
+                Map(p => p.Piece).Index(13).TypeConverter<StringConverter>();
+                Map(p => p.QtyPiece).Index(14).TypeConverter<StringConverter>();
+                Map(p => p.Qty).Index(15).TypeConverter<StringConverter>();
+                //Map(p => p.Barcode).Index(14);
+                //Map(p => p.ProductionOrderDate).Index(15);
             }
         }
 
         public List<string> CsvHeaderUpload { get; } = new List<string>()
-        {
-           "Konstruksi","Benang","Anyaman","Lusi","Pakan","Lebar","JL","JP","AL","AP","Grade","Piece","Qty","QtyPiece","Barcode","ProductionOrderDate"
+        {  
+            
+            //With Barcode 
+           //"Konstruksi","Benang","Anyaman","Lusi","Pakan","Lebar","JL","JP","AL","AP","Grade","Piece","Qty","QtyPiece","Barcode","ProductionOrderDate"
+
+
+           //without Barcode
+           "nota","nmtujuan","benang","type","lusi","pakan","lebar","jlusi","jpakan","alusi","apakan","sp","grade","jenis","piece","meter"
 
             //"BonNo","Tanggal","Benang","Anyaman","Lusi","Pakan","Lebar","JL","JP","AL","AP","Grade","Piece","Qty","QtyPiece","Barcode","ProductionOrderDate"
         };
@@ -1038,54 +1047,81 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
             {
                 ErrorMessage = "";
 
-                if (string.IsNullOrWhiteSpace(productVM.Construction))
+
+                if (string.IsNullOrWhiteSpace(productVM.ReferenceNo))
                 {
-                    ErrorMessage = string.Concat(ErrorMessage, "Konstruksi tidak boleh kosong, ");
+                    ErrorMessage = string.Concat(ErrorMessage, "NOTA TIDAK BOLEH KOSONG, ");
+                }
+                if (string.IsNullOrWhiteSpace(productVM.DestinationArea))
+                {
+                    ErrorMessage = string.Concat(ErrorMessage, "TUJUAN TIDAK BOLEH KOSONG, ");
+
                 }
 
                 if (string.IsNullOrWhiteSpace(productVM.MaterialName))
                 {
-                    ErrorMessage = string.Concat(ErrorMessage, "Benang tidak boleh kosong, ");
+
+                    ErrorMessage = string.Concat(ErrorMessage, "BENANG TIDAK BOLEH KOSONG, ");
                 }
 
-                if (string.IsNullOrWhiteSpace(productVM.Width))
+                if (string.IsNullOrWhiteSpace(productVM.WovenType))
                 {
-                    ErrorMessage = string.Concat(ErrorMessage, "Lebar tidak boleh kosong, ");
+                    ErrorMessage = string.Concat(ErrorMessage, "ANYAMAN TIDAK BOLEH KOSONG, ");
+
                 }
 
                 if (string.IsNullOrWhiteSpace(productVM.Yarn1))
                 {
-                    ErrorMessage = string.Concat(ErrorMessage, "Lusi tidak boleh kosong, ");
+
+                    ErrorMessage = string.Concat(ErrorMessage, "LUSI TIDAK BOLEH KOSONG, ");
+
                 }
                 
                 if (string.IsNullOrWhiteSpace(productVM.Yarn2))
                 {
-                    ErrorMessage = string.Concat(ErrorMessage, "Pakan tidak boleh kosong, ");
+                    ErrorMessage = string.Concat(ErrorMessage, "PAKAN TIDAK BOLEH KOSONG, ");
+                }
+
+                if (string.IsNullOrWhiteSpace(productVM.Width))
+                {
+                    ErrorMessage = string.Concat(ErrorMessage, "LEBAR TIDAK BOLEH KOSONG, ");
+
                 }
 
                 if (string.IsNullOrWhiteSpace(productVM.YarnType1))
                 {
-                    ErrorMessage = string.Concat(ErrorMessage, "Jenis Lusi tidak boleh kosong, ");
+                    ErrorMessage = string.Concat(ErrorMessage, "JENIS LUSI TIDAK BOLEH KOSONG, ");
+
                 }
 
                 if (string.IsNullOrWhiteSpace(productVM.YarnType2))
                 {
-                    ErrorMessage = string.Concat(ErrorMessage, "Jenis Pakan tidak boleh kosong, ");
+                    ErrorMessage = string.Concat(ErrorMessage, "JENIS PAKAN TIDAK BOLEH KOSONG, ");
+
                 }
 
                 if (string.IsNullOrWhiteSpace(productVM.YarnOrigin1))
                 {
-                    ErrorMessage = string.Concat(ErrorMessage, "Asal Lusi tidak boleh kosong, ");
+                    ErrorMessage = string.Concat(ErrorMessage, "ASAL LUSI TIDAK BOLEH KOSONG, ");
+
                 }
 
                 if (string.IsNullOrWhiteSpace(productVM.YarnOrigin2))
                 {
-                    ErrorMessage = string.Concat(ErrorMessage, "Asal Pakan tidak boleh kosong, ");
+                    ErrorMessage = string.Concat(ErrorMessage, "ASAL PAKAN TIDAK BOLEH KOSONG, ");
+
                 }
 
                 if (string.IsNullOrWhiteSpace(productVM.Grade))
                 {
-                    ErrorMessage = string.Concat(ErrorMessage, "Grade tidak boleh kosong, ");
+
+                    ErrorMessage = string.Concat(ErrorMessage, "GRADE TIDAK BOLEH KOSONG ");
+                }
+
+                if (string.IsNullOrWhiteSpace(productVM.Piece))
+                {
+                    ErrorMessage = string.Concat(ErrorMessage, "JENIS PIECE TIDAK BOLEH KOSONG ");
+
                 }
 
                 double Qty = 0;
@@ -1124,10 +1160,10 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
                     ErrorMessage = string.Concat(ErrorMessage, "Quantity Piece harus lebih besar dari 0, ");
                 }
 
-                if (string.IsNullOrWhiteSpace(productVM.Barcode))
-                {
-                    ErrorMessage = string.Concat(ErrorMessage, "Barcode tidak boleh kosong");
-                }
+                //if (string.IsNullOrWhiteSpace(productVM.Barcode))
+                //{
+                //    ErrorMessage = string.Concat(ErrorMessage, "Barcode tidak boleh kosong");
+                //}
 
                 
                 if (string.IsNullOrEmpty(ErrorMessage))
@@ -1146,16 +1182,25 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
                     ErrorMessage = ErrorMessage.Remove(ErrorMessage.Length - 2);
                     var Error = new ExpandoObject() as IDictionary<string, object>;
 
-                    Error.Add("Konstruksi", productVM.Construction);
+                    Error.Add("Nota", productVM.BonNo);
+                    Error.Add("Tujuan", productVM.DestinationArea);
+                    //Error.Add("Konstruksi", productVM.Construction);
                     Error.Add("Benang", productVM.MaterialName);
-                    Error.Add("Lebar", productVM.Width);
-                    Error.Add("Grade", productVM.Grade);
+                    Error.Add("Anyaman", productVM.WovenType);
                     Error.Add("Lusi", productVM.Yarn1);
                     Error.Add("Pakan", productVM.Yarn2);
+                    Error.Add("Lebar", productVM.Width);
+
                     Error.Add("JL", productVM.YarnType1);
                     Error.Add("JP", productVM.YarnType2);
                     Error.Add("AL", productVM.YarnOrigin1);
                     Error.Add("AP", productVM.YarnOrigin2);
+                    Error.Add("SP", productVM.ProductionOrderNo);
+                    Error.Add("Grade", productVM.Grade);
+                    Error.Add("Jenis", productVM.Piece);
+                    Error.Add("Jumlah Piece", productVM.QtyPiece);
+                    Error.Add("Jumlah Meter", productVM.Qty);
+
 
                     ErrorList.Add(Error);
                 }
@@ -1208,6 +1253,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
                     InventoryWeavingDocumentItemId = item.Id,
                     Barcode = item.Barcode,
                     ProductionOrderDate = item.ProductionOrderDate,
+                    DestinationArea = item.DestinationArea
 
                 };
 
@@ -1218,7 +1264,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
             var result2 = await DbContext.SaveChangesAsync();
         }
         
-        public async Task<InventoryWeavingDocumentOutUploadViewModel> MapToViewModel(List<InventoryWeavingUploadCsvOutViewModel> csv, DateTimeOffset date, string from)
+
+        public async Task<InventoryWeavingDocumentOutUploadViewModel> MapToViewModel(List<InventoryWeavingUploadCsvOutViewModel> csv, DateTimeOffset date)
         {
             List<InventoryWeavingDocumentOutItemViewModel> DocsOutItems = new List<InventoryWeavingDocumentOutItemViewModel>();
             
@@ -1227,14 +1274,31 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
                 //foreach (var k in DocsOutItems)
                 //{
                     //var query = k.ListItems.Where(s => s.IsSave).ToList();
+       
 
                     foreach (var i in csv)
                     {
+
+                        var MaterialName = i.MaterialName.Trim();
+                        var WovenType = i.WovenType.Trim();
+
+                        var Yarn1 = i.Yarn1.Trim();
+                        var Yarn2 = i.Yarn2.Trim();
+                        var Width = i.Width.Trim();
+                        var YarnType1 = i.YarnType1.Trim();
+                        var YarnType2 = i.YarnType2.Trim();
+                        var YarnOrigin1 = i.YarnOrigin1.Trim();
+                        var YarnOrigin2 = i.YarnOrigin2.Trim();
+
+                        var constructonC = MaterialName + " " + WovenType + " " + Yarn1 + " " + Yarn2 + " " + Width + " "
+                                           + YarnType1 + " " + YarnType2 + " " + YarnOrigin1 + " " + YarnOrigin2;
+
                         DocsOutItems.Add(new InventoryWeavingDocumentOutItemViewModel()
                         {
                             ProductOrderNo = i.ProductionOrderNo,
                             ReferenceNo = i.ReferenceNo,
-                            Construction = i.Construction,
+                            Construction = constructonC,
+
                             Grade = i.Grade,
                             MaterialName = i.MaterialName,
                             WovenType = i.WovenType,
@@ -1250,8 +1314,12 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
                             Piece = i.Piece,
                             Quantity = Convert.ToDouble(i.Qty),
                             QuantityPiece = Convert.ToDouble(i.QtyPiece),
-                            Barcode = i.Barcode,
-                            ProductionOrderDate = i.ProductionOrderDate ,
+                            Barcode = null,
+                            ProductionOrderDate = DateTime.MinValue,
+                            DestinationArea = i.DestinationArea,
+                            Type = "OUT"
+                            
+
                         });
                     }
             //}
@@ -1259,11 +1327,10 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
 
             InventoryWeavingDocumentOutUploadViewModel sPKDocView = new InventoryWeavingDocumentOutUploadViewModel
             {
-                bonNo = GenerateBon(from, date),
+                bonNo = GenerateBonUpload(date),
                 date = date,
-                bonType = from == "PACKING" ? "PACKING" : from == "FINISHING" ? "FINISHING" :
-                           from == "PRINTING" ? "PRINTING" : from == "KOTOR" ? "KOTOR" : 
-                           from == "INSPECTING WEAVING" ? "INSPECTING WEAVING" : "LAIN-LAIN",
+                bonType ="KELUAR GUDANG" ,
+
                 storageId = 105,
                 storageCode = "DNWDX2GZ",
                 storageName = "WEAVING 2 (EX. WEAVING 3) / WEAVING",
@@ -1322,21 +1389,42 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
                     InventoryWeavingDocumentId = item.InventoryWeavingDocumentId,
                     Barcode = item.Barcode,
                     ProductionOrderDate = item.ProductionOrderDate,
+                    DestinationArea = item.DestinationArea,
+                    Type = item.Type
+
                 }).ToList()
             };
             return model;
         }
 
-        public int checkCsv(List<InventoryWeavingUploadCsvOutViewModel> data)
+
+        private string GenerateBonUpload(DateTimeOffset date)
+        {
+            var totalData = DbSetDoc.Count(s => s._CreatedUtc.Year == date.Date.Year) + 1;
+            return string.Format("{0}.{1}.{2}", "GD", date.ToString("yy"), totalData.ToString().PadLeft(4, '0'));
+        }
+
+        public int checkCsv(List<InventoryWeavingDocumentOutItemViewModel> data)
         {
             var index = 0;
-            var query = data.GroupBy(s => new { s.Barcode }).Select(x => new { x.FirstOrDefault().Barcode });
+            var query = data.GroupBy(s => new { s.MaterialName,
+                                                s.WovenType,
+                                                s.Yarn1,
+                                                s.Yarn2,
+                                                s.YarnType1,
+                                                s.YarnType2,
+                                                s.YarnOrigin1,
+                                                s.YarnOrigin2,
+                                                s.Grade
+
+                                    }).Select(x => new { x.FirstOrDefault().Construction });
 
             //InventoryWeavingDocumentOutUploadViewModel check = new InventoryWeavingDocumentOutUploadViewModel();
             //List<InventoryWeavingDocumentOutItemViewModel> checkItem = new List<InventoryWeavingDocumentOutItemViewModel>();
             foreach (var i in query)
             {
-                var result = this.DbSetMovement.Where(s => s.Barcode.Equals(i.Barcode) && s.Type == "IN").Count();
+                var result = this.DbSetMovement.Where(s => s.Construction.Equals(i.Construction) && s.Type == "IN").Count();
+
 
                 if (result == 0)
                 {
