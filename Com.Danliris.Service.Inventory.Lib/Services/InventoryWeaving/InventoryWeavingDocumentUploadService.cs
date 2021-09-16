@@ -143,6 +143,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
                 //Map(p => p.Barcode).Index(15);
                 //Map(p => p.ProductionOrderDate).Index(16);
 
+
             }
         }
 
@@ -150,8 +151,10 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
         {
            // "BonNo", "Benang", "Anyaman", "Lusi", "Pakan", "Lebar", "JL", "JP", "AL", "AP", "SP", "Grade", "Piece", "Qty", "QtyPiece"
 
+
            // "nota","benang","type","lusi","pakan","lebar","jlusi","jpakan","alusi","apakan","sp","grade","jenis","piece","meter","barcode","tgl"
            "nota","benang","type","lusi","pakan","lebar","jlusi","jpakan","alusi","apakan","sp","grade","jenis","piece","meter"
+
         };
 
         public Tuple<bool, List<object>> UploadValidate(ref List<InventoryWeavingDocumentCsvViewModel> Data, List<KeyValuePair<string, StringValues>> Body)
@@ -275,6 +278,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
                 //    ErrorMessage = string.Concat(ErrorMessage, "Barcode tidak boleh kosong");
                 //}
 
+
                 //if (string.IsNullOrWhiteSpace(productVM.ProductionOrderDate.ToString()))
                 //{
                   //  ErrorMessage = string.Concat(ErrorMessage, "Tanggal produksi order tidak boleh kosong");
@@ -369,6 +373,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
                     ProductionOrderDate = item.ProductionOrderDate,
                     DestinationArea = item.DestinationArea
 
+
                     //await BulkInsert(data, username);
                 };
                 MoonlayEntityExtension.FlagForCreate(movementModel, username, USER_AGENT);
@@ -411,6 +416,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
                     construction = constructonC,
                     grade = i.Grade,
                     // piece = i.Piece,
+
                     materialName = MaterialName,
                     wovenType = WovenType,
                     width = Width,
@@ -426,6 +432,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
                     quantityPiece = Convert.ToDouble(i.QtyPiece),
                     barcode = null,
                     productionOrderDate = DateTime.MinValue,
+
 
                 });
 
@@ -502,6 +509,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
                     DestinationArea = data.bonType,
                     Type = "IN"
                     
+
 
                 }).ToList()
             };

@@ -1047,6 +1047,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
             {
                 ErrorMessage = "";
 
+
                 if (string.IsNullOrWhiteSpace(productVM.ReferenceNo))
                 {
                     ErrorMessage = string.Concat(ErrorMessage, "NOTA TIDAK BOLEH KOSONG, ");
@@ -1054,21 +1055,26 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
                 if (string.IsNullOrWhiteSpace(productVM.DestinationArea))
                 {
                     ErrorMessage = string.Concat(ErrorMessage, "TUJUAN TIDAK BOLEH KOSONG, ");
+
                 }
 
                 if (string.IsNullOrWhiteSpace(productVM.MaterialName))
                 {
+
                     ErrorMessage = string.Concat(ErrorMessage, "BENANG TIDAK BOLEH KOSONG, ");
                 }
 
                 if (string.IsNullOrWhiteSpace(productVM.WovenType))
                 {
                     ErrorMessage = string.Concat(ErrorMessage, "ANYAMAN TIDAK BOLEH KOSONG, ");
+
                 }
 
                 if (string.IsNullOrWhiteSpace(productVM.Yarn1))
                 {
+
                     ErrorMessage = string.Concat(ErrorMessage, "LUSI TIDAK BOLEH KOSONG, ");
+
                 }
                 
                 if (string.IsNullOrWhiteSpace(productVM.Yarn2))
@@ -1079,36 +1085,43 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
                 if (string.IsNullOrWhiteSpace(productVM.Width))
                 {
                     ErrorMessage = string.Concat(ErrorMessage, "LEBAR TIDAK BOLEH KOSONG, ");
+
                 }
 
                 if (string.IsNullOrWhiteSpace(productVM.YarnType1))
                 {
                     ErrorMessage = string.Concat(ErrorMessage, "JENIS LUSI TIDAK BOLEH KOSONG, ");
+
                 }
 
                 if (string.IsNullOrWhiteSpace(productVM.YarnType2))
                 {
                     ErrorMessage = string.Concat(ErrorMessage, "JENIS PAKAN TIDAK BOLEH KOSONG, ");
+
                 }
 
                 if (string.IsNullOrWhiteSpace(productVM.YarnOrigin1))
                 {
                     ErrorMessage = string.Concat(ErrorMessage, "ASAL LUSI TIDAK BOLEH KOSONG, ");
+
                 }
 
                 if (string.IsNullOrWhiteSpace(productVM.YarnOrigin2))
                 {
                     ErrorMessage = string.Concat(ErrorMessage, "ASAL PAKAN TIDAK BOLEH KOSONG, ");
+
                 }
 
                 if (string.IsNullOrWhiteSpace(productVM.Grade))
                 {
+
                     ErrorMessage = string.Concat(ErrorMessage, "GRADE TIDAK BOLEH KOSONG ");
                 }
 
                 if (string.IsNullOrWhiteSpace(productVM.Piece))
                 {
                     ErrorMessage = string.Concat(ErrorMessage, "JENIS PIECE TIDAK BOLEH KOSONG ");
+
                 }
 
                 double Qty = 0;
@@ -1177,6 +1190,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
                     Error.Add("Lusi", productVM.Yarn1);
                     Error.Add("Pakan", productVM.Yarn2);
                     Error.Add("Lebar", productVM.Width);
+
                     Error.Add("JL", productVM.YarnType1);
                     Error.Add("JP", productVM.YarnType2);
                     Error.Add("AL", productVM.YarnOrigin1);
@@ -1186,6 +1200,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
                     Error.Add("Jenis", productVM.Piece);
                     Error.Add("Jumlah Piece", productVM.QtyPiece);
                     Error.Add("Jumlah Meter", productVM.Qty);
+
 
                     ErrorList.Add(Error);
                 }
@@ -1249,6 +1264,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
             var result2 = await DbContext.SaveChangesAsync();
         }
         
+
         public async Task<InventoryWeavingDocumentOutUploadViewModel> MapToViewModel(List<InventoryWeavingUploadCsvOutViewModel> csv, DateTimeOffset date)
         {
             List<InventoryWeavingDocumentOutItemViewModel> DocsOutItems = new List<InventoryWeavingDocumentOutItemViewModel>();
@@ -1258,8 +1274,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
                 //foreach (var k in DocsOutItems)
                 //{
                     //var query = k.ListItems.Where(s => s.IsSave).ToList();
-
-                    
+       
 
                     foreach (var i in csv)
                     {
@@ -1277,11 +1292,13 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
 
                         var constructonC = MaterialName + " " + WovenType + " " + Yarn1 + " " + Yarn2 + " " + Width + " "
                                            + YarnType1 + " " + YarnType2 + " " + YarnOrigin1 + " " + YarnOrigin2;
+
                         DocsOutItems.Add(new InventoryWeavingDocumentOutItemViewModel()
                         {
                             ProductOrderNo = i.ProductionOrderNo,
                             ReferenceNo = i.ReferenceNo,
                             Construction = constructonC,
+
                             Grade = i.Grade,
                             MaterialName = i.MaterialName,
                             WovenType = i.WovenType,
@@ -1302,6 +1319,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
                             DestinationArea = i.DestinationArea,
                             Type = "OUT"
                             
+
                         });
                     }
             //}
@@ -1312,6 +1330,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
                 bonNo = GenerateBonUpload(date),
                 date = date,
                 bonType ="KELUAR GUDANG" ,
+
                 storageId = 105,
                 storageCode = "DNWDX2GZ",
                 storageName = "WEAVING 2 (EX. WEAVING 3) / WEAVING",
@@ -1372,10 +1391,12 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
                     ProductionOrderDate = item.ProductionOrderDate,
                     DestinationArea = item.DestinationArea,
                     Type = item.Type
+
                 }).ToList()
             };
             return model;
         }
+
 
         private string GenerateBonUpload(DateTimeOffset date)
         {
@@ -1403,6 +1424,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
             foreach (var i in query)
             {
                 var result = this.DbSetMovement.Where(s => s.Construction.Equals(i.Construction) && s.Type == "IN").Count();
+
 
                 if (result == 0)
                 {

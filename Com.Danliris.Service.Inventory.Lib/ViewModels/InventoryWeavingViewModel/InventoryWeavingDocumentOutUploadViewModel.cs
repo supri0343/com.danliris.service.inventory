@@ -30,6 +30,7 @@ namespace Com.Danliris.Service.Inventory.Lib.ViewModels.InventoryWeavingViewMode
             //{
             //    yield return new ValidationResult("Destination is required", new List<string> { "destination" });
             //}
+
             
         }
     }

@@ -10,6 +10,7 @@ namespace Com.Danliris.Service.Inventory.Lib.ViewModels.InventoryWeavingViewMode
         public string BonNo { get; set; }
         //public string Tanggal { get; set; }
         public string DestinationArea { get; set; }
+
         public string ReferenceNo { get; set; }
         public string Construction { get; set; }
         public string MaterialName { get; set; }
@@ -29,6 +30,7 @@ namespace Com.Danliris.Service.Inventory.Lib.ViewModels.InventoryWeavingViewMode
 
         //public string Barcode { get; set; }
         //public DateTime ProductionOrderDate { get; set; }
+
 
 
 

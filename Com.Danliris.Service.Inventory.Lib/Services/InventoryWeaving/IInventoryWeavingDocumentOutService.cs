@@ -25,6 +25,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
         List<string> CsvHeader { get; }
         List<string> CsvHeaderUpload { get; }
         Task<InventoryWeavingDocument> MapToModelUpload(InventoryWeavingDocumentOutUploadViewModel data);
+
         Task<InventoryWeavingDocumentOutUploadViewModel> MapToViewModel(List<InventoryWeavingUploadCsvOutViewModel> data, DateTimeOffset date);
         Tuple<bool, List<object>> UploadValidate(ref List<InventoryWeavingUploadCsvOutViewModel> Data, List<KeyValuePair<string, StringValues>> Body);
         int checkCsv (List<InventoryWeavingDocumentOutItemViewModel> data);

@@ -230,7 +230,9 @@ namespace Com.Danliris.Service.Inventory.Test.Services.InventoryWeaving.Report.I
                     Piece = "",
                     Qty = "",
                     QtyPiece = "",
+
                     //Barcode = "",
+
                     //ProductionOrderDate = Convert.ToDateTime(""),
                 }
             };
@@ -270,6 +272,7 @@ namespace Com.Danliris.Service.Inventory.Test.Services.InventoryWeaving.Report.I
                     QtyPiece = "1",
                     //Barcode = "barcode",
                     //ProductionOrderDate = DateTime.Now,
+
                 }
             };
 
@@ -303,6 +306,7 @@ namespace Com.Danliris.Service.Inventory.Test.Services.InventoryWeaving.Report.I
                     QtyPiece = "1",
                     //Barcode = "barcode",
                     //ProductionOrderDate = DateTime.Now,
+
                     ProductionOrderNo = "a",
                 }
             };
