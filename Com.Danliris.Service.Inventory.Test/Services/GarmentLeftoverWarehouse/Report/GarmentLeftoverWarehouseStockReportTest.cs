@@ -194,7 +194,7 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
             var dataReceiptAcc = _dataUtilReceiptAcc(receiptFabservice).GetTestData();
 
             var dataAcc = await _dataUtilAcc(service).GetTestData();
-            var result = utilService.GetMonitoringAcc( DateTime.Now, DateTime.Now, 1, 1, 1, "{}", 7);
+            var result = utilService.GetMonitoringAcc( DateTime.Now, DateTime.Now, 1, 1, 25, "{}", 7);
 
 
             Assert.NotNull(result);
@@ -270,7 +270,7 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
             var dataReceiptFInishedGood = _dataUtilReceiptFinishedGood(receiptservice).GetTestData();
 
             var dataFinishedGood = await _dataUtilFinishedGood(service).GetTestData();
-            var result = utilService.GetMonitoringFinishedGood(DateTime.Now, DateTime.Now, 1, 1, 1, "{}", 7);
+            var result = utilService.GetMonitoringFinishedGood(DateTime.Now, DateTime.Now, 1, 1, 25, "{}", 7);
 
 
             Assert.NotNull(result);
@@ -365,7 +365,7 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
 
             var resultStock = await serviceStock.StockIn(stock, "StockReferenceNo", 1, 1);
             await serviceStock.StockIn(stock, "StockReferenceNo", 1, 1);
-            var result = utilService.GetMonitoringFabric(DateTime.Now, DateTime.Now, 1, 1, 1, "{}", 7);
+            var result = utilService.GetMonitoringFabric(DateTime.Now, DateTime.Now, 1, 1, 25, "{}", 7);
 
 
             Assert.NotNull(result);
@@ -463,7 +463,7 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
             var dataAval = await _dataUtilAval(service, GetCurrentMethod()).GetNewDataFabric();
 
             GarmentLeftoverWarehouseStockService serviceStock = new GarmentLeftoverWarehouseStockService(_dbContext(GetCurrentMethod()), GetServiceProvider().Object);
-            var result = utilService.GetMonitoringAval(DateTime.Now, DateTime.Now, 1, 1, 1, "{}",7, "AVAL FABRIC");
+            var result = utilService.GetMonitoringAval(DateTime.Now, DateTime.Now, 1, 1, 25, "{}",7, "AVAL FABRIC");
             Assert.NotNull(result);
         }
 

@@ -409,9 +409,11 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.E
                                         Code= b.UnitCode,
                                         Name=b.UnitName },
                             RONo = b.RONo,
+                            LeftoverComodityCode = b.LeftoverComodityCode,
                             LeftoverComodityName = b.LeftoverComodityName,
                             ExpenditureQuantity = b.ExpenditureQuantity,
-                            Uom ="PCS"
+                            Uom ="PCS",
+                            Price = Math.Round(b.BasicPrice * b.ExpenditureQuantity, 2)
                         };
             return Query;
         }
@@ -443,9 +445,10 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.E
 
             });
 
-            if (page == ((TotalData / size) + 1) && TotalData != 0)
+            if (TotalData == page * size && TotalData != 0)
             {
                 var QtyTotal = Query.Sum(x => x.ExpenditureQuantity);
+                var PriceTotal = Math.Round(Query.Sum(x => x.Price),2);
                 //var WeightTotal = Query.Sum(x => x.Weight);
                 ExpenditureFInishedGoodReportViewModel vm = new ExpenditureFInishedGoodReportViewModel();
 
@@ -457,9 +460,11 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.E
                 vm.ExpenditureDestinationDesc = "";
                 vm.UnitFrom = new UnitViewModel();
                 vm.RONo = "";
+                vm.LeftoverComodityCode = "";
                 vm.LeftoverComodityName = "";
                 vm.ExpenditureQuantity = QtyTotal;
                 vm.Uom = "";
+                vm.Price = PriceTotal;
 
                 Data.Add(vm);
 
@@ -473,6 +478,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.E
             Query = Query.OrderByDescending(b => b.ExpenditureDate);
 
             var QtyTotal = Query.Sum(x => x.ExpenditureQuantity);
+            var PriceTotal = Math.Round(Query.Sum(x => x.Price),2);
 
             DataTable result = new DataTable();
 
@@ -483,14 +489,16 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.E
             result.Columns.Add(new DataColumn() { ColumnName = "Keterangan Tujuan", DataType = typeof(String) });
             result.Columns.Add(new DataColumn() { ColumnName = "Unit Asal", DataType = typeof(String) });
             result.Columns.Add(new DataColumn() { ColumnName = "RO", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Kode Komoditi", DataType = typeof(String) });
             result.Columns.Add(new DataColumn() { ColumnName = "Komoditi", DataType = typeof(String) });
             result.Columns.Add(new DataColumn() { ColumnName = "Qty", DataType = typeof(double) });
             result.Columns.Add(new DataColumn() { ColumnName = "Satuan", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Harga", DataType = typeof(double) });
             result.Columns.Add(new DataColumn() { ColumnName = "Titip Jual", DataType = typeof(String) });
             result.Columns.Add(new DataColumn() { ColumnName = "No Nota Penjualan", DataType = typeof(String) });
 
             if (Query.ToArray().Count() == 0)
-                result.Rows.Add("", "", "", "", "", "", "", "", 0, "", "",""); // to allow column name to be generated properly for empty data as template
+                result.Rows.Add("", "", "", "", "", "", "", "", "", 0, "", 0, "", ""); // to allow column name to be generated properly for empty data as template
             else
             {
                 int index = 0;
@@ -499,10 +507,10 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.E
                     index++;
                     //DateTimeOffset date = item.date ?? new DateTime(1970, 1, 1);
                     //string dateString = date == new DateTime(1970, 1, 1) ? "-" : date.ToOffset(new TimeSpan(offset, 0, 0)).ToString("dd MMM yyyy", new CultureInfo("id-ID"));
-                    result.Rows.Add(index, item.FinishedGoodExpenditureNo,item.ExpenditureDate.AddHours(offset).ToString("dd MMM yyyy", new CultureInfo("id-ID")), item.ExpenditureTo,item.ExpenditureDestinationDesc,item.UnitFrom.Code,item.RONo,item.LeftoverComodityName, item.ExpenditureQuantity,item.Uom,item.Consignment,item.LocalSalesNoteNo);
+                    result.Rows.Add(index, item.FinishedGoodExpenditureNo, item.ExpenditureDate.AddHours(offset).ToString("dd MMM yyyy", new CultureInfo("id-ID")), item.ExpenditureTo, item.ExpenditureDestinationDesc, item.UnitFrom.Code, item.RONo, item.LeftoverComodityCode, item.LeftoverComodityName, item.ExpenditureQuantity, item.Uom, item.Price, item.Consignment, item.LocalSalesNoteNo);
                 }
 
-                result.Rows.Add("", "T O T A L ..........", "", "", "", "", "", "", QtyTotal, "", "", "");
+                result.Rows.Add("", "T O T A L ..........", "", "", "", "", "", "", "", QtyTotal, "", PriceTotal, "", "");
             }
 
             return Excel.CreateExcel(new List<KeyValuePair<DataTable, string>>() { new KeyValuePair<DataTable, string>(result, "Report Pengeluaran Gudang Sisa Barang Jadi") }, true);

@@ -399,9 +399,13 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
             GarmentLeftoverWarehouseExpenditureFinishedGoodService service = new GarmentLeftoverWarehouseExpenditureFinishedGoodService(_dbContext(GetCurrentMethod()), serviceProvider.Object);
 
             
-            var dataFinishedGood = await _dataUtilFinishedGood(service).GetTestData(); ;
+            var dataFinishedGood =  _dataUtilFinishedGood(service).GetNewData();
 
-            var result = utilService.GetReport( DateTime.Now, DateTime.Now, 1, 1, "{}", 7);
+            dataFinishedGood.ExpenditureDate = dataFinishedGood.ExpenditureDate.AddDays(-1);
+
+            await service.CreateAsync(dataFinishedGood);
+
+            var result = utilService.GetReport( null, DateTime.Now, 1, 1, "{}", 7);
 
 
             Assert.NotNull(result);
@@ -433,9 +437,13 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
             GarmentLeftoverWarehouseExpenditureFinishedGoodService service = new GarmentLeftoverWarehouseExpenditureFinishedGoodService(_dbContext(GetCurrentMethod()), serviceProvider.Object);
 
 
-            var dataFinishedGood = await _dataUtilFinishedGood(service).GetTestData(); ;
+            var dataFinishedGood = _dataUtilFinishedGood(service).GetNewData();
 
-            var result = utilService.GenerateExcel(DateTime.Now, DateTime.Now, 7);
+            dataFinishedGood.ExpenditureDate = dataFinishedGood.ExpenditureDate.AddDays(-1);
+
+            await service.CreateAsync(dataFinishedGood);
+
+            var result = utilService.GenerateExcel(null, DateTime.Now, 7);
 
 
             Assert.NotNull(result);
