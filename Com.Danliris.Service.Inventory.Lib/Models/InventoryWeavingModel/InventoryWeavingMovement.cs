@@ -32,6 +32,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Models.InventoryWeavingModel
         public string ProductRemark { get; set; }
         public int InventoryWeavingDocumentId { get; set; }
         public int InventoryWeavingDocumentItemId { get; set; }
+        public string DestinationArea { get; set; }
         public string Type { get; set; }
 
         public string Barcode { get; set; }

@@ -151,7 +151,7 @@ namespace Com.Danliris.Service.Inventory.Test.Controllers.InventoryWeavingReport
             var file = new FormFile(new MemoryStream(Encoding.UTF8.GetBytes(header + "\n" + isi)), 0, Encoding.UTF8.GetBytes(header + "\n" + isi).LongLength, "Data", "test.csv");
             controller.ControllerContext.HttpContext.Request.Form = new FormCollection(new Dictionary<string, StringValues>(), new FormFileCollection { file });
 
-            var response = controller.postCsvFileAsync("PRODUKSI", DateTime.Now);
+            var response = controller.postCsvFileAsync(DateTime.Now);
             Assert.NotNull(response.Result);
         }
 
@@ -168,7 +168,7 @@ namespace Com.Danliris.Service.Inventory.Test.Controllers.InventoryWeavingReport
             var controller = GetController((mockIdentityService, mockValidateService, mockFacade, mockMapper));
             controller.ControllerContext.HttpContext.Request.Headers["x-timezone-offset"] = $"{It.IsAny<int>()}";
 
-            var response = controller.postCsvFileAsync("", DateTime.Now);
+            var response = controller.postCsvFileAsync(DateTime.Now);
             Assert.Equal((int)HttpStatusCode.InternalServerError, GetStatusCode(response.Result));
 
         }
@@ -195,7 +195,7 @@ namespace Com.Danliris.Service.Inventory.Test.Controllers.InventoryWeavingReport
             var file = new FormFile(new MemoryStream(Encoding.UTF8.GetBytes(header + "\n" + header)), 0, Encoding.UTF8.GetBytes(header + "\n" + header).LongLength, "Data", "test.csv");
             controller.ControllerContext.HttpContext.Request.Form = new FormCollection(new Dictionary<string, StringValues>(), new FormFileCollection { });
 
-            var response = controller.postCsvFileAsync("PRODUKSI", DateTime.Now);
+            var response = controller.postCsvFileAsync(DateTime.Now);
             Assert.Equal((int)HttpStatusCode.BadRequest, GetStatusCode(response.Result));
         }
 
@@ -219,7 +219,7 @@ namespace Com.Danliris.Service.Inventory.Test.Controllers.InventoryWeavingReport
             var file = new FormFile(new MemoryStream(Encoding.UTF8.GetBytes(header + "\n" + header)), 0, Encoding.UTF8.GetBytes(header + "\n" + header).LongLength, "Data", "test.csv");
             controller.ControllerContext.HttpContext.Request.Form = new FormCollection(new Dictionary<string, StringValues>(), new FormFileCollection { file });
 
-            var response = controller.postCsvFileAsync("", DateTime.Now);
+            var response = controller.postCsvFileAsync(DateTime.Now);
             Assert.Equal((int)HttpStatusCode.NotFound, GetStatusCode(response.Result));
         }
 
@@ -244,7 +244,7 @@ namespace Com.Danliris.Service.Inventory.Test.Controllers.InventoryWeavingReport
             var file = new FormFile(new MemoryStream(Encoding.UTF8.GetBytes(header + "\n" + isi)), 0, Encoding.UTF8.GetBytes(header + "\n" + isi).LongLength, "Data", "test.csv");
             controller.ControllerContext.HttpContext.Request.Form = new FormCollection(new Dictionary<string, StringValues>(), new FormFileCollection { file });
 
-            var response = controller.postCsvFileAsync("", DateTime.Now);
+            var response = controller.postCsvFileAsync(DateTime.Now);
             Assert.NotNull(response.Result);
         }
 

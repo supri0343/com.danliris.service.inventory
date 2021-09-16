@@ -192,8 +192,8 @@ namespace Com.Danliris.Service.Inventory.Test.Services.InventoryWeaving.Report.I
                     Piece = "1",
                     Qty = "1",
                     QtyPiece = "1",
-                    Barcode = "barcode",
-                    ProductionOrderDate = DateTime.Now,
+                    //Barcode = "barcode",
+                    //ProductionOrderDate = DateTime.Now,
                 }
             };
 
@@ -230,7 +230,9 @@ namespace Com.Danliris.Service.Inventory.Test.Services.InventoryWeaving.Report.I
                     Piece = "",
                     Qty = "",
                     QtyPiece = "",
-                    Barcode = "",
+
+                    //Barcode = "",
+
                     //ProductionOrderDate = Convert.ToDateTime(""),
                 }
             };
@@ -268,12 +270,13 @@ namespace Com.Danliris.Service.Inventory.Test.Services.InventoryWeaving.Report.I
                     Grade = "a",
                     Qty = "1",
                     QtyPiece = "1",
-                    Barcode = "barcode",
-                    ProductionOrderDate = DateTime.Now,
+                    //Barcode = "barcode",
+                    //ProductionOrderDate = DateTime.Now,
+
                 }
             };
 
-            var Response = service.MapToViewModel(CSV, DateTime.Now, "test");
+            var Response = service.MapToViewModel(CSV, DateTime.Now);
             Assert.NotNull(Response);
         }
 
@@ -282,9 +285,9 @@ namespace Com.Danliris.Service.Inventory.Test.Services.InventoryWeaving.Report.I
         {
             InventoryWeavingDocumentOutService service = new InventoryWeavingDocumentOutService(GetServiceProvider().Object, _dbContext(GetCurrentMethod()));
 
-            List<InventoryWeavingUploadCsvOutViewModel> CSV = new List<InventoryWeavingUploadCsvOutViewModel>
+            List<InventoryWeavingDocumentOutItemViewModel> CSV = new List<InventoryWeavingDocumentOutItemViewModel>
             {
-                new InventoryWeavingUploadCsvOutViewModel
+                new InventoryWeavingDocumentOutItemViewModel
                 {
                     ReferenceNo = "referencce",
                     Construction = "CD",
@@ -299,11 +302,14 @@ namespace Com.Danliris.Service.Inventory.Test.Services.InventoryWeaving.Report.I
                     YarnOrigin1 = "yo1",
                     YarnOrigin2 = "yo2",
                     Width = "1",
-                    Qty = "1",
-                    QtyPiece = "1",
-                    Barcode = "barcode",
-                    ProductionOrderDate = DateTime.Now,
-                    ProductionOrderNo = "a",
+                    Quantity = 1,
+                    QuantityPiece = 1,
+                    //Barcode = "barcode",
+                    //ProductionOrderDate = DateTime.Now,
+
+                    ProductOrderNo = "a",
+                    DestinationArea = "a",
+                    Type = "IN"
                 }
             };
 

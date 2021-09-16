@@ -26,10 +26,11 @@ namespace Com.Danliris.Service.Inventory.Lib.ViewModels.InventoryWeavingViewMode
             {
                 yield return new ValidationResult("Date is required", new List<string> { "date" });
             }
-            if (this.bonType == null)
-            {
-                yield return new ValidationResult("Destination is required", new List<string> { "destination" });
-            }
+            //if (this.bonType == null)
+            //{
+            //    yield return new ValidationResult("Destination is required", new List<string> { "destination" });
+            //}
+
             
         }
     }
