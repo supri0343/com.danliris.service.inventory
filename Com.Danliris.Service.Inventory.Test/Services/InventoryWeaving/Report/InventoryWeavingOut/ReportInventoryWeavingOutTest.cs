@@ -192,8 +192,8 @@ namespace Com.Danliris.Service.Inventory.Test.Services.InventoryWeaving.Report.I
                     Piece = "1",
                     Qty = "1",
                     QtyPiece = "1",
-                    Barcode = "barcode",
-                    ProductionOrderDate = DateTime.Now,
+                    //Barcode = "barcode",
+                    //ProductionOrderDate = DateTime.Now,
                 }
             };
 
@@ -230,7 +230,7 @@ namespace Com.Danliris.Service.Inventory.Test.Services.InventoryWeaving.Report.I
                     Piece = "",
                     Qty = "",
                     QtyPiece = "",
-                    Barcode = "",
+                    //Barcode = "",
                     //ProductionOrderDate = Convert.ToDateTime(""),
                 }
             };
@@ -268,8 +268,8 @@ namespace Com.Danliris.Service.Inventory.Test.Services.InventoryWeaving.Report.I
                     Grade = "a",
                     Qty = "1",
                     QtyPiece = "1",
-                    Barcode = "barcode",
-                    ProductionOrderDate = DateTime.Now,
+                    //Barcode = "barcode",
+                    //ProductionOrderDate = DateTime.Now,
                 }
             };
 
@@ -301,8 +301,8 @@ namespace Com.Danliris.Service.Inventory.Test.Services.InventoryWeaving.Report.I
                     Width = "1",
                     Qty = "1",
                     QtyPiece = "1",
-                    Barcode = "barcode",
-                    ProductionOrderDate = DateTime.Now,
+                    //Barcode = "barcode",
+                    //ProductionOrderDate = DateTime.Now,
                     ProductionOrderNo = "a",
                 }
             };

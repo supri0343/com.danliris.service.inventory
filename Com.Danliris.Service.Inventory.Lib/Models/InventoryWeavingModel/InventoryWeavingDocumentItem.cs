@@ -31,6 +31,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Models.InventoryWeavingModel
         public double Quantity { get; set; }
         public double QuantityPiece { get; set; }
         public string ProductRemark { get; set; }
+        public string DestinationArea { get; set; }
+        public string Type { get; set; }
         
         public string Barcode { get; set; }
         public DateTime ProductionOrderDate { get; set; }
