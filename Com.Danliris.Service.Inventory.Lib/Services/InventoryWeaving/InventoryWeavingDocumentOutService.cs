@@ -793,7 +793,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
 
                 result.Rows.Add(item.Number, item.BonNo, item.Construction, item.Grade, item.Piece, item.Quantity, item.QuantityPiece,
 
-                    item.QuantityTot, item.QuantityPieceTot, item.Remark, item.Barcode, tglProduksi);
+                    item.QuantityTot, item.QuantityPieceTot, item.Remark, "", "");
 
             }
 
