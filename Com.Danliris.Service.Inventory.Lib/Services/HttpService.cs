@@ -50,7 +50,6 @@ namespace Com.Danliris.Service.Inventory.Lib.Services
             {
                 Content = content
             };
-            //_client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
             return await _client.SendAsync(request);
 

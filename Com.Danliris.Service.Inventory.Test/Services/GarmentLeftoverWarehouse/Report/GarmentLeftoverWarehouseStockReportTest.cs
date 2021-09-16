@@ -636,6 +636,13 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
 
             Assert.NotNull(result);
         }
+
+        [Fact]
+        private async Task TestSendError()
+        {
+            HttpService httpService = new HttpService(new IdentityService());
+            await Assert.ThrowsAnyAsync<Exception>(() => httpService.SendAsync(HttpMethod.Get, null, null));
+        }
     }
 }
 

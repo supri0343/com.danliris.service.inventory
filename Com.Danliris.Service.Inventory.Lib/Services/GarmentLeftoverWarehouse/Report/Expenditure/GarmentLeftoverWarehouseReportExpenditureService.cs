@@ -80,7 +80,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
 
             int TotalData = pageable.TotalCount;
             
-            if (page == ((TotalData / size) + 1) && TotalData != 0)
+            if (page == Math.Ceiling((double)TotalData / (double)size) && TotalData != 0)
             {
                 var QtyTotal = Query.Sum(x => x.Quantity);
                 var ExpendQtyTotal = Query.Sum(x => x.QtyKG);

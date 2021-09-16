@@ -506,10 +506,12 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
                 Query = Query.OrderBy(string.Concat(Key, " ", OrderType));
             }
 
+
             Pageable<ReceiptFinishedGoodMonitoringViewModel> pageable = new Pageable<ReceiptFinishedGoodMonitoringViewModel>(Query, page - 1, size);
             List<ReceiptFinishedGoodMonitoringViewModel> Data = pageable.Data.ToList<ReceiptFinishedGoodMonitoringViewModel>();
 
             int TotalData = pageable.TotalCount;
+            int totalCountReport = Query.Count();
             int index = 0;
             Data.ForEach(c =>
             {
@@ -518,7 +520,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
 
             });
 
-            if (TotalData == page * size && TotalData != 0)
+            if (page == Math.Ceiling((double)totalCountReport / (double)size) && TotalData != 0)
             {
                 var QtyTotal = Query.Sum(x => x.Quantity);
                 var PriceTotal = Math.Round(Query.Sum(x => x.Price),2);
