@@ -512,10 +512,10 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
                 StorageName = model.StorageName,
                 Type = model.Type,
 
-                Detail = model.Items.GroupBy(x => x.Construction).Select(item => new InventoryWeavingItemDetailViewModel()
+                Detail = model.Items.GroupBy(x => x.ReferenceNo).Select(item => new InventoryWeavingItemDetailViewModel()
                 {
                 
-                    Construction = item.First().Construction,
+                    //Construction = item.First().Construction,
                     ReferenceNo = item.First().ReferenceNo,
                   
 
@@ -531,7 +531,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
                         _LastModifiedAgent = s._LastModifiedAgent,
                         _LastModifiedBy = s._LastModifiedBy,
                         _LastModifiedUtc = s._LastModifiedUtc,
-
+                        Construction = s.Construction,
                         Grade = s.Grade,
                         //Piece = s.Piece == "1" ? "BESAR" : s.Piece == "2"? "KECIL": "POTONGAN",
                         MaterialName = s.MaterialName,
@@ -1032,7 +1032,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
 
 
            //without Barcode
-           "nota","nmtujuan","benang","type","lusi","pakan","lebar","jlusi","jpakan","alusi","apakan","sp","grade","jenis","piece","meter"
+           "nota","nm_tujuan","benang","type","lusi","pakan","lebar","jlusi","jpakan","alusi","apakan","sp","grade","jenis","piece","meter"
 
             //"BonNo","Tanggal","Benang","Anyaman","Lusi","Pakan","Lebar","JL","JP","AL","AP","Grade","Piece","Qty","QtyPiece","Barcode","ProductionOrderDate"
         };

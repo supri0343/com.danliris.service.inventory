@@ -128,8 +128,8 @@ namespace Com.Danliris.Service.Inventory.Test.Controllers.InventoryWeavingReport
         [Fact]
         public void UploadUploadFile_WithoutException_ReturnOK()
         {
-            string header = "nota,nmtujuan,benang,type,lusi,pakan,lebar,jlusi,jpakan,alusi,apakan,sp,grade,jenis,piece,meter";
-            string isi = "nota,nmtujuan,benang,type,lusi,pakan,lebar,jlusi,jpakan,alusi,apakan,sp,grade,1,1,1";
+            string header = "nota,nm_tujuan,benang,type,lusi,pakan,lebar,jlusi,jpakan,alusi,apakan,sp,grade,jenis,piece,meter";
+            string isi = "nota,nm_tujuan,benang,type,lusi,pakan,lebar,jlusi,jpakan,alusi,apakan,sp,grade,1,1,1";
 
             //---continue
             var mockFacade = new Mock<IInventoryWeavingDocumentOutService>();
