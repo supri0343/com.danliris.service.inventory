@@ -397,6 +397,76 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
 
             Assert.NotNull(result);
         }
+
+        [Fact]
+        public async Task Should_Failed_GetFInishedGoodExcelReport()
+        {
+            var serviceProvider = GetServiceProvider();
+
+            var stockServiceMock = new Mock<IGarmentLeftoverWarehouseStockService>();
+            stockServiceMock.Setup(s => s.StockOut(It.IsAny<GarmentLeftoverWarehouseStock>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>()))
+                .ReturnsAsync(1);
+
+            stockServiceMock.Setup(s => s.StockIn(It.IsAny<GarmentLeftoverWarehouseStock>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>()))
+              .ReturnsAsync(1);
+
+            serviceProvider
+                .Setup(x => x.GetService(typeof(IGarmentLeftoverWarehouseStockService)))
+                .Returns(stockServiceMock.Object);
+
+            serviceProvider
+                .Setup(x => x.GetService(typeof(IHttpService)))
+                .Returns(new HttpTestService());
+
+
+
+            GarmentLeftoverWarehouseExpenditureFinishedGoodService service = new GarmentLeftoverWarehouseExpenditureFinishedGoodService(_dbContext(GetCurrentMethod()), serviceProvider.Object);
+
+            GarmentLeftoverWarehouseBalanceStockService _balanceservice = new GarmentLeftoverWarehouseBalanceStockService(_dbContext(GetCurrentMethod()), serviceProvider.Object);
+
+            GarmentLeftoverWarehouseReceiptFinishedGoodService receiptservice = new GarmentLeftoverWarehouseReceiptFinishedGoodService(_dbContext(GetCurrentMethod()), serviceProvider.Object);
+
+            var data_Balance = _dataUtilbalanceStock(_balanceservice).GetTestData_FINISHEDGOOD();
+
+            var dataReceiptFInishedGood = _dataUtilReceiptFinishedGood(receiptservice).GetTestData();
+
+            var httpClientService = new Mock<IHttpService>();
+
+            var ExpendGood = new List<ExpendGoodViewModel> {
+                new ExpendGoodViewModel
+                {
+                    RONo = "roNo",
+                    Comodity = new GarmentComodity
+                    {
+                        Code = "Code",
+                        Id = 10,
+                        Name = "Name"
+                    }
+                }
+            };
+
+            Dictionary<string, object> result2 =
+                new ResultFormatter("1.0", WebApi.Helpers.General.OK_STATUS_CODE, WebApi.Helpers.General.OK_MESSAGE)
+                .Ok(ExpendGood);
+
+            httpClientService
+                .Setup(x => x.SendAsync(It.IsAny<HttpMethod>(), It.Is<string>(s => s.Contains("expenditure-goods/traceable-by-ro")), It.IsAny<HttpContent>()))
+                .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent(JsonConvert.SerializeObject(result2)) });
+
+            serviceProvider
+                .Setup(x => x.GetService(typeof(IHttpService)))
+                .Returns(httpClientService.Object);
+
+
+
+            var dataFinishedGood = await _dataUtilFinishedGood(service).GetTestData();
+
+            GarmentLeftoverWarehouseStockReportService utilService = new GarmentLeftoverWarehouseStockReportService(_dbContext(GetCurrentMethod()), serviceProvider.Object);
+            var result = utilService.GenerateExcelFinishedGood(DateTime.Now, DateTime.Now, 10, 7);
+
+
+            Assert.NotNull(result);
+        }
         [Fact]
         public async Task Should_Success_GetFabricReport()
         {
