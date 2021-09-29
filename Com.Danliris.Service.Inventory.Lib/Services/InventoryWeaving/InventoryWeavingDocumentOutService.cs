@@ -1,4 +1,4 @@
-﻿using Com.Danliris.Service.Inventory.Lib.Helpers;
+using Com.Danliris.Service.Inventory.Lib.Helpers;
 using Com.Danliris.Service.Inventory.Lib.Models.InventoryWeavingModel;
 using Com.Danliris.Service.Inventory.Lib.ViewModels.InventoryWeavingViewModel;
 using Com.Moonlay.Models;
@@ -515,7 +515,9 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
                 Detail = model.Items.GroupBy(x => x.ReferenceNo).Select(item => new InventoryWeavingItemDetailViewModel()
                 {
                 
+
                     //Construction = item.First().Construction,
+
                     ReferenceNo = item.First().ReferenceNo,
                   
 
@@ -1032,7 +1034,9 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
 
 
            //without Barcode
+
            "nota","nm_tujuan","benang","type","lusi","pakan","lebar","jlusi","jpakan","alusi","apakan","sp","grade","jenis","piece","meter"
+
 
             //"BonNo","Tanggal","Benang","Anyaman","Lusi","Pakan","Lebar","JL","JP","AL","AP","Grade","Piece","Qty","QtyPiece","Barcode","ProductionOrderDate"
         };
@@ -1049,11 +1053,13 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
 
 
                 if (string.IsNullOrWhiteSpace(productVM.ReferenceNo))
+
                 {
                     ErrorMessage = string.Concat(ErrorMessage, "NOTA TIDAK BOLEH KOSONG, ");
                 }
                 if (string.IsNullOrWhiteSpace(productVM.DestinationArea))
                 {
+
                     ErrorMessage = string.Concat(ErrorMessage, "TUJUAN TIDAK BOLEH KOSONG, ");
 
                 }
