@@ -922,7 +922,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
             sheet.Cells["A5:J6"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
             sheet.Cells["A5:J6"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
             sheet.Cells["A5:J6"].Style.Font.Bold = true;
-            var widths = new int[] { 10, 20, 30, 10, 20, 15, 15, 15, 15,20};
+            var widths = new int[] { 10, 20, 30, 10, 20, 15, 15, 15, 15,20,10,10};
             foreach (var i in Enumerable.Range(0, headers.Length))
             {
                 sheet.Column(i + 1).Width = widths[i];
