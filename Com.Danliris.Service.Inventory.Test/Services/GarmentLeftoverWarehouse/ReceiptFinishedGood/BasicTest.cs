@@ -435,7 +435,7 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
 
             await service.CreateAsync(dataFinishedGood);
 
-            var result = service.GetMonitoring(null, DateTime.Now, 1, 1, "{}", 7);
+            var result = service.GetMonitoring(null, DateTime.Now, 1, 25, "{}", 7);
 
 
             Assert.NotNull(result);

@@ -1,4 +1,4 @@
-﻿using Com.Danliris.Service.Inventory.Lib.Helpers;
+using Com.Danliris.Service.Inventory.Lib.Helpers;
 using Com.Danliris.Service.Inventory.Lib.Models.InventoryWeavingModel;
 using Com.Danliris.Service.Inventory.Lib.ViewModels.InventoryWeavingViewModel;
 using Com.Moonlay.Models;
@@ -512,10 +512,12 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
                 StorageName = model.StorageName,
                 Type = model.Type,
 
-                Detail = model.Items.GroupBy(x => x.Construction).Select(item => new InventoryWeavingItemDetailViewModel()
+                Detail = model.Items.GroupBy(x => x.ReferenceNo).Select(item => new InventoryWeavingItemDetailViewModel()
                 {
                 
-                    Construction = item.First().Construction,
+
+                    //Construction = item.First().Construction,
+
                     ReferenceNo = item.First().ReferenceNo,
                   
 
@@ -531,7 +533,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
                         _LastModifiedAgent = s._LastModifiedAgent,
                         _LastModifiedBy = s._LastModifiedBy,
                         _LastModifiedUtc = s._LastModifiedUtc,
-
+                        Construction = s.Construction,
                         Grade = s.Grade,
                         //Piece = s.Piece == "1" ? "BESAR" : s.Piece == "2"? "KECIL": "POTONGAN",
                         MaterialName = s.MaterialName,
@@ -793,7 +795,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
 
                 result.Rows.Add(item.Number, item.BonNo, item.Construction, item.Grade, item.Piece, item.Quantity, item.QuantityPiece,
 
-                    item.QuantityTot, item.QuantityPieceTot, item.Remark, item.Barcode, tglProduksi);
+                    item.QuantityTot, item.QuantityPieceTot, item.Remark, "", "");
 
             }
 
@@ -922,7 +924,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
             sheet.Cells["A5:J6"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
             sheet.Cells["A5:J6"].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
             sheet.Cells["A5:J6"].Style.Font.Bold = true;
-            var widths = new int[] { 10, 20, 30, 10, 20, 15, 15, 15, 15,20};
+            var widths = new int[] { 10, 20, 30, 10, 20, 15, 15, 15, 15,20,10,10};
             foreach (var i in Enumerable.Range(0, headers.Length))
             {
                 sheet.Column(i + 1).Width = widths[i];
@@ -1032,7 +1034,9 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
 
 
            //without Barcode
-           "nota","nmtujuan","benang","type","lusi","pakan","lebar","jlusi","jpakan","alusi","apakan","sp","grade","jenis","piece","meter"
+
+           "nota","nm_tujuan","benang","type","lusi","pakan","lebar","jlusi","jpakan","alusi","apakan","sp","grade","jenis","piece","meter"
+
 
             //"BonNo","Tanggal","Benang","Anyaman","Lusi","Pakan","Lebar","JL","JP","AL","AP","Grade","Piece","Qty","QtyPiece","Barcode","ProductionOrderDate"
         };
@@ -1049,11 +1053,13 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving
 
 
                 if (string.IsNullOrWhiteSpace(productVM.ReferenceNo))
+
                 {
                     ErrorMessage = string.Concat(ErrorMessage, "NOTA TIDAK BOLEH KOSONG, ");
                 }
                 if (string.IsNullOrWhiteSpace(productVM.DestinationArea))
                 {
+
                     ErrorMessage = string.Concat(ErrorMessage, "TUJUAN TIDAK BOLEH KOSONG, ");
 
                 }

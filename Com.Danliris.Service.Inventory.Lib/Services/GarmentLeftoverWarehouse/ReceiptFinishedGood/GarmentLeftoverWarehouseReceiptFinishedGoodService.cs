@@ -465,13 +465,14 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
                             ExpenditureGoodNo = b.ExpenditureGoodNo,
                             ComodityCode = b.LeftoverComodityCode,
                             ComodityName = b.LeftoverComodityName,
+                            UnitComodityCode = b.ComodityCode,
                             Quantity = b.Quantity,
                             RONo = b.RONo,
                             UomUnit = b.UomUnit,
                             Price = Math.Round(b.BasicPrice * b.Quantity,2),
                         };
             var querySum= Query
-                .GroupBy(x => new { x.ReceiptNoteNo, x.ReceiptDate, x.UnitFromCode, x.ExpenditureGoodNo, x.ComodityCode, x.ComodityName, x.RONo,x.UomUnit }, (key, group) => new
+                .GroupBy(x => new { x.ReceiptNoteNo, x.ReceiptDate, x.UnitFromCode, x.ExpenditureGoodNo, x.ComodityCode, x.ComodityName, x.RONo,x.UomUnit, x.UnitComodityCode }, (key, group) => new
             ReceiptFinishedGoodMonitoringViewModel
             {
                 ReceiptNoteNo = key.ReceiptNoteNo,
@@ -480,6 +481,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
                 ExpenditureGoodNo = key.ExpenditureGoodNo,
                 ComodityCode = key.ComodityCode,
                 ComodityName = key.ComodityName,
+                UnitComodityCode = key.UnitComodityCode,
                 Quantity = group.Sum(s=>s.Quantity),
                 RONo = key.RONo,
                 UomUnit = key.UomUnit,
@@ -504,10 +506,12 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
                 Query = Query.OrderBy(string.Concat(Key, " ", OrderType));
             }
 
+
             Pageable<ReceiptFinishedGoodMonitoringViewModel> pageable = new Pageable<ReceiptFinishedGoodMonitoringViewModel>(Query, page - 1, size);
             List<ReceiptFinishedGoodMonitoringViewModel> Data = pageable.Data.ToList<ReceiptFinishedGoodMonitoringViewModel>();
 
             int TotalData = pageable.TotalCount;
+            int totalCountReport = Query.Count();
             int index = 0;
             Data.ForEach(c =>
             {
@@ -516,7 +520,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
 
             });
 
-            if (TotalData == page * size && TotalData != 0)
+            if (page == Math.Ceiling((double)totalCountReport / (double)size) && TotalData != 0)
             {
                 var QtyTotal = Query.Sum(x => x.Quantity);
                 var PriceTotal = Math.Round(Query.Sum(x => x.Price),2);
@@ -528,6 +532,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
                 vm.UnitFromCode = "";
                 vm.ExpenditureGoodNo = "";
                 vm.ComodityCode = "";
+                vm.UnitComodityCode = "";
                 vm.ComodityName = "";
                 vm.Quantity = QtyTotal;
                 vm.RONo = "";
@@ -554,6 +559,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
             result.Columns.Add(new DataColumn() { ColumnName = "Asal barang", DataType = typeof(String) });
             result.Columns.Add(new DataColumn() { ColumnName = "No Bon Pengeluaran Barang", DataType = typeof(String) });
             result.Columns.Add(new DataColumn() { ColumnName = "RO", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Kode Komoditi Unit", DataType = typeof(String) });
             result.Columns.Add(new DataColumn() { ColumnName = "Kode Komoditi", DataType = typeof(String) });
             result.Columns.Add(new DataColumn() { ColumnName = "Komoditi", DataType = typeof(String) });
             result.Columns.Add(new DataColumn() { ColumnName = "Qty", DataType = typeof(double) });
@@ -561,7 +567,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
             result.Columns.Add(new DataColumn() { ColumnName = "Price", DataType = typeof(double) });
 
             if (Query.ToArray().Count() == 0)
-                result.Rows.Add("", "", "", "", "", "", "", "", 0, "",0); // to allow column name to be generated properly for empty data as template
+                result.Rows.Add("", "", "", "", "","", "", "", "", 0, "",0); // to allow column name to be generated properly for empty data as template
             else
             {
                 int index = 0;
@@ -570,10 +576,10 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
                     index++;
                     //DateTimeOffset date = item.date ?? new DateTime(1970, 1, 1);
                     //string dateString = date == new DateTime(1970, 1, 1) ? "-" : date.ToOffset(new TimeSpan(offset, 0, 0)).ToString("dd MMM yyyy", new CultureInfo("id-ID"));
-                    result.Rows.Add(index, item.ReceiptNoteNo, item.ReceiptDate.AddHours(offset).ToString("dd MMM yyyy", new CultureInfo("id-ID")), item.UnitFromCode, item.ExpenditureGoodNo, item.RONo, item.ComodityCode, item.ComodityName, item.Quantity, item.UomUnit);
+                    result.Rows.Add(index, item.ReceiptNoteNo, item.ReceiptDate.AddHours(offset).ToString("dd MMM yyyy", new CultureInfo("id-ID")), item.UnitFromCode, item.ExpenditureGoodNo, item.RONo, item.UnitComodityCode, item.ComodityCode, item.ComodityName, item.Quantity, item.UomUnit);
                 }
 
-                result.Rows.Add("" , "T O T A L .......", "", "", "", "", "", "", QtyTotal, "", PriceTotal);
+                result.Rows.Add("" , "T O T A L .......", "", "", "", "", "", "", "", QtyTotal, "", PriceTotal);
             }
 
             return Excel.CreateExcel(new List<KeyValuePair<DataTable, string>>() { new KeyValuePair<DataTable, string>(result, "Report Pengeluaran Gudang Sisa Barang Jadi") }, true);

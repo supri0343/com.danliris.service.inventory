@@ -22,6 +22,7 @@ using System.Threading.Tasks;
 using Xunit;
 using Com.Danliris.Service.Inventory.Lib.ViewModels.InventoryWeavingViewModel;
 using Microsoft.Extensions.Primitives;
+using Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving.Reports.ReportGreigeWeavingPerMonth;
 
 namespace Com.Danliris.Service.Inventory.Test.Services.InventoryWeaving.Report.InventoryWeavingOut
 {
@@ -334,6 +335,19 @@ namespace Com.Danliris.Service.Inventory.Test.Services.InventoryWeaving.Report.I
             var data = _dataUtilDoc(service).GetQueryReport();
             var response = service.GetQueryReport("", null, null, 7);
             Assert.NotNull(response);
+        }
+
+        [Fact]
+        public void Should_success_GenerateExcel()
+        {
+            InventoryWeavingDocumentOutService service = new InventoryWeavingDocumentOutService(GetServiceProvider().Object, _dbContext(GetCurrentMethod()));
+
+            var data = _dataUtilDoc(service).GetTestData();
+            //var Responses =  Utilservice.Create(data);
+
+            var Service = new InventoryWeavingDocumentOutService(GetServiceProvider().Object, _dbContext(GetCurrentMethod()));
+            var Response = service.GenerateExcelReceiptReport("", null, null, 7);
+            Assert.IsType<System.IO.MemoryStream>(Response);
         }
     }
 }

@@ -82,20 +82,61 @@ namespace Com.Danliris.Service.Inventory.Test.Controllers.InventoryWeavingReport
             return (int)response.GetType().GetProperty("StatusCode").GetValue(response, null);
         }
 
+        public InventoryWeavingDocumentOutUploadViewModel Vm()
+        {
+            return new InventoryWeavingDocumentOutUploadViewModel
+            {
+
+                date = DateTimeOffset.Now,
+                bonNo = "test01",
+                bonType = "PRODUKSI",
+                storageCode = "test01",
+                storageId = 2,
+                storageName = "Test",
+
+                type = "OUT",
+                remark = "Remark",
+                itemsOut = new List<InventoryWeavingDocumentOutItemViewModel> { new InventoryWeavingDocumentOutItemViewModel()
+                    {
+                        ProductOrderNo = "product",
+                        ReferenceNo = "referencce",
+                        Construction = "CD",
+                        Grade = "A",
+                        Piece = "1",
+                        MaterialName = "CD",
+                        WovenType = "",
+                        Yarn1 = "yarn1",
+                        Yarn2 = "yarn2",
+                        YarnType1 = "yt1",
+                        YarnType2 = "yt2",
+                        YarnOrigin1 = "yo1",
+                        YarnOrigin2 = "yo2",
+                        Width = "1",
+                        UomUnit = "MTR",
+                        Quantity = 1,
+                        QuantityPiece =1,
+                        ProductRemark = "",
+                        Barcode = "barcode",
+                        ProductionOrderDate = DateTime.Now,
+                } }
+            };
+        }
+
         private const string URI = "v1/master/upload-garment-currencies";
         private const string currURI = "v1/master/upload-currencies";
 
         [Fact]
         public void UploadUploadFile_WithoutException_ReturnOK()
         {
-            string header = "Konstruksi,Benang,Anyaman,Lusi,Pakan,Lebar,JL,JP,AL,AP,Grade,Piece,Qty,QtyPiece,Barcode,ProductionOrderDate";
-            string isi = "Konstruksi,Benang,Anyaman,Lusi,Pakan,Lebar,JL,JP,AL,AP,Grade,1,1,1,barcode,01/01/2020";
+            string header = "nota,nm_tujuan,benang,type,lusi,pakan,lebar,jlusi,jpakan,alusi,apakan,sp,grade,jenis,piece,meter";
+            string isi = "nota,nm_tujuan,benang,type,lusi,pakan,lebar,jlusi,jpakan,alusi,apakan,sp,grade,1,1,1";
 
             //---continue
             var mockFacade = new Mock<IInventoryWeavingDocumentOutService>();
             mockFacade.Setup(f => f.UploadData(It.IsAny<InventoryWeavingDocument>(), It.IsAny<string>())).Returns(Task.CompletedTask);
             mockFacade.Setup(f => f.CsvHeaderUpload).Returns(header.Split(',').ToList());
             mockFacade.Setup(f => f.UploadValidate(ref It.Ref<List<InventoryWeavingUploadCsvOutViewModel>>.IsAny, It.IsAny<List<KeyValuePair<string, StringValues>>>())).Returns(new Tuple<bool, List<object>>(true, new List<object>()));
+            mockFacade.Setup(f => f.MapToViewModel(It.IsAny<List<InventoryWeavingUploadCsvOutViewModel>>(), It.IsAny<DateTimeOffset>())).ReturnsAsync(Vm);
 
             var MockMapper = new Mock<IMapper>();
 
@@ -288,5 +329,8 @@ namespace Com.Danliris.Service.Inventory.Test.Controllers.InventoryWeavingReport
             var response = controller.postCsvFileAsync(DateTime.Now);
             Assert.NotNull(response);
         }
+
+
+
     }
 }
