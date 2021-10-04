@@ -484,7 +484,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
                 UnitComodityCode = key.UnitComodityCode,
                 Quantity = group.Sum(s=>s.Quantity),
                 RONo = key.RONo,
-                UomUnit = key.UomUnit,
+                UomUnit = "PCS",
                 Price = Math.Round(group.Sum(x=>x.Price),2)
             }).OrderBy(s => s.ReceiptDate);
             return querySum;
