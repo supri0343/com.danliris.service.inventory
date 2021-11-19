@@ -10,6 +10,7 @@ using Com.Moonlay.Models;
 using Com.Moonlay.NetCore.Lib;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
+using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -36,6 +37,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
         private readonly IGarmentLeftoverWarehouseStockService StockService;
 
         private readonly string GarmentExpenditureGoodUri;
+        private readonly string GarmentUnitDeliveryOrder;
+        private readonly string GarmentCustomsUri;
 
         public GarmentLeftoverWarehouseReceiptFinishedGoodService(InventoryDbContext dbContext, IServiceProvider serviceProvider)
         {
@@ -47,6 +50,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
 
             StockService = (IGarmentLeftoverWarehouseStockService)serviceProvider.GetService(typeof(IGarmentLeftoverWarehouseStockService));
             GarmentExpenditureGoodUri = APIEndpoint.GarmentProduction + "expenditure-goods/";
+            GarmentUnitDeliveryOrder = APIEndpoint.Purchasing + "garment-unit-delivery-orders/leftoverwarehouse";
+            GarmentCustomsUri = APIEndpoint.Purchasing + "garment-beacukai/by-poserialnumbers";
         }
 
         public GarmentLeftoverWarehouseReceiptFinishedGood MapToModel(GarmentLeftoverWarehouseReceiptFinishedGoodViewModel viewModel)
@@ -487,7 +492,86 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
                 UomUnit = "PCS",
                 Price = Math.Round(group.Sum(x=>x.Price),2)
             }).OrderBy(s => s.ReceiptDate);
-            return querySum;
+
+            var ros = string.Join(",", querySum.Select(x => x.RONo).Distinct().ToList());
+
+            var pos = getPOfromUnitdo(ros);
+
+           
+
+            var data2 = from a in querySum
+                       join b in pos on a.RONo equals b.Rono
+                       where b.ProductName == "FABRIC"
+                       select new ReceiptFinishedGoodMonitoringViewModel
+                       {
+                           ReceiptNoteNo = a.ReceiptNoteNo,
+                           ReceiptDate = a.ReceiptDate,
+                           UnitFromCode = a.UnitFromCode,
+                           ExpenditureGoodNo = a.ExpenditureGoodNo,
+                           ComodityCode = a.ComodityCode,
+                           ComodityName = a.ComodityName,
+                           UnitComodityCode = a.UnitComodityCode,
+                           Quantity = a.Quantity,
+                           RONo = a.RONo,
+                           UomUnit = a.UomUnit,
+                           Price = a.Price,
+                           PoSerialNumber = b.POSerialNumber
+                       };
+
+            var bcpos = string.Join(",", data2.Select(x => x.PoSerialNumber).Distinct().ToList());
+
+            var bcs = GetBCfromPO(bcpos);
+
+            var dataexpenditure = from a in data2
+                                  join b in bcs on a.PoSerialNumber equals b.POSerialNumber
+                                  select new ReceiptFinishedGoodMonitoringViewModel
+                                  {
+                                      ReceiptNoteNo = a.ReceiptNoteNo,
+                                      ReceiptDate = a.ReceiptDate,
+                                      UnitFromCode = a.UnitFromCode,
+                                      ExpenditureGoodNo = a.ExpenditureGoodNo,
+                                      ComodityCode = a.ComodityCode,
+                                      ComodityName = a.ComodityName,
+                                      UnitComodityCode = a.UnitComodityCode,
+                                      Quantity = a.Quantity,
+                                      RONo = a.RONo,
+                                      UomUnit = a.UomUnit,
+                                      Price = a.Price,
+                                      PoSerialNumber = a.PoSerialNumber,
+                                      CustomsDate = b.customdates,
+                                      CustomsNo = b.customnos,
+                                      CustomsType = b.customtypes,
+
+                                  };
+
+            //foreach (var c in data2)
+            //{
+            //    if (!String.IsNullOrEmpty(c.PoSerialNumber))
+            //    {
+            //        var bc = GetBcFromBC(c.PoSerialNumber);
+            //        if (bc != null)
+            //        {
+
+                                  //            List<string> no = new List<string>();
+                                  //            List<string> type = new List<string>();
+                                  //            List<DateTimeOffset> date = new List<DateTimeOffset>();
+                                  //            foreach (var item in bc)
+                                  //            {
+                                  //                if (item["POSerialNumber"].ToString() == c.PoSerialNumber)
+                                  //                {
+                                  //                    no.Add(item["BeacukaiNo"].ToString());
+                                  //                    date.Add(DateTimeOffset.Parse(item["BeacukaiDate"].ToString()));
+                                  //                    type.Add(item["CustomsType"].ToString());
+                                  //                }
+                                  //            }
+                                  //            c.CustomsNo = no;
+                                  //            c.CustomsDate = date;
+                                  //            c.CustomsType = type;
+                                  //        }
+                                  //    }
+                                  //}
+
+            return dataexpenditure;
         }
 
         public Tuple<List<ReceiptFinishedGoodMonitoringViewModel>, int> GetMonitoring(DateTime? dateFrom, DateTime? dateTo, int page, int size, string order, int offset)
@@ -565,25 +649,127 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
             result.Columns.Add(new DataColumn() { ColumnName = "Qty", DataType = typeof(double) });
             result.Columns.Add(new DataColumn() { ColumnName = "Satuan", DataType = typeof(String) });
             result.Columns.Add(new DataColumn() { ColumnName = "Price", DataType = typeof(double) });
+            result.Columns.Add(new DataColumn() { ColumnName = "PO", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "No BC masuk", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Tgl Bc masuk", DataType = typeof(String) });
+            result.Columns.Add(new DataColumn() { ColumnName = "Tipe BC", DataType = typeof(String) });
 
             if (Query.ToArray().Count() == 0)
-                result.Rows.Add("", "", "", "", "","", "", "", "", 0, "",0); // to allow column name to be generated properly for empty data as template
+                result.Rows.Add("", "", "", "", "","", "", "", "", 0, "",0, "","","",""); // to allow column name to be generated properly for empty data as template
             else
             {
                 int index = 0;
                 foreach (var item in Query)
                 {
                     index++;
+                    string no = "";
+                    string type = "";
+                    string date = "";
+
+                    if (item.CustomsNo != null)
+                    {
+                        foreach (var x in item.CustomsNo)
+                        {
+                            if (no != "")
+                            {
+                                no += "\n";
+                            }
+                            no += x;
+                        }
+                        foreach (var y in item.CustomsType)
+                        {
+                            if (type != "")
+                            {
+                                type += "\n";
+                            }
+                            type += y;
+                        }
+                        foreach (var z in item.CustomsDate)
+                        {
+                            if (date != "")
+                            {
+                                date += "\n";
+                            }
+                            date += z.ToString("dd MMM yyyy", new CultureInfo("id-ID"));
+                        }
+                    }
+
                     //DateTimeOffset date = item.date ?? new DateTime(1970, 1, 1);
                     //string dateString = date == new DateTime(1970, 1, 1) ? "-" : date.ToOffset(new TimeSpan(offset, 0, 0)).ToString("dd MMM yyyy", new CultureInfo("id-ID"));
-                    result.Rows.Add(index, item.ReceiptNoteNo, item.ReceiptDate.AddHours(offset).ToString("dd MMM yyyy", new CultureInfo("id-ID")), item.UnitFromCode, item.ExpenditureGoodNo, item.RONo, item.UnitComodityCode, item.ComodityCode, item.ComodityName, item.Quantity, item.UomUnit);
+                    result.Rows.Add(index, item.ReceiptNoteNo, item.ReceiptDate.AddHours(offset).ToString("dd MMM yyyy", new CultureInfo("id-ID")), item.UnitFromCode, item.ExpenditureGoodNo, item.RONo, item.UnitComodityCode, item.ComodityCode, item.ComodityName, item.Quantity, item.UomUnit, item.Price, item.PoSerialNumber, no, date, type);
                 }
 
-                result.Rows.Add("" , "T O T A L .......", "", "", "", "", "", "", "", QtyTotal, "", PriceTotal);
+                result.Rows.Add("" , "T O T A L .......", "", "", "", "", "", "", "", QtyTotal, "", PriceTotal, "", "", "" , "");
             }
 
-            return Excel.CreateExcel(new List<KeyValuePair<DataTable, string>>() { new KeyValuePair<DataTable, string>(result, "Report Pengeluaran Gudang Sisa Barang Jadi") }, true);
+            ExcelPackage package = new ExcelPackage();
+            var sheet = package.Workbook.Worksheets.Add("Report Penerimaan Barang Jadi Gudang Sisa");
+            sheet.Cells["A1"].LoadFromDataTable(result, true, OfficeOpenXml.Table.TableStyles.Light16);
 
+            sheet.Cells[sheet.Dimension.Address].AutoFitColumns();
+            sheet.Cells[sheet.Dimension.Address].Style.WrapText = true;
+
+            MemoryStream streamExcel = new MemoryStream();
+            package.SaveAs(streamExcel);
+
+            //Dictionary<string, string> FilterDictionary = new Dictionary<string, string>(JsonConvert.DeserializeObject<Dictionary<string, string>>(filter), StringComparer.OrdinalIgnoreCase);
+            //string fileName = string.Concat("Report Penerimaan  Gudang Sisa - Fabric", DateTime.Now.Date, ".xlsx");
+
+            return streamExcel;
+
+        }
+
+
+        private List<UnitDoViewModel> getPOfromUnitdo(string ro)
+        {
+            var httpService = (IHttpService)ServiceProvider.GetService(typeof(IHttpService));
+
+            var httpContent = new StringContent(JsonConvert.SerializeObject(ro), Encoding.UTF8, "application/json");
+
+            //var garmentProductionUri = APIEndpoint.Core + $"master/garmentProducts/byCode";
+            var httpResponse = httpService.SendAsync(HttpMethod.Get, GarmentUnitDeliveryOrder, httpContent).Result;
+
+            if (httpResponse.IsSuccessStatusCode)
+            {
+                var content = httpResponse.Content.ReadAsStringAsync().Result;
+                Dictionary<string, object> result = JsonConvert.DeserializeObject<Dictionary<string, object>>(content);
+
+                List<UnitDoViewModel> viewModel;
+                
+                    viewModel = JsonConvert.DeserializeObject<List<UnitDoViewModel>>(result.GetValueOrDefault("data").ToString());
+                return viewModel;
+            }
+            else
+            {
+                List<UnitDoViewModel> viewModel = new List<UnitDoViewModel>();
+                return viewModel;
+            }
+        }
+
+        private List<BCViewModels> GetBCfromPO(string po)
+        {
+            var httpService = (IHttpService)ServiceProvider.GetService(typeof(IHttpService));
+
+            var httpContent = new StringContent(JsonConvert.SerializeObject(po), Encoding.UTF8, "application/json");
+
+            //var garmentProductionUri = APIEndpoint.Core + $"master/garmentProducts/byCode";
+            var httpResponse = httpService.SendAsync(HttpMethod.Get, GarmentCustomsUri, httpContent).Result;
+
+            if (httpResponse.IsSuccessStatusCode)
+            {
+                var content = httpResponse.Content.ReadAsStringAsync().Result;
+                Dictionary<string, object> result = JsonConvert.DeserializeObject<Dictionary<string, object>>(content);
+
+                List<BCViewModels> viewModel;
+
+                viewModel = JsonConvert.DeserializeObject<List<BCViewModels>>(result.GetValueOrDefault("data").ToString());
+                return viewModel;
+            }
+            else
+            {
+                List<BCViewModels> viewModel = new List<BCViewModels>();
+                return viewModel;
+            }
         }
     }
 }
