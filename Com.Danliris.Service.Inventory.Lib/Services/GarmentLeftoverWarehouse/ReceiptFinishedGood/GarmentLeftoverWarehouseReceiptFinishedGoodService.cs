@@ -499,7 +499,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
 
            
 
-            var data2 = from a in querySum
+            var data2 = (from a in querySum
                        join b in pos on a.RONo equals b.Rono
                        where b.ProductName == "FABRIC"
                        select new ReceiptFinishedGoodMonitoringViewModel
@@ -516,11 +516,30 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
                            UomUnit = a.UomUnit,
                            Price = a.Price,
                            PoSerialNumber = b.POSerialNumber
-                       };
+                       }).GroupBy(x=> new { x.ReceiptNoteNo, x.ReceiptDate, x.UnitFromCode, x.ExpenditureGoodNo, x.ComodityCode, x.ComodityName, x.UnitComodityCode, x.Quantity, x.RONo, x.UomUnit, x.Price, x.PoSerialNumber }, (key, group) => new ReceiptFinishedGoodMonitoringViewModel {
+                           ReceiptNoteNo = key.ReceiptNoteNo,
+                           ReceiptDate = key.ReceiptDate,
+                           UnitFromCode = key.UnitFromCode,
+                           ExpenditureGoodNo = key.ExpenditureGoodNo,
+                           ComodityCode = key.ComodityCode,
+                           ComodityName = key.ComodityName,
+                           UnitComodityCode = key.UnitComodityCode,
+                           Quantity = key.Quantity,
+                           RONo = key.RONo,
+                           UomUnit = key.UomUnit,
+                           Price = key.Price,
+                           PoSerialNumber = key.PoSerialNumber
+
+                       });
 
             var bcpos = string.Join(",", data2.Select(x => x.PoSerialNumber).Distinct().ToList());
 
-            var bcs = GetBCfromPO(bcpos);
+            var bcs = GetBCfromPO(bcpos).GroupBy(x=>x.POSerialNumber).Select(x=> new BCViewModels {
+                POSerialNumber = x.Key,
+                customdates = x.FirstOrDefault().customdates,
+                customnos = x.FirstOrDefault().customnos,
+                customtypes = x.FirstOrDefault().customtypes
+            }).ToList();
 
             var dataexpenditure = from a in data2
                                   join b in bcs on a.PoSerialNumber equals b.POSerialNumber
@@ -571,7 +590,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
                                   //    }
                                   //}
 
-            return dataexpenditure;
+            return dataexpenditure.Distinct().AsQueryable();
         }
 
         public Tuple<List<ReceiptFinishedGoodMonitoringViewModel>, int> GetMonitoring(DateTime? dateFrom, DateTime? dateTo, int page, int size, string order, int offset)
