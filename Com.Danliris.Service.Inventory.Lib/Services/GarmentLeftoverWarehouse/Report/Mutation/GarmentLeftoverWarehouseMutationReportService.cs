@@ -797,7 +797,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                                 }
 
                                 sheet.Cells[$"A{(rowNum1 + 2)}:A{(rowNum2) + 2}"].Merge = true;
-                                sheet.Cells[$"A{(rowNum1 + 3)}:A{(rowNum2) + 2}"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                                sheet.Cells[$"A{(rowNum1 + 2)}:A{(rowNum2) + 2}"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
                                 sheet.Cells[$"A{(rowNum1 + 2)}:A{(rowNum2) + 2}"].Style.VerticalAlignment = ExcelVerticalAlignment.Top;
 
                                 sheet.Cells[$"B{(rowNum1 + 2)}:B{(rowNum2 + 2)}"].Merge = true;
