@@ -516,7 +516,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                                       select new GarmentLeftoverWarehouseMutationReportViewModel
                                       {
                                           ClassificationCode =  "AV001" ,
-                                          ClassificationName = "AVAL FABRIC",
+                                          ClassificationName = "Aval Besar",
                                           SaldoAwal = 0,
                                           Pemasukan = 0,
                                           Pengeluaran = b.Quantity,
