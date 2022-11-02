@@ -317,7 +317,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                                     Selisih = 0,
                                     SaldoAkhir = 0,
                                     StockOpname = 0,
-                                    UnitQtyName = b.UomUnit
+                                    //UnitQtyName = b.UomUnit
+                                    UnitQtyName = "KG"
                                 })
                                 //.GroupBy(x => new { x.ClassificationCode, x.ClassificationName, x.UnitQtyName }, (key, group) => new GarmentLeftoverWarehouseMutationReportViewModel
                                 //{
@@ -632,7 +633,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                                           Selisih = 0,
                                           SaldoAkhir = 0,
                                           StockOpname = 0,
-                                          UnitQtyName = b.UomUnit
+                                          //UnitQtyName = b.UomUnit
+                                          UnitQtyName = "KG"
                                       }).GroupBy(x => new { x.ClassificationCode, x.ClassificationName, x.UnitQtyName }, (key, group) => new GarmentLeftoverWarehouseMutationReportViewModel
                                       {
                                           ClassificationCode = key.ClassificationCode,
