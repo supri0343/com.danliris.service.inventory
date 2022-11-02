@@ -163,7 +163,9 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                                      Selisih = 0,
                                      SaldoAkhir = 0,
                                      StockOpname = 0,
-                                     UnitQtyName = b.UomUnit
+                                     //UnitQtyName = b.UomUnit
+                                     UnitQtyName = "KG"
+
                                  }).Distinct();
 
             var SAReceiptAval = SaldoAwalReceiptAval.Select(x => new GarmentLeftoverWarehouseMutationReportViewModel
@@ -515,7 +517,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                                            Selisih = 0,
                                            SaldoAkhir = 0,
                                            StockOpname = 0,
-                                           UnitQtyName = b.UomUnit
+                                           //UnitQtyName = b.UomUnit
+                                           UnitQtyName = "KG"
                                        }).Distinct();
 
             var FilteredReceiptAval = ReceiptAvalFabric.Select(x => new GarmentLeftoverWarehouseMutationReportViewModel
