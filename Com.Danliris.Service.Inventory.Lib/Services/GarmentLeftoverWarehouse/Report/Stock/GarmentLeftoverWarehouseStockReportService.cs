@@ -37,6 +37,133 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
             //GarmentExpenditureGoodUri = APIEndpoint.GarmentProduction + "expenditure-goods/byRO";
             GarmentExpenditureGoodUri = APIEndpoint.GarmentProduction + "expenditure-goods/traceable-by-ro";
         }
+
+        public List<GarmentLeftoverWarehouseStockMonitoringViewModel> GetReportQueryForMutationBB(DateTime? dateFrom, DateTime? dateTo, int offset)
+        {
+            DateTimeOffset DateFrom = dateFrom == null ? new DateTime(1970, 1, 1) : (DateTimeOffset)dateFrom;
+            DateTimeOffset DateTo = dateTo == null ? DateTime.Now : (DateTimeOffset)dateTo;
+
+            List<GarmentLeftoverWarehouseStockMonitoringViewModel> garmentLeftoverWarehouseStockMonitoringViewModel = new List<GarmentLeftoverWarehouseStockMonitoringViewModel>();
+
+            var QueryBalance = from a in (from data in DbContext.GarmentLeftoverWarehouseBalanceStocks
+                                          where data._IsDeleted == false && data.TypeOfGoods.ToString() == "FABRIC"
+                                          select new { data._CreatedUtc, data.Id })
+                               join b in DbContext.GarmentLeftoverWarehouseBalanceStocksItems on a.Id equals b.BalanceStockId
+                               select new GarmentLeftoverWarehouseStockMonitoringViewModel
+                               {
+                                   PONo = b.PONo,
+                                   BeginingbalanceQty = b.Quantity,
+                                   QuantityReceipt = 0,
+                                   QuantityExpend = 0,
+                                   UomUnit = b.UomUnit,
+                                   UnitCode = b.UnitCode,
+                                   ProductCode = "",
+                                   ProductRemark = "",
+                                   ProductName = "",
+                                   FabricRemark = "",
+                                   EndbalanceQty = 0,
+                                   index = 0
+                               };
+            var QueryReceipt = from a in (from data in DbContext.GarmentLeftoverWarehouseReceiptFabrics
+                                          where data._IsDeleted == false
+                                     && data.ReceiptDate.AddHours(offset).Date <= DateTo.Date
+                                          select new { data.UnitFromCode, data.ReceiptDate, data.Id })
+                               join b in DbContext.GarmentLeftoverWarehouseReceiptFabricItems on a.Id equals b.GarmentLeftoverWarehouseReceiptFabricId
+                               select new GarmentLeftoverWarehouseStockMonitoringViewModel
+                               {
+                                   PONo = b.POSerialNumber,
+                                   BeginingbalanceQty = a.ReceiptDate.AddHours(offset).Date < DateFrom.Date ? b.Quantity : 0,
+                                   QuantityReceipt = a.ReceiptDate.AddHours(offset).Date >= DateFrom.Date ? b.Quantity : 0,
+                                   QuantityExpend = 0,
+                                   UomUnit = b.UomUnit,
+                                   UnitCode = a.UnitFromCode,
+                                   ProductCode = "",
+                                   ProductRemark = "",
+                                   ProductName = "",
+                                   FabricRemark = "",
+                                   EndbalanceQty = 0,
+                                   index = 0
+                               };
+            var QueryExpenditure = from a in (from data in DbContext.GarmentLeftoverWarehouseExpenditureFabrics
+                                              where data._IsDeleted == false
+                                         && data.ExpenditureDate.AddHours(offset).Date <= DateTo.Date
+                                         && data.ExpenditureDestination == "JUAL LOKAL"
+
+                                              select new { data.UnitExpenditureCode, data.ExpenditureDate, data.Id })
+                                   join b in (from expend in DbContext.GarmentLeftoverWarehouseExpenditureFabricItems
+                                              select new { expend.UomUnit, expend.PONo, expend.Quantity, expend.UnitCode, expend.ExpenditureId }) on a.Id equals b.ExpenditureId
+                                   select new GarmentLeftoverWarehouseStockMonitoringViewModel
+                                   {
+                                       PONo = b.PONo,
+                                       BeginingbalanceQty = a.ExpenditureDate.AddHours(offset).Date < DateFrom.Date ? -b.Quantity : 0,
+                                       QuantityReceipt = 0,
+                                       QuantityExpend = a.ExpenditureDate.AddHours(offset).Date >= DateFrom.Date ? b.Quantity : 0,
+                                       UomUnit = b.UomUnit,
+                                       UnitCode = b.UnitCode,
+                                       ProductCode = "",
+                                       ProductRemark = "",
+                                       ProductName = "",
+                                       FabricRemark = "",
+                                       EndbalanceQty = 0,
+                                       index = 0
+                                   };
+            var Query = QueryReceipt.Union(QueryExpenditure).Union(QueryBalance);
+            var querySum = Query.ToList()
+                .GroupBy(x => new { x.PONo, x.UnitCode, x.UomUnit, x.index }, (key, group) => new
+                {
+                    pono = key.PONo,
+                    begining = group.Sum(s => s.BeginingbalanceQty),
+                    expend = group.Sum(s => s.QuantityExpend),
+                    receipt = group.Sum(s => s.QuantityReceipt),
+                    uomunit = key.UomUnit,
+                    unit = key.UnitCode,
+                    index = key.index
+                }).OrderBy(s => s.pono);
+
+            var fabricType = GarmentLeftoverWarehouseStockReferenceTypeEnum.FABRIC;
+            foreach (var data in querySum)
+            {
+                var Product = (from aa in DbContext.GarmentLeftoverWarehouseStocks
+                               where aa.ReferenceType == fabricType && aa.PONo == data.pono && aa.UomUnit == data.uomunit && aa.UnitCode == data.unit
+                               select new
+                               {
+                                   aa.ProductCode,
+                                   aa.ProductName
+                               }).FirstOrDefault();
+                var remarkReceipt = (from aa in DbContext.GarmentLeftoverWarehouseReceiptFabricItems
+                                     where aa.POSerialNumber == data.pono
+                                     select new
+                                     {
+                                         ProductRemark = aa.Composition,
+                                         aa.FabricRemark
+                                     }).FirstOrDefault();
+                var remarkBalance = (from aa in DbContext.GarmentLeftoverWarehouseBalanceStocksItems
+                                     where aa.PONo == data.pono
+                                     select new
+                                     {
+                                         ProductRemark = aa.Composition,
+                                         FabricRemark = aa.Construction + " ;" + aa.Yarn + " ;" + aa.Width
+                                     }).FirstOrDefault();
+                GarmentLeftoverWarehouseStockMonitoringViewModel garmentLeftover = new GarmentLeftoverWarehouseStockMonitoringViewModel
+                {
+                    PONo = data.pono,
+                    BeginingbalanceQty = Math.Round(data.begining, 2, MidpointRounding.AwayFromZero),
+                    QuantityReceipt = Math.Round(data.receipt, 2, MidpointRounding.AwayFromZero),
+                    QuantityExpend = Math.Round(data.expend, 2, MidpointRounding.AwayFromZero),
+                    UnitCode = data.unit,
+                    UomUnit = data.uomunit,
+                    ProductCode = Product.ProductCode,
+                    ProductName = Product.ProductName,
+                    ProductRemark = remarkReceipt != null ? remarkReceipt.ProductRemark : remarkBalance != null ? remarkBalance.ProductRemark : "-",
+                    FabricRemark = remarkReceipt != null ? remarkReceipt.FabricRemark : remarkBalance != null ? remarkBalance.FabricRemark : "-",
+                    EndbalanceQty = Math.Round(data.begining + data.receipt - data.expend, 2, MidpointRounding.AwayFromZero)
+                };
+                garmentLeftoverWarehouseStockMonitoringViewModel.Add(garmentLeftover);
+            }
+
+            return garmentLeftoverWarehouseStockMonitoringViewModel.ToList();
+
+        }
         #region REPORT
         public IQueryable<GarmentLeftoverWarehouseStockMonitoringViewModel> GetReportQuery(DateTime? dateFrom, DateTime? dateTo, int UnitId, string type, int offset, string typeAval = "")
         {
@@ -45,7 +172,10 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
             DateTimeOffset DateTo = dateTo == null ? DateTime.Now : (DateTimeOffset)dateTo;
 
 
+
             List<GarmentLeftoverWarehouseStockMonitoringViewModel> garmentLeftoverWarehouseStockMonitoringViewModel = new List<GarmentLeftoverWarehouseStockMonitoringViewModel>();
+
+
 
             if (type == "FABRIC")
             {
