@@ -304,7 +304,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                                               where data._IsDeleted == false && data.TypeOfGoods.ToString() == "BARANG JADI"
                                               select new { data._CreatedUtc, data.Id })
                                    join b in DbContext.GarmentLeftoverWarehouseBalanceStocksItems on a.Id equals b.BalanceStockId
-                                   where b.UnitId == (UnitId == 0 ? b.UnitId : UnitId)
+                                   where b.UnitId == (UnitId == 0 ? b.UnitId : UnitId) 
                                    select new GarmentLeftoverWarehouseStockMonitoringViewModel
                                    {
                                        RO = b.RONo,
@@ -351,7 +351,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                                                   select new { data.ExpenditureDate, data.Id })
                                        join b in (from expend in DbContext.GarmentLeftoverWarehouseExpenditureFinishedGoodItems
                                                   where expend.UnitId == (UnitId == 0 ? expend.UnitId : UnitId)
-                                                  select new { expend.FinishedGoodExpenditureId, expend.UnitCode, expend.ExpenditureQuantity, expend.RONo, expend.LeftoverComodityName }
+                                                  select new { expend.FinishedGoodExpenditureId, expend.UnitCode, expend.ExpenditureQuantity, expend.RONo, expend.LeftoverComodityName,expend.LeftoverComodityCode }
                                                   ) on a.Id equals b.FinishedGoodExpenditureId
                                        select new GarmentLeftoverWarehouseStockMonitoringViewModel
                                        {
@@ -368,7 +368,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                                            EndbalanceQty = 0,
                                            index = 0,
                                            Comodity= b.LeftoverComodityName,
-                                           ComodityCode = b.LeftoverComodityName
+                                           ComodityCode = b.LeftoverComodityCode
                                        };
                 var Query = QueryReceipt.Union(QueryExpenditure).Union(QueryBalance);
                 var querySum = Query.ToList()
