@@ -25,5 +25,9 @@ namespace Com.Danliris.Service.Inventory.Lib.ViewModels.GarmentLeftoverWarehouse
         public string RONo { get; set; }
         public double Quantity { get; set; }
         public UomViewModel Uom { get; set; }
+        public string BCNo { get;  set; }
+        public DateTimeOffset? BCDate { get;  set; }
+        public string POSerialNumber { get;  set; }
+        public string BCType { get;  set; }
     }
 }
