@@ -23,6 +23,10 @@ namespace Com.Danliris.Service.Inventory.Lib.Models.GarmentLeftoverWarehouse.Gar
         public long UomId { get; set; }
         public string UomUnit { get; set; }
         public string RONo { get; set; }
+        public string BCNo { get; set; }
+        public DateTimeOffset? BCDate { get; set; }
+        public string POSerialNumber { get; set; }
+        public string BCType { get; set; }
         public GarmentLeftoverWarehouseReceiptAval GarmentLeftoverWarehouseReceiptAval { get; set; }
     }
 }

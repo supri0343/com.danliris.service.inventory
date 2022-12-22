@@ -143,9 +143,9 @@ namespace Com.Danliris.Service.Inventory.Lib.PDFTemplates.GarmentLeftoverWarehou
             }
             else if (viewModel.AvalType == "AVAL FABRIC")
             {
-                PdfPTable bodyTable = new PdfPTable(6);
+                PdfPTable bodyTable = new PdfPTable(10);
                 bodyTable.WidthPercentage = 100;
-                bodyTable.SetWidths(new float[] { 1f, 3f, 5f, 3f, 3f, 3f });
+                bodyTable.SetWidths(new float[] { 1f, 3f, 5f, 4f, 3f, 4f, 3f, 3f, 2f ,2f});
 
                 PdfPCell bodyTableCellRightBorder = new PdfPCell() { MinimumHeight = 15, Border = Rectangle.TOP_BORDER | Rectangle.LEFT_BORDER | Rectangle.RIGHT_BORDER | Rectangle.BOTTOM_BORDER, HorizontalAlignment = Element.ALIGN_RIGHT };
                 PdfPCell bodyTableCellLeftBorder = new PdfPCell() { MinimumHeight = 15, Border = Rectangle.TOP_BORDER | Rectangle.LEFT_BORDER | Rectangle.RIGHT_BORDER | Rectangle.BOTTOM_BORDER, HorizontalAlignment = Element.ALIGN_LEFT };
@@ -157,6 +157,14 @@ namespace Com.Danliris.Service.Inventory.Lib.PDFTemplates.GarmentLeftoverWarehou
                 bodyTableCellCenterBorder.Phrase = new Phrase("KODE BARANG", bold_font);
                 bodyTable.AddCell(bodyTableCellCenterBorder);
                 bodyTableCellCenterBorder.Phrase = new Phrase("NAMA BARANG", bold_font);
+                bodyTable.AddCell(bodyTableCellCenterBorder);
+                bodyTableCellCenterBorder.Phrase = new Phrase("NOMOR PO", bold_font);
+                bodyTable.AddCell(bodyTableCellCenterBorder);
+                bodyTableCellCenterBorder.Phrase = new Phrase("NOMOR BC", bold_font);
+                bodyTable.AddCell(bodyTableCellCenterBorder);
+                bodyTableCellCenterBorder.Phrase = new Phrase("TANGGAL BC", bold_font);
+                bodyTable.AddCell(bodyTableCellCenterBorder);
+                bodyTableCellCenterBorder.Phrase = new Phrase("TIPE BC", bold_font);
                 bodyTable.AddCell(bodyTableCellCenterBorder);
                 bodyTableCellCenterBorder.Phrase = new Phrase("NO RO", bold_font);
                 bodyTable.AddCell(bodyTableCellCenterBorder);
@@ -176,6 +184,14 @@ namespace Com.Danliris.Service.Inventory.Lib.PDFTemplates.GarmentLeftoverWarehou
                     bodyTable.AddCell(bodyTableCellLeftBorder);
                     bodyTableCellLeftBorder.Phrase = new Phrase(item.Product.Name, normal_font);
                     bodyTable.AddCell(bodyTableCellLeftBorder);
+                    bodyTableCellLeftBorder.Phrase = new Phrase(item.POSerialNumber == null ? "-" : item.POSerialNumber, normal_font);
+                    bodyTable.AddCell(bodyTableCellLeftBorder);
+                    bodyTableCellLeftBorder.Phrase = new Phrase(item.BCNo == null ? "-" : item.BCNo, normal_font);
+                    bodyTable.AddCell(bodyTableCellLeftBorder);
+                    bodyTableCellLeftBorder.Phrase = new Phrase(item.BCDate == null ? "-" : item.BCDate?.ToString("dd-MMM-yyyy"), normal_font);
+                    bodyTable.AddCell(bodyTableCellLeftBorder);
+                    bodyTableCellLeftBorder.Phrase = new Phrase(item.BCType == null ? "-" : item.BCType, normal_font);
+                    bodyTable.AddCell(bodyTableCellLeftBorder);
                     bodyTableCellLeftBorder.Phrase = new Phrase(item.RONo, normal_font);
                     bodyTable.AddCell(bodyTableCellLeftBorder);
                     bodyTableCellRightBorder.Phrase = new Phrase(item.Quantity.ToString(), normal_font);
@@ -186,7 +202,7 @@ namespace Com.Danliris.Service.Inventory.Lib.PDFTemplates.GarmentLeftoverWarehou
                     totalQuantity += item.Quantity;
                 }
                 bodyTableCellRightBorder.Phrase = new Phrase("TOTAL", bold_font);
-                bodyTableCellRightBorder.Colspan = 4;
+                bodyTableCellRightBorder.Colspan = 8;
                 bodyTable.AddCell(bodyTableCellRightBorder);
                 bodyTableCellRightBorder.Phrase = new Phrase(totalQuantity.ToString(), bold_font);
                 bodyTableCellRightBorder.Colspan = 1;
@@ -195,7 +211,7 @@ namespace Com.Danliris.Service.Inventory.Lib.PDFTemplates.GarmentLeftoverWarehou
                 bodyTable.AddCell(bodyTableCellLeftBorder);
 
                 bodyTableCellNoBorder.Phrase = new Phrase("", bold_font);
-                bodyTableCellNoBorder.Colspan = 4;
+                bodyTableCellNoBorder.Colspan = 8;
                 bodyTable.AddCell(bodyTableCellNoBorder);
                 bodyTableCellRightBorder.Phrase = new Phrase(viewModel.TotalAval.ToString(), bold_font);
                 bodyTableCellRightBorder.Colspan = 1;
