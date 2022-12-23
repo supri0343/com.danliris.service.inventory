@@ -34,6 +34,11 @@ using Com.Danliris.Service.Inventory.Lib.Models.GarmentLeftoverWarehouse.Balance
 using Com.Danliris.Service.Inventory.Lib.Configs.GarmentLeftoverWarehouse.BalanceStock;
 using Com.Danliris.Service.Inventory.Lib.Models.InventoryWeavingModel;
 using Com.Danliris.Service.Inventory.Lib.Configs.InventoryWeavingsConfig;
+using Com.Danliris.Service.Inventory.Lib.Models.GarmentWasteProduction.ReceiptWaste;
+using Com.Danliris.Service.Inventory.Lib.Models.GarmentWasteProduction.ExpenditureWaste;
+using Com.Danliris.Service.Inventory.Lib.Configs.GarmentWasteProductionConfig.ReceiptWaste;
+using Com.Danliris.Service.Inventory.Lib.Configs.GarmentLeftoverWarehouse.GarmentExpenditureWasteProductionsConfig;
+using Com.Danliris.Service.Inventory.Lib.Configs.GarmentWasteProductionConfig.ExpenditureWasteConfig;
 
 namespace Com.Danliris.Service.Inventory.Lib
 {
@@ -91,6 +96,10 @@ namespace Com.Danliris.Service.Inventory.Lib
         public DbSet<InventoryWeavingDocument> InventoryWeavingDocuments { get; set; }
         public DbSet<InventoryWeavingDocumentItem> InventoryWeavingDocumentItems { get; set; }
         public DbSet<InventoryWeavingMovement> InventoryWeavingMovements { get; set; }
+        public DbSet<GarmentReceiptWasteProductions> GarmentReceiptWasteProductions { get; set; }
+        public DbSet<GarmentReceiptWasteProductionItems> GarmentReceiptWasteProductionItems { get; set; }
+        public DbSet<GarmentExpenditureWasteProductions> GarmentExpenditureWasteProductions { get; set; }
+        public DbSet<GarmentExpenditureWasteProductionItems> GarmentExpenditureWasteProductionItems { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -140,6 +149,11 @@ namespace Com.Danliris.Service.Inventory.Lib
             modelBuilder.ApplyConfiguration(new InventoryWeavingDocumentConfig());
             modelBuilder.ApplyConfiguration(new InventoryWeavingDocumentItemConfig());
             modelBuilder.ApplyConfiguration(new InventoryWeavingMovementConfig());
+
+            modelBuilder.ApplyConfiguration(new GarmentReceiptWasteProductionConfig());
+            modelBuilder.ApplyConfiguration(new GarmentReceiptWasteProductionItemConfig());
+            modelBuilder.ApplyConfiguration(new GarmentExpenditureWasteProductionsConfig());
+            modelBuilder.ApplyConfiguration(new GarmentExpenditureWasteProductionsItemConfig());
         }
     }
 }
