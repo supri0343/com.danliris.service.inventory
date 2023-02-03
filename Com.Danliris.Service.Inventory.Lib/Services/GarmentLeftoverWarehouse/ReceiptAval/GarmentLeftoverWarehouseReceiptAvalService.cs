@@ -123,7 +123,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
 
         public ReadResponse<GarmentLeftoverWarehouseReceiptAval> Read(int page, int size, string order, List<string> select, string keyword, string filter)
         {
-            IQueryable<GarmentLeftoverWarehouseReceiptAval> Query = DbSet;
+            IQueryable<GarmentLeftoverWarehouseReceiptAval> Query = DbSet.Include(x => x.Items);
 
             List<string> SearchAttributes = new List<string>()
             {
@@ -139,7 +139,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
 
             List<string> SelectedFields = (select != null && select.Count > 0) ? select : new List<string>()
             {
-                "Id", "AvalReceiptNo", "UnitFrom", "ReceiptDate","AvalType","TotalAval"
+                "Id", "AvalReceiptNo", "UnitFrom", "ReceiptDate","AvalType","TotalAval","Items"
             };
 
             Query = Query.Select(s => new GarmentLeftoverWarehouseReceiptAval
@@ -151,7 +151,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
                 UnitFromName = s.UnitFromName,
                 AvalType = s.AvalType,
                 TotalAval=s.TotalAval,
-                ReceiptDate = s.ReceiptDate
+                ReceiptDate = s.ReceiptDate,
+                Items = s.Items  
             });
 
             Pageable<GarmentLeftoverWarehouseReceiptAval> pageable = new Pageable<GarmentLeftoverWarehouseReceiptAval>(Query, page - 1, size);
