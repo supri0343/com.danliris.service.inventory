@@ -378,6 +378,9 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                                     UnitQtyName = b.UomUnit
                                 });
 
+            
+
+
             var SAwal = BalanceStock.Concat(SAReceiptBarangJadi).Concat(SAReceiptAval).Concat(SAReceiptAvalPen).Concat(SAReceiptAvalKomponen).Concat(SAExpendAval).Concat(SAExpendAvalPen).Concat(SAExpendBarangJadi).Concat(SAExpendAvalKompo).AsEnumerable();
             //var SAwal = BalanceStock.Concat(SAReceiptBarangJadi).Concat(SAReceiptAval).Concat(SAReceiptAvalPen).Concat(SAExpendAval).Concat(SAExpendAvalPen).Concat(SAExpendBarangJadi).AsEnumerable();
             var SaldoAwal = SAwal.GroupBy(x => new { x.ClassificationCode, x.ClassificationName, x.Productname, x.UnitQtyName }, (key, group) => new GarmentLeftoverWarehouseMutationReportViewModel
@@ -718,7 +721,108 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                                           UnitQtyName = key.UnitQtyName
 
                                       });
-            var SAkhir = SaldoAwal.Concat(FilteredReceiptAval).Concat(FilteredReceiptAvalPen).Concat(FilteredReceiptBarangJadi).Concat(FilteredExpendAval).Concat(FilteredExpendAvalPen).Concat(FilteredExpendBarangJadi).Concat(FilteredReceiptAvalKomponen).Concat(FilteredExpendAvalKomp).AsEnumerable();
+
+
+
+            //Add Query From Garment -> Aval TC Kecil & Sampah Sapuan -->10/02/2023
+            var ReceipTC = (from a in DbContext.GarmentReceiptWasteProductions
+                            join b in DbContext.GarmentReceiptWasteProductionItems on a.Id equals b.GarmentReceiptWasteId
+                            where a._IsDeleted == false && b._IsDeleted == false
+                            && a.ReceiptDate.AddHours(7).Date > BalanceDate.Date
+                            && a.ReceiptDate.AddHours(7).Date <= dateTo.Value.Date
+                            && a.WasteType == "AVAL TC KECIL"
+                            select new GarmentLeftoverWarehouseMutationReportViewModel
+                            {
+                                ClassificationCode = "ZB05",
+                                ClassificationName = "Aval Tc Kecil",
+                                Productname = "",
+                                SaldoAwal = a.ReceiptDate.AddHours(7).Date < dateFrom ? b.Quantity : 0,
+                                Pemasukan = a.ReceiptDate.AddHours(7).Date >= dateFrom ? b.Quantity : 0,
+                                Pengeluaran = 0,
+                                Penyesuaian = 0,
+                                Selisih = 0,
+                                SaldoAkhir = 0,
+                                StockOpname = 0,
+                                UnitQtyName = "KG"
+                            });
+
+
+            var ExpendTC = (from a in DbContext.GarmentExpenditureWasteProductions
+                            join b in DbContext.GarmentExpenditureWasteProductionItems on a.Id equals b.GarmentExpenditureWasteId
+                            where a._IsDeleted == false && b._IsDeleted == false
+                            && a.ExpenditureDate.AddHours(7).Date > BalanceDate.Date
+                            && a.ExpenditureDate.AddHours(7).Date <= dateTo.Value.Date
+                            && a.WasteType == "AVAL TC KECIL"
+                            select new GarmentLeftoverWarehouseMutationReportViewModel
+                            {
+                                ClassificationCode = "ZB05",
+                                ClassificationName = "Aval Tc Kecil",
+                                Productname = "",
+                                SaldoAwal = a.ExpenditureDate.AddHours(7).Date < dateFrom ? -b.Quantity : 0,
+                                Pemasukan =  0,
+                                Pengeluaran = a.ExpenditureDate.AddHours(7).Date >= dateFrom ? b.Quantity : 0,
+                                Penyesuaian = 0,
+                                Selisih = 0,
+                                SaldoAkhir = 0,
+                                StockOpname = 0,
+                                UnitQtyName = "KG"
+                            });
+
+
+            var ReceipSamSap = (from a in DbContext.GarmentReceiptWasteProductions
+                            join b in DbContext.GarmentReceiptWasteProductionItems on a.Id equals b.GarmentReceiptWasteId
+                            where a._IsDeleted == false && b._IsDeleted == false
+                            && a.ReceiptDate.AddHours(7).Date > BalanceDate.Date
+                            && a.ReceiptDate.AddHours(7).Date <= dateTo.Value.Date
+                            && a.WasteType == "SAMPAH SAPUAN"
+                            select new GarmentLeftoverWarehouseMutationReportViewModel
+                            {
+                                ClassificationCode = "ZA59",
+                                ClassificationName = "Sampah Sapuan",
+                                Productname = "",
+                                SaldoAwal = a.ReceiptDate.AddHours(7).Date < dateFrom ? b.Quantity : 0,
+                                Pemasukan = a.ReceiptDate.AddHours(7).Date >= dateFrom ? b.Quantity : 0,
+                                Pengeluaran = 0,
+                                Penyesuaian = 0,
+                                Selisih = 0,
+                                SaldoAkhir = 0,
+                                StockOpname = 0,
+                                UnitQtyName = "KG"
+                            });
+
+
+            var ExpendSamSap = (from a in DbContext.GarmentExpenditureWasteProductions
+                            join b in DbContext.GarmentExpenditureWasteProductionItems on a.Id equals b.GarmentExpenditureWasteId
+                            where a._IsDeleted == false && b._IsDeleted == false
+                            && a.ExpenditureDate.AddHours(7).Date > BalanceDate.Date
+                            && a.ExpenditureDate.AddHours(7).Date <= dateTo.Value.Date
+                            && a.WasteType == "SAMPAH SAPUAN"
+                            select new GarmentLeftoverWarehouseMutationReportViewModel
+                            {
+                                ClassificationCode = "ZA59",
+                                ClassificationName = "Sampah Sapuan",
+                                Productname = "",
+                                SaldoAwal = a.ExpenditureDate.AddHours(7).Date < dateFrom ? -b.Quantity : 0,
+                                Pemasukan = 0,
+                                Pengeluaran = a.ExpenditureDate.AddHours(7).Date >= dateFrom ? b.Quantity : 0,
+                                Penyesuaian = 0,
+                                Selisih = 0,
+                                SaldoAkhir = 0,
+                                StockOpname = 0,
+                                UnitQtyName = "KG"
+                            });
+
+
+            var SAkhir = SaldoAwal.Concat(FilteredReceiptAval).Concat(FilteredReceiptAvalPen).Concat(FilteredReceiptBarangJadi)
+                .Concat(FilteredExpendAval)
+                .Concat(FilteredExpendAvalPen)
+                .Concat(FilteredExpendBarangJadi)
+                .Concat(FilteredReceiptAvalKomponen)
+                .Concat(FilteredExpendAvalKomp)
+                .Concat(ReceipTC)
+                .Concat(ExpendTC)
+                .Concat(ReceipSamSap)
+                .Concat(ExpendSamSap).AsEnumerable();
             //var SAkhir = SaldoAwal.Concat(FilteredReceiptAval).Concat(FilteredReceiptAvalPen).Concat(FilteredReceiptBarangJadi).Concat(FilteredExpendAval).Concat(FilteredExpendAvalPen).Concat(FilteredExpendBarangJadi).AsEnumerable();
             var SaldoAkhir = SAkhir.GroupBy(x => new { x.ClassificationCode, x.ClassificationName, x.Productname, x.UnitQtyName }, (key, group) => new GarmentLeftoverWarehouseMutationReportViewModel
             {
@@ -736,63 +840,49 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
 
             }).ToList();
 
-            var mutationScrap = GetScrap(DateFrom.Date, DateTo.Date);
+            //var mutationScrap = GetScrap(DateFrom.Date, DateTo.Date);
 
-            foreach (var mm in mutationScrap)
-            {
-                //var saldoawal = mm.SaldoAwal < 0 ? 0 : mm.SaldoAwal;
-                //var saldoakhir = mm.SaldoAkhir < 0 ? 0 : mm.SaldoAkhir;
+            //foreach (var mm in mutationScrap)
+            //{
+            //    //var saldoawal = mm.SaldoAwal < 0 ? 0 : mm.SaldoAwal;
+            //    //var saldoakhir = mm.SaldoAkhir < 0 ? 0 : mm.SaldoAkhir;
 
-                //mm.SaldoAwal = saldoawal;
-                //mm.SaldoAkhir = saldoakhir;
-                mm.ClassificationName = (mm.ClassificationCode == "ZB05" ? "Aval Tc Kecil" :  "Sampah Sapuan" );
-                //mm.ClassificationName = (mm.ClassificationCode == "ZB05" ? "Aval Tc Kecil" : mm.ClassificationCode == "ZA59" ? "Sampah Sapuan" : "Aval Komponen");
-            }
+            //    //mm.SaldoAwal = saldoawal;
+            //    //mm.SaldoAkhir = saldoakhir;
+            //    mm.ClassificationName = (mm.ClassificationCode == "ZB05" ? "Aval Tc Kecil" :  "Sampah Sapuan" );
+            //    //mm.ClassificationName = (mm.ClassificationCode == "ZB05" ? "Aval Tc Kecil" : mm.ClassificationCode == "ZA59" ? "Sampah Sapuan" : "Aval Komponen");
+            //}
 
-            if (mutationScrap.Count == 0)
-            {
-                mutationScrap.Add(new GarmentLeftoverWarehouseMutationReportViewModel
-                {
-                    ClassificationCode = "ZB05",
-                    ClassificationName = "Aval Tc Kecil",
-                    SaldoAwal = 0,
-                    Pemasukan = 0,
-                    Pengeluaran = 0,
-                    Penyesuaian = 0,
-                    Selisih = 0,
-                    SaldoAkhir = 0,
-                    StockOpname = 0,
-                    UnitQtyName = "KG"
-                });
+            //if (mutationScrap.Count == 0)
+            //{
+            //    mutationScrap.Add(new GarmentLeftoverWarehouseMutationReportViewModel
+            //    {
+            //        ClassificationCode = "ZB05",
+            //        ClassificationName = "Aval Tc Kecil",
+            //        SaldoAwal = 0,
+            //        Pemasukan = 0,
+            //        Pengeluaran = 0,
+            //        Penyesuaian = 0,
+            //        Selisih = 0,
+            //        SaldoAkhir = 0,
+            //        StockOpname = 0,
+            //        UnitQtyName = "KG"
+            //    });
 
-                mutationScrap.Add(new GarmentLeftoverWarehouseMutationReportViewModel
-                {
-                    ClassificationCode = "ZA59",
-                    ClassificationName = "Sampah Sapuan",
-                    SaldoAwal = 0,
-                    Pemasukan = 0,
-                    Pengeluaran = 0,
-                    Penyesuaian = 0,
-                    Selisih = 0,
-                    SaldoAkhir = 0,
-                    StockOpname = 0,
-                    UnitQtyName = "KG"
-                });
-
-                //mutationScrap.Add(new GarmentLeftoverWarehouseMutationReportViewModel
-                //{
-                //    ClassificationCode = "AV002",
-                //    ClassificationName = "Aval Komponen",
-                //    SaldoAwal = 0,
-                //    Pemasukan = 0,
-                //    Pengeluaran = 0,
-                //    Penyesuaian = 0,
-                //    Selisih = 0,
-                //    SaldoAkhir = 0,
-                //    StockOpname = 0,
-                //    UnitQtyName = "KG"
-                //});
-            }
+            //    mutationScrap.Add(new GarmentLeftoverWarehouseMutationReportViewModel
+            //    {
+            //        ClassificationCode = "ZA59",
+            //        ClassificationName = "Sampah Sapuan",
+            //        SaldoAwal = 0,
+            //        Pemasukan = 0,
+            //        Pengeluaran = 0,
+            //        Penyesuaian = 0,
+            //        Selisih = 0,
+            //        SaldoAkhir = 0,
+            //        StockOpname = 0,
+            //        UnitQtyName = "KG"
+            //    });
+            //}
 
             if (SaldoAkhir.FirstOrDefault(x => x.ClassificationName == "Aval Komponen") == null)
             {
@@ -860,11 +950,45 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                 });
             };
 
+            if (SaldoAkhir.FirstOrDefault(x => x.ClassificationName == "Aval Tc Kecil") == null)
+            {
+                SaldoAkhir.Add(new GarmentLeftoverWarehouseMutationReportViewModel
+                {
+                    ClassificationCode = "ZB05",
+                    ClassificationName = "Aval Tc Kecil",
+                    SaldoAwal = 0,
+                    Pemasukan = 0,
+                    Pengeluaran = 0,
+                    Penyesuaian = 0,
+                    Selisih = 0,
+                    SaldoAkhir = 0,
+                    StockOpname = 0,
+                    UnitQtyName = "KG"
+                });
+            };
+
+            if (SaldoAkhir.FirstOrDefault(x => x.ClassificationName == "Sampah Sapuan") == null)
+            {
+                SaldoAkhir.Add(new GarmentLeftoverWarehouseMutationReportViewModel
+                {
+                    ClassificationCode = "ZA59",
+                    ClassificationName = "Sampah Sapuan",
+                    SaldoAwal = 0,
+                    Pemasukan = 0,
+                    Pengeluaran = 0,
+                    Penyesuaian = 0,
+                    Selisih = 0,
+                    SaldoAkhir = 0,
+                    StockOpname = 0,
+                    UnitQtyName = "KG"
+                });
+            };
 
 
-            var mutation = SaldoAkhir.Concat(mutationScrap).ToList();
 
-            return mutation.OrderBy(x => x.ClassificationCode).ToList();
+            //var mutation = SaldoAkhir.Concat(mutationScrap).ToList();
+
+            return SaldoAkhir.OrderBy(x => x.ClassificationCode).ToList();
 
         }
 
