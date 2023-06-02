@@ -394,7 +394,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                     result.Rows.Add(
                         index, 
                         item.ExpenditureNo, 
-                        item.ExpenditureDate.ToString("dd MMM yyyy", new CultureInfo("id-ID")), 
+                        item.ExpenditureDate.ToString("MM/dd/yyyy", new CultureInfo("id-ID")), 
                         item.UnitFrom.Name,
                         item.ExpenditureDestination, 
                         item.DescriptionOfPurpose, 
@@ -410,7 +410,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                         item.LocalSalesNoteNo, 
                         item.BCNo, 
                         item.BCType, 
-                        item.BCDate?.ToString("dd MMM yyyy", new CultureInfo("id-ID")));
+                        item.BCDate?.ToString("MM/dd/yyyy", new CultureInfo("id-ID")));
                 }
 
                 result.Rows.Add(
