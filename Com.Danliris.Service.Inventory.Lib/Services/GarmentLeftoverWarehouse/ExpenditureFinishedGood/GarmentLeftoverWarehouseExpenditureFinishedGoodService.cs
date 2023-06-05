@@ -517,8 +517,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.E
 
                     index++;
                     //DateTimeOffset date = item.date ?? new DateTime(1970, 1, 1);
-                    //string dateString = date == new DateTime(1970, 1, 1) ? "-" : date.ToOffset(new TimeSpan(offset, 0, 0)).ToString("dd MMM yyyy", new CultureInfo("id-ID"));
-                    result.Rows.Add(index, item.FinishedGoodExpenditureNo, item.ExpenditureDate.AddHours(offset).ToString("dd MMM yyyy", new CultureInfo("id-ID")), item.ExpenditureTo, item.ExpenditureDestinationDesc, item.UnitFrom.Code, item.RONo, (comodity.Count() > 0 ? comodity.FirstOrDefault().Comodity.Code : "-"), item.LeftoverComodityCode, item.LeftoverComodityName, item.ExpenditureQuantity, item.Uom, item.Price, item.Consignment, item.LocalSalesNoteNo);
+                    //string dateString = date == new DateTime(1970, 1, 1) ? "-" : date.ToOffset(new TimeSpan(offset, 0, 0)).ToString("MM/dd/yyyy", new CultureInfo("id-ID"));
+                    result.Rows.Add(index, item.FinishedGoodExpenditureNo, item.ExpenditureDate.AddHours(offset).ToString("MM/dd/yyyy", new CultureInfo("id-ID")), item.ExpenditureTo, item.ExpenditureDestinationDesc, item.UnitFrom.Code, item.RONo, (comodity.Count() > 0 ? comodity.FirstOrDefault().Comodity.Code : "-"), item.LeftoverComodityCode, item.LeftoverComodityName, item.ExpenditureQuantity, item.Uom, item.Price, item.Consignment, item.LocalSalesNoteNo);
                 }
 
                 result.Rows.Add("", "T O T A L ..........", "", "", "", "", "", "", "", "", QtyTotal, "", PriceTotal, "", "");
