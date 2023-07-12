@@ -391,10 +391,12 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                         item.Composition = garmentProduct["Composition"] == null ? "-" : garmentProduct["Composition"].ToString();
                         item.Const = receiptType == "ACCESSORIES" ? "-" : (garmentProduct["Const"] == null ? "-" : garmentProduct["Const"].ToString()) + "; " + (garmentProduct["Yarn"] == null ? "-" : garmentProduct["Yarn"].ToString()) + "; " + (garmentProduct["Width"] == null ? "-" : garmentProduct["Width"].ToString());
                     }
+                    string expenditureDate = item.ExpenditureDate == new DateTime(1970, 1, 1) ? "-" : item.ExpenditureDate.ToOffset(new TimeSpan(offset, 0, 0)).ToString("MM/dd/yyyy", new CultureInfo("id-ID"));
+
                     result.Rows.Add(
-                        index, 
-                        item.ExpenditureNo, 
-                        item.ExpenditureDate.ToString("MM/dd/yyyy", new CultureInfo("id-ID")), 
+                        index,
+                        item.ExpenditureNo,
+                        expenditureDate,
                         item.UnitFrom.Name,
                         item.ExpenditureDestination, 
                         item.DescriptionOfPurpose, 
