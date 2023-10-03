@@ -4,6 +4,7 @@ using Com.Danliris.Service.Inventory.Lib.Models.GarmentLeftoverWarehouse.Expendi
 using Com.Danliris.Service.Inventory.Lib.Models.GarmentLeftoverWarehouse.ReceiptAccessories;
 using Com.Danliris.Service.Inventory.Lib.Models.GarmentLeftoverWarehouse.Stock;
 using Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.Stock;
+using Com.Danliris.Service.Inventory.Lib.Services.LogHistories;
 using Com.Danliris.Service.Inventory.Lib.ViewModels;
 using Com.Danliris.Service.Inventory.Lib.ViewModels.GarmentLeftoverWarehouse.ExpenditureAccessories;
 using Com.Moonlay.Models;
@@ -30,7 +31,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.E
 
         private readonly IServiceProvider ServiceProvider;
         private readonly IIdentityService IdentityService;
-
+        private readonly ILogHistoryService logHistoryService;
         public GarmentLeftoverWarehouseExpenditureAccessoriesService(InventoryDbContext dbContext, IServiceProvider serviceProvider)
         {
             DbContext = dbContext;
@@ -41,6 +42,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.E
             IdentityService = (IIdentityService)serviceProvider.GetService(typeof(IIdentityService));
 
             StockService = (IGarmentLeftoverWarehouseStockService)serviceProvider.GetService(typeof(IGarmentLeftoverWarehouseStockService));
+            logHistoryService = (ILogHistoryService)serviceProvider.GetService(typeof(ILogHistoryService));
         }
 
         public GarmentLeftoverWarehouseExpenditureAccessories MapToModel(GarmentLeftoverWarehouseExpenditureAccessoriesViewModel viewModel)
@@ -167,6 +169,10 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.E
                         item.FlagForUpdate(IdentityService.Username, UserAgent);
                     }
                     DbSet.Add(model);
+
+                    //Create Log History
+                    logHistoryService.CreateAsync("GUDANG", "Create Pengeluaran Gudang Sisa Accessoris - " + model.ExpenditureNo);
+
                     Created = await DbContext.SaveChangesAsync();
 
                     foreach (var item in model.Items)
@@ -253,6 +259,9 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.E
                         item.FlagForDelete(IdentityService.Username, UserAgent);
                     }
 
+                    //Create Log History
+                    logHistoryService.CreateAsync("GUDANG", "Delete Pengeluaran Gudang Sisa Accessoris - " + model.ExpenditureNo);
+
                     Deleted = await DbContext.SaveChangesAsync();
 
                     foreach (var item in model.Items)
@@ -325,6 +334,9 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.E
                         item.FlagForUpdate(IdentityService.Username, UserAgent);
                         existingModel.Items.Add(item);
                     }
+
+                    //Create Log History
+                    logHistoryService.CreateAsync("GUDANG", "Update Pengeluaran Gudang Sisa Accessoris - " + model.ExpenditureNo);
 
                     Updated = await DbContext.SaveChangesAsync();
 
