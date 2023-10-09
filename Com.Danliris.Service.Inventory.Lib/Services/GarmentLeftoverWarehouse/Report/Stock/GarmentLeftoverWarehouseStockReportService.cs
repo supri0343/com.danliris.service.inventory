@@ -524,7 +524,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                                               where data._IsDeleted == false && data.TypeOfGoods.ToString() == "ACCESSORIES"
                                               select new { data._CreatedUtc, data.Id })
                                    join b in DbContext.GarmentLeftoverWarehouseBalanceStocksItems on a.Id equals b.BalanceStockId
-                                   where b.UnitId == UnitId
+                                   where b.UnitId == (UnitId == 0 ? b.UnitId : UnitId)
                                    select new GarmentLeftoverWarehouseStockMonitoringViewModel
                                    {
                                        PONo = b.PONo,
@@ -543,7 +543,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                 var QueryReceipt = from a in (from data in DbContext.GarmentLeftoverWarehouseReceiptAccessories
                                               where data._IsDeleted == false
                                          && data.StorageReceiveDate.AddHours(offset).Date <= DateTo.Date
-                                         && data.RequestUnitId == UnitId
+                                         && data.RequestUnitId == (UnitId == 0 ? data.RequestUnitId : UnitId)
                                               select new { data.RequestUnitCode, data.StorageReceiveDate, data.Id })
                                    join b in DbContext.GarmentLeftoverWarehouseReceiptAccessoryItems on a.Id equals b.GarmentLeftOverWarehouseReceiptAccessoriesId
                                    select new GarmentLeftoverWarehouseStockMonitoringViewModel
@@ -567,7 +567,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
 
                                                   select new { data.ExpenditureDate, data.Id })
                                        join b in (from expend in DbContext.GarmentLeftoverWarehouseExpenditureAccessoriesItems
-                                                  where expend.UnitId == UnitId
+                                                  where expend.UnitId == (UnitId == 0 ? expend.UnitId : UnitId)
                                                   select new { expend.ExpenditureId, expend.UomUnit, expend.UnitCode, expend.Quantity, expend.PONo }
                                                   ) on a.Id equals b.ExpenditureId
                                        select new GarmentLeftoverWarehouseStockMonitoringViewModel
