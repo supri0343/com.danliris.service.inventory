@@ -153,7 +153,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentWasteProduction
                     DbSet.Add(model);
 
                     //Create Log History
-                    logHistoryService.CreateAsync("GUDANG", "Create Pengeluaran Aval Sampah Sapuan Dan TC Kecil - " + model.GarmentExpenditureWasteNo);
+                    logHistoryService.CreateAsync("GUDANG SISA", "Create Pengeluaran Aval Sampah Sapuan Dan TC Kecil - " + model.GarmentExpenditureWasteNo);
 
                     Created = await DbContext.SaveChangesAsync();
                     transaction.Commit();
@@ -235,7 +235,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentWasteProduction
                     existingModel.FlagForUpdate(IdentityService.Username, UserAgent);
 
                     //Create Log History
-                    logHistoryService.CreateAsync("GUDANG", "Update Pengeluaran Aval Sampah Sapuan Dan TC Kecil - " + model.GarmentExpenditureWasteNo);
+                    logHistoryService.CreateAsync("GUDANG SISA", "Update Pengeluaran Aval Sampah Sapuan Dan TC Kecil - " + model.GarmentExpenditureWasteNo);
 
                     Updated = await DbContext.SaveChangesAsync();
 
@@ -273,7 +273,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentWasteProduction
                         item.FlagForDelete(IdentityService.Username, UserAgent);
                     }
                     //Create Log History
-                    logHistoryService.CreateAsync("GUDANG", "Delete Pengeluaran Aval Sampah Sapuan Dan TC Kecil - " + model.GarmentExpenditureWasteNo);
+                    logHistoryService.CreateAsync("GUDANG SISA", "Delete Pengeluaran Aval Sampah Sapuan Dan TC Kecil - " + model.GarmentExpenditureWasteNo);
 
 
                     Deleted = await DbContext.SaveChangesAsync();

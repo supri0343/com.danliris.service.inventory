@@ -196,7 +196,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
                     DbSet.Add(model);
 
                     //Create Log History
-                    logHistoryService.CreateAsync("GUDANG", "Create Penerimaan Gudang Sisa Aval - " + model.AvalReceiptNo);
+                    logHistoryService.CreateAsync("GUDANG SISA", "Create Penerimaan Gudang Sisa Aval - " + model.AvalReceiptNo);
 
                     Created = await DbContext.SaveChangesAsync();
 
@@ -345,7 +345,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
                     existingModel.FlagForUpdate(IdentityService.Username, UserAgent);
 
                     //Create Log History
-                    logHistoryService.CreateAsync("GUDANG", "Update Penerimaan Gudang Sisa Aval - " + model.AvalReceiptNo);
+                    logHistoryService.CreateAsync("GUDANG SISA", "Update Penerimaan Gudang Sisa Aval - " + model.AvalReceiptNo);
 
                     Updated = await DbContext.SaveChangesAsync();
 
@@ -379,7 +379,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
                     }
 
                     //Create Log History
-                    logHistoryService.CreateAsync("GUDANG", "Delete Penerimaan Gudang Sisa Aval - " + model.AvalReceiptNo);
+                    logHistoryService.CreateAsync("GUDANG SISA", "Delete Penerimaan Gudang Sisa Aval - " + model.AvalReceiptNo);
 
                     Deleted = await DbContext.SaveChangesAsync();
 
