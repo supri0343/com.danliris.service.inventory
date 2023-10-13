@@ -69,7 +69,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.E
                     DbSet.Add(model);
 
                     //Create Log History
-                    logHistoryService.CreateAsync("GUDANG", "Create Pengeluaran Gudang Sisa Aval - " + model.AvalExpenditureNo);
+                    logHistoryService.CreateAsync("GUDANG SISA", "Create Pengeluaran Gudang Sisa Aval - " + model.AvalExpenditureNo);
 
                     Created = await DbContext.SaveChangesAsync();
 
@@ -154,7 +154,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.E
                     }
 
                     //Create Log History
-                    logHistoryService.CreateAsync("GUDANG", "Delete Pengeluaran Gudang Sisa Aval - " + model.AvalExpenditureNo);
+                    logHistoryService.CreateAsync("GUDANG SISA", "Delete Pengeluaran Gudang Sisa Aval - " + model.AvalExpenditureNo);
 
                     Deleted = await DbContext.SaveChangesAsync();
 
@@ -472,7 +472,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.E
                     }
 
                     //Create Log History
-                    logHistoryService.CreateAsync("GUDANG", "Update Pengeluaran Gudang Sisa Aval - " + model.AvalExpenditureNo);
+                    logHistoryService.CreateAsync("GUDANG SISA", "Update Pengeluaran Gudang Sisa Aval - " + model.AvalExpenditureNo);
 
                     Updated = await DbContext.SaveChangesAsync();
 
