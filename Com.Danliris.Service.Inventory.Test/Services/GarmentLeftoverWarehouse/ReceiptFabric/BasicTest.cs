@@ -346,7 +346,9 @@ namespace Com.Danliris.Service.Inventory.Test.Services.GarmentLeftoverWarehouse.
         [Fact]
         private async Task TestPatchError()
         {
-            HttpService httpService = new HttpService(new IdentityService());
+            var serviceProvider = GetServiceProvider();
+
+            HttpService httpService = new HttpService(new IdentityService(), serviceProvider.Object);
             await Assert.ThrowsAnyAsync<Exception>(() => httpService.PatchAsync(null, null));
         }
     }
