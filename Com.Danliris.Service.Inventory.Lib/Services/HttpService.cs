@@ -11,9 +11,10 @@ namespace Com.Danliris.Service.Inventory.Lib.Services
     public class HttpService : IHttpService
     {
         private HttpClient _client = new HttpClient();
-
-        public HttpService(IIdentityService identityService)
+        protected IIdentityService identityService;
+        public HttpService(IIdentityService IdentityService, IServiceProvider serviceProvider)
         {
+            identityService = IdentityService;
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(JwtBearerDefaults.AuthenticationScheme, identityService.Token);
         }
 
@@ -46,6 +47,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services
 
         public async Task<HttpResponseMessage> SendAsync(HttpMethod method, string url, HttpContent content)
         {
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", identityService.Token);
             var request = new HttpRequestMessage(method, url)
             {
                 Content = content

@@ -3,6 +3,7 @@ using Com.Danliris.Service.Inventory.Lib.Helpers;
 using Com.Danliris.Service.Inventory.Lib.Models.GarmentLeftoverWarehouse.GarmentLeftoverWarehouseReceiptAvalModels;
 using Com.Danliris.Service.Inventory.Lib.Models.GarmentLeftoverWarehouse.Stock;
 using Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.Stock;
+using Com.Danliris.Service.Inventory.Lib.Services.LogHistories;
 using Com.Danliris.Service.Inventory.Lib.ViewModels;
 using Com.Danliris.Service.Inventory.Lib.ViewModels.GarmentLeftoverWarehouse.GarmentLeftoverWarehouseReceiptAvalViewModels;
 using Com.Moonlay.Models;
@@ -30,7 +31,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
         private readonly IGarmentLeftoverWarehouseStockService StockService;
         private readonly string GarmentAvalProductUri;
         private readonly string GarmentAvalComponentUri;
-
+        private readonly ILogHistoryService logHistoryService;
         public GarmentLeftoverWarehouseReceiptAvalService(InventoryDbContext dbContext, IServiceProvider serviceProvider)
         {
             DbContext = dbContext;
@@ -42,6 +43,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
 
             GarmentAvalProductUri = APIEndpoint.GarmentProduction + "aval-products/";
             GarmentAvalComponentUri = APIEndpoint.GarmentProduction + "aval-components/";
+            logHistoryService = (ILogHistoryService)serviceProvider.GetService(typeof(ILogHistoryService));
         }
 
         public GarmentLeftoverWarehouseReceiptAval MapToModel(GarmentLeftoverWarehouseReceiptAvalViewModel viewModel)
@@ -193,6 +195,9 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
 
                     DbSet.Add(model);
 
+                    //Create Log History
+                    logHistoryService.CreateAsync("GUDANG SISA", "Create Penerimaan Gudang Sisa Aval - " + model.AvalReceiptNo);
+
                     Created = await DbContext.SaveChangesAsync();
 
                     if (model.AvalType=="AVAL FABRIC")
@@ -339,6 +344,9 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
 
                     existingModel.FlagForUpdate(IdentityService.Username, UserAgent);
 
+                    //Create Log History
+                    logHistoryService.CreateAsync("GUDANG SISA", "Update Penerimaan Gudang Sisa Aval - " + model.AvalReceiptNo);
+
                     Updated = await DbContext.SaveChangesAsync();
 
                     transaction.Commit();
@@ -369,6 +377,10 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.G
                         avalItemIds.Add(item.GarmentAvalProductItemId.ToString());
                         item.FlagForDelete(IdentityService.Username, UserAgent);
                     }
+
+                    //Create Log History
+                    logHistoryService.CreateAsync("GUDANG SISA", "Delete Penerimaan Gudang Sisa Aval - " + model.AvalReceiptNo);
+
                     Deleted = await DbContext.SaveChangesAsync();
 
                     if(model.AvalType=="AVAL FABRIC")

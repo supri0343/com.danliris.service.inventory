@@ -7,6 +7,7 @@ using Com.Danliris.Service.Inventory.Lib.Helpers;
 using Com.Danliris.Service.Inventory.Lib.Models.GarmentLeftoverWarehouse.ExpenditureFabric;
 using Com.Danliris.Service.Inventory.Lib.Models.GarmentLeftoverWarehouse.Stock;
 using Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.Stock;
+using Com.Danliris.Service.Inventory.Lib.Services.LogHistories;
 using Com.Danliris.Service.Inventory.Lib.ViewModels;
 using Com.Danliris.Service.Inventory.Lib.ViewModels.GarmentLeftoverWarehouse.ExpenditureFabric;
 using Com.Moonlay.Models;
@@ -31,7 +32,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.E
 
         private readonly string GarmentUnitReceiptNoteUri;
         private readonly string GarmentCoreProductUri;
-
+        private readonly ILogHistoryService logHistoryService;
         public GarmentLeftoverWarehouseExpenditureFabricService(InventoryDbContext dbContext, IServiceProvider serviceProvider)
         {
             DbContext = dbContext;
@@ -45,6 +46,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.E
 
             GarmentUnitReceiptNoteUri = APIEndpoint.Purchasing + "garment-unit-expenditure-notes/";
             GarmentCoreProductUri = APIEndpoint.Core + "master/garmentProducts";
+            logHistoryService = (ILogHistoryService)serviceProvider.GetService(typeof(ILogHistoryService));
         }
 
         public GarmentLeftoverWarehouseExpenditureFabric MapToModel(GarmentLeftoverWarehouseExpenditureFabricViewModel viewModel)
@@ -157,6 +159,10 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.E
                         item.FlagForUpdate(IdentityService.Username, UserAgent);
                     }
                     DbSet.Add(model);
+
+                    //Create Log History
+                    logHistoryService.CreateAsync("GUDANG SISA", "Create Pengeluaran Gudang Sisa Fabric - " + model.ExpenditureNo);
+
                     Created = await DbContext.SaveChangesAsync();
 
                     foreach (var item in model.Items)
@@ -243,6 +249,9 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.E
                         item.FlagForDelete(IdentityService.Username, UserAgent);
                     }
 
+                    //Create Log History
+                    logHistoryService.CreateAsync("GUDANG SISA", "Delete Pengeluaran Gudang Sisa Fabric - " + model.ExpenditureNo);
+
                     Deleted = await DbContext.SaveChangesAsync();
 
                     foreach (var item in model.Items)
@@ -319,6 +328,9 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.E
                         item.FlagForUpdate(IdentityService.Username, UserAgent);
                         existingModel.Items.Add(item);
                     }
+
+                    //Create Log History
+                    logHistoryService.CreateAsync("GUDANG SISA", "Update Pengeluaran Gudang Sisa Fabric - " + model.ExpenditureNo);
 
                     Updated = await DbContext.SaveChangesAsync();
 
