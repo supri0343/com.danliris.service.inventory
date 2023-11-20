@@ -39,6 +39,7 @@ using Com.Danliris.Service.Inventory.Lib.Models.GarmentWasteProduction.Expenditu
 using Com.Danliris.Service.Inventory.Lib.Configs.GarmentWasteProductionConfig.ReceiptWaste;
 using Com.Danliris.Service.Inventory.Lib.Configs.GarmentLeftoverWarehouse.GarmentExpenditureWasteProductionsConfig;
 using Com.Danliris.Service.Inventory.Lib.Configs.GarmentWasteProductionConfig.ExpenditureWasteConfig;
+using com.Danliris.Service.Inventory.Lib.Models.LogHistory;
 
 namespace Com.Danliris.Service.Inventory.Lib
 {
@@ -100,7 +101,7 @@ namespace Com.Danliris.Service.Inventory.Lib
         public DbSet<GarmentReceiptWasteProductionItems> GarmentReceiptWasteProductionItems { get; set; }
         public DbSet<GarmentExpenditureWasteProductions> GarmentExpenditureWasteProductions { get; set; }
         public DbSet<GarmentExpenditureWasteProductionItems> GarmentExpenditureWasteProductionItems { get; set; }
-
+        public DbSet<LogHistory> LogHistories { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
