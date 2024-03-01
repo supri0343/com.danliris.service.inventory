@@ -6,10 +6,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Configs\GarmentReceiptSubconWasteProductionConfig\ExpenditureWasteConfig\**" />
     <Compile Remove="Facades\**" />
     <Compile Remove="ViewModels\InventoryDocumentViewModel\**" />
+    <EmbeddedResource Remove="Configs\GarmentReceiptSubconWasteProductionConfig\ExpenditureWasteConfig\**" />
     <EmbeddedResource Remove="Facades\**" />
     <EmbeddedResource Remove="ViewModels\InventoryDocumentViewModel\**" />
+    <None Remove="Configs\GarmentReceiptSubconWasteProductionConfig\ExpenditureWasteConfig\**" />
     <None Remove="Facades\**" />
     <None Remove="ViewModels\InventoryDocumentViewModel\**" />
   </ItemGroup>
