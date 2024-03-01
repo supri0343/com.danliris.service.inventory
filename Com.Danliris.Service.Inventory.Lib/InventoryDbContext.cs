@@ -40,6 +40,11 @@ using Com.Danliris.Service.Inventory.Lib.Configs.GarmentWasteProductionConfig.Re
 using Com.Danliris.Service.Inventory.Lib.Configs.GarmentLeftoverWarehouse.GarmentExpenditureWasteProductionsConfig;
 using Com.Danliris.Service.Inventory.Lib.Configs.GarmentWasteProductionConfig.ExpenditureWasteConfig;
 using com.Danliris.Service.Inventory.Lib.Models.LogHistory;
+using Com.Danliris.Service.Inventory.Lib.Configs.GarmentWasteProductionConfig.GarmentReceiptSubconWasteProductionConfig.ReceiptWaste;
+using Com.Danliris.Service.Inventory.Lib.Configs.GarmentLeftoverWarehouse.GarmentReceiptSubconWasteProductionConfig.GarmentExpenditureWasteProductionsConfig;
+using Com.Danliris.Service.Inventory.Lib.Configs.GarmentWasteProductionConfig.GarmentReceiptSubconWasteProductionConfig.ExpenditureWasteConfig;
+using Com.Danliris.Service.Inventory.Lib.Models.GarmentReceiptSubconWasteProduction.ReceiptWaste;
+using Com.Danliris.Service.Inventory.Lib.Models.GarmentReceiptSubconWasteProduction.ExpenditureWaste;
 
 namespace Com.Danliris.Service.Inventory.Lib
 {
@@ -103,6 +108,11 @@ namespace Com.Danliris.Service.Inventory.Lib
         public DbSet<GarmentExpenditureWasteProductionItems> GarmentExpenditureWasteProductionItems { get; set; }
         public DbSet<LogHistory> LogHistories { get; set; }
 
+        public DbSet<GarmentSubconReceiptWasteProductions> GarmentSubconReceiptWasteProductions { get; set; }
+        public DbSet<GarmentSubconReceiptWasteProductionItems> GarmentSubconReceiptWasteProductionItems { get; set; }
+        public DbSet<GarmentSubconExpenditureWasteProductions> GarmentSubconExpenditureWasteProductions { get; set; }
+        public DbSet<GarmentSubconExpenditureWasteProductionItems> GarmentSubconExpenditureWasteProductionItems { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -155,6 +165,11 @@ namespace Com.Danliris.Service.Inventory.Lib
             modelBuilder.ApplyConfiguration(new GarmentReceiptWasteProductionItemConfig());
             modelBuilder.ApplyConfiguration(new GarmentExpenditureWasteProductionsConfig());
             modelBuilder.ApplyConfiguration(new GarmentExpenditureWasteProductionsItemConfig());
+
+            modelBuilder.ApplyConfiguration(new GarmentSubconReceiptWasteProductionConfig());
+            modelBuilder.ApplyConfiguration(new GarmentSubconReceiptWasteProductionItemConfig());
+            modelBuilder.ApplyConfiguration(new GarmentSubconExpenditureWasteProductionsConfig());
+            modelBuilder.ApplyConfiguration(new GarmentSubconExpenditureWasteProductionsItemConfig());
         }
     }
 }

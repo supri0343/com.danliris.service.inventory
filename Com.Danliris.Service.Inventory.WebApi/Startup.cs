@@ -55,6 +55,7 @@ using Com.Danliris.Service.Inventory.Lib.Services.InventoryWeaving.Reports.Repor
 using Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.Report.AvalMutation;
 using Com.Danliris.Service.Inventory.Lib.Services.GarmentWasteProduction;
 using Com.Danliris.Service.Inventory.Lib.Services.LogHistories;
+using Com.Danliris.Service.Inventory.Lib.Services.GarmentReceiptSubconWasteProduction;
 
 namespace Com.Danliris.Service.Inventory.WebApi
 {
@@ -146,6 +147,8 @@ namespace Com.Danliris.Service.Inventory.WebApi
                 .AddTransient<IGarmentLeftoverWarehouseAvalMutationReportService, GarmentLeftoverWarehouseAvalMutationReportService>()
                 .AddTransient<IGarmentReceiptWasteProductionService, GarmentReceiptWasteProductionService>()
                 .AddTransient<IGarmentExpenditureWasteProductionService, GarmentExpenditureWasteProductionService>()
+                .AddTransient<IGarmentSubconReceiptWasteProductionService, GarmentSubconReceiptWasteProductionService>()
+                .AddTransient<IGarmentSubconExpenditureWasteProductionService, GarmentSubconExpenditureWasteProductionService>()
                 .AddScoped<IIdentityService, IdentityService>()
                 .AddScoped<IValidateService, ValidateService>()
                 .AddScoped<IHttpService, HttpService>()
