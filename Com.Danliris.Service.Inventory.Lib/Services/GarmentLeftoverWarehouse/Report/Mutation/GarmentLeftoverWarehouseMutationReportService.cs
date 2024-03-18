@@ -1005,16 +1005,16 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
             if (httpResponse.IsSuccessStatusCode)
             {
                 var content = httpResponse.Content.ReadAsStringAsync().Result;
-                Dictionary<string, object> result = JsonConvert.DeserializeObject<Dictionary<string, object>>(content);
+                Dictionary<string, object> Result = JsonConvert.DeserializeObject<Dictionary<string, object>>(content);
 
                 List<GarmentLeftoverWarehouseMutationReportViewModel> viewModel;
-                if (result.GetValueOrDefault("data") == null)
+                if (Result.GetValueOrDefault("data") == null)
                 {
                     viewModel = null;
                 }
                 else
                 {
-                    viewModel = JsonConvert.DeserializeObject<List<GarmentLeftoverWarehouseMutationReportViewModel>>(result.GetValueOrDefault("data").ToString());
+                    viewModel = JsonConvert.DeserializeObject<List<GarmentLeftoverWarehouseMutationReportViewModel>>(Result.GetValueOrDefault("data").ToString());
 
                 }
                 return viewModel;
@@ -1030,25 +1030,29 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
         {
             var Query = GetReportQuery(dateFrom, dateTo);
             DataTable Result = new DataTable();
+            Result.Columns.Add(new DataColumn() { ColumnName = "No", DataType = typeof(String) });
             Result.Columns.Add(new DataColumn() { ColumnName = "Kode Barang", DataType = typeof(String) });
             Result.Columns.Add(new DataColumn() { ColumnName = "Nama Barang", DataType = typeof(String) });
             Result.Columns.Add(new DataColumn() { ColumnName = "Kategori Barang", DataType = typeof(String) });
-            Result.Columns.Add(new DataColumn() { ColumnName = "Satuan", DataType = typeof(String) });
-            Result.Columns.Add(new DataColumn() { ColumnName = "Saldo Awal", DataType = typeof(Double) });
-            Result.Columns.Add(new DataColumn() { ColumnName = "Pemasukan", DataType = typeof(Double) });
-            Result.Columns.Add(new DataColumn() { ColumnName = "Pengeluaran", DataType = typeof(Double) });
-            Result.Columns.Add(new DataColumn() { ColumnName = "Penyesuaian", DataType = typeof(Double) });
-            Result.Columns.Add(new DataColumn() { ColumnName = "Saldo Akhir", DataType = typeof(Double) });
-            Result.Columns.Add(new DataColumn() { ColumnName = "Stock Opname", DataType = typeof(Double) });
-            Result.Columns.Add(new DataColumn() { ColumnName = "Selisih", DataType = typeof(Double) });
+            Result.Columns.Add(new DataColumn() { ColumnName = "Satuan Barang", DataType = typeof(string) });
+            Result.Columns.Add(new DataColumn() { ColumnName = "Jumlah Barang", DataType = typeof(double) });
+            Result.Columns.Add(new DataColumn() { ColumnName = "Saldo Awal", DataType = typeof(double) });
+            Result.Columns.Add(new DataColumn() { ColumnName = "Jumlah Pemasukan Barang", DataType = typeof(double) });
+            Result.Columns.Add(new DataColumn() { ColumnName = "Jumlah Pengeluaran Barang", DataType = typeof(double) });
+            Result.Columns.Add(new DataColumn() { ColumnName = "Penyesuaian (Adjustment)", DataType = typeof(double) });
+            Result.Columns.Add(new DataColumn() { ColumnName = "Saldo Akhir", DataType = typeof(double) });
+            Result.Columns.Add(new DataColumn() { ColumnName = "Hasil Pencacahan", DataType = typeof(double) });
+            Result.Columns.Add(new DataColumn() { ColumnName = "Jumlah Selisih", DataType = typeof(double) });
+            Result.Columns.Add(new DataColumn() { ColumnName = "Keterangan", DataType = typeof(string) });
             ExcelPackage package = new ExcelPackage();
             if (Query.ToArray().Count() == 0)
-                Result.Rows.Add("", "", "", 0, 0, 0, 0, 0, 0, 0);
+                Result.Rows.Add("", "", "", "", "", 0, 0, 0, 0, 0, 0, 0, 0, "");
             else
             {
                 int counter = 5;
                 int idx = 1;
                 var rCount = 0;
+                int indexNum = 1;
                 Dictionary<string, string> Rowcount = new Dictionary<string, string>();
 
                 foreach (var item in Query)
@@ -1073,40 +1077,41 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.R
                             }
                         }
                     }
-                    Result.Rows.Add(item.ClassificationCode, item.ClassificationName, item.Productname, item.UnitQtyName, item.SaldoAwal, item.Pemasukan, item.Pengeluaran, item.Penyesuaian, item.SaldoAkhir, item.StockOpname, item.Selisih);
+                    Result.Rows.Add(indexNum.ToString(),item.ClassificationCode, item.ClassificationName, item.Productname, item.UnitQtyName,0, item.SaldoAwal, item.Pemasukan, item.Pengeluaran, item.Penyesuaian, item.SaldoAkhir, item.StockOpname, item.Selisih,"-");
                     counter++;
+                    indexNum++;
                 }
                 bool styling = true;
 
                 foreach (KeyValuePair<DataTable, String> item in new List<KeyValuePair<DataTable, string>>() { new KeyValuePair<DataTable, string>(Result, "ScrapReject") })
                 {
                     var sheet = package.Workbook.Worksheets.Add(item.Value);
-                    sheet.Cells[$"A1:K1"].Style.Font.Bold = true;
+                    sheet.Cells[$"A1:N1"].Style.Font.Bold = true;
                     sheet.Cells["A1"].LoadFromDataTable(item.Key, true, (styling == true) ? OfficeOpenXml.Table.TableStyles.Light16 : OfficeOpenXml.Table.TableStyles.Light16);
                     sheet.Cells[sheet.Dimension.Address].AutoFitColumns();
 
                     foreach (var rowMerge in Rowcount)
                     {
-                       
-                                var UnitrowNum = rowMerge.Value.Split("-");
-                                int rowNum2 = 1;
-                                int rowNum1 = Convert.ToInt32(UnitrowNum[0]);
-                                if (UnitrowNum.Length > 1)
-                                {
-                                    rowNum2 = Convert.ToInt32(rowNum1) + Convert.ToInt32(UnitrowNum[1]);
-                                }
-                                else
-                                {
-                                    rowNum2 = Convert.ToInt32(rowNum1);
-                                }
 
-                                sheet.Cells[$"A{(rowNum1 + 2)}:A{(rowNum2) + 2}"].Merge = true;
-                                sheet.Cells[$"A{(rowNum1 + 2)}:A{(rowNum2) + 2}"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
-                                sheet.Cells[$"A{(rowNum1 + 2)}:A{(rowNum2) + 2}"].Style.VerticalAlignment = ExcelVerticalAlignment.Top;
+                        var UnitrowNum = rowMerge.Value.Split("-");
+                        int rowNum2 = 1;
+                        int rowNum1 = Convert.ToInt32(UnitrowNum[0]);
+                        if (UnitrowNum.Length > 1)
+                        {
+                            rowNum2 = Convert.ToInt32(rowNum1) + Convert.ToInt32(UnitrowNum[1]);
+                        }
+                        else
+                        {
+                            rowNum2 = Convert.ToInt32(rowNum1);
+                        }
 
-                                sheet.Cells[$"B{(rowNum1 + 2)}:B{(rowNum2 + 2)}"].Merge = true;
-                                sheet.Cells[$"B{(rowNum1 + 2)}:B{(rowNum2 + 2)}"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
-                                sheet.Cells[$"B{(rowNum1 + 2)}:B{(rowNum2 + 2)}"].Style.VerticalAlignment = ExcelVerticalAlignment.Top;
+                        sheet.Cells[$"A{(rowNum1 + 3)}:A{(rowNum2) + 3}"].Merge = true;
+                        sheet.Cells[$"A{(rowNum1 + 3)}:A{(rowNum2) + 3}"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                        sheet.Cells[$"A{(rowNum1 + 3)}:A{(rowNum2) + 3}"].Style.VerticalAlignment = ExcelVerticalAlignment.Top;
+
+                        sheet.Cells[$"B{(rowNum1 + 3)}:B{(rowNum2 + 3)}"].Merge = true;
+                        sheet.Cells[$"B{(rowNum1 + 3)}:B{(rowNum2 + 3)}"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+                        sheet.Cells[$"B{(rowNum1 + 3)}:B{(rowNum2 + 3)}"].Style.VerticalAlignment = ExcelVerticalAlignment.Top;
                     }
                 }
             }
