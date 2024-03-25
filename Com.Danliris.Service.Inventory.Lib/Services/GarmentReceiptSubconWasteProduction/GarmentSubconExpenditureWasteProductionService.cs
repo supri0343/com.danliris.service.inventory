@@ -11,6 +11,7 @@ using Com.Danliris.Service.Inventory.Lib.Models.GarmentWasteProduction.ReceiptWa
 using Com.Danliris.Service.Inventory.Lib.Services.LogHistories;
 using Com.Danliris.Service.Inventory.Lib.Models.GarmentReceiptSubconWasteProduction.ExpenditureWaste;
 using Com.Danliris.Service.Inventory.Lib.ViewModels.GarmentReceiptSubconWasteProductionViewModel.ExpenditureWaste;
+using Com.Danliris.Service.Inventory.Lib.Models.GarmentReceiptSubconWasteProduction.ReceiptWaste;
 
 namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentReceiptSubconWasteProduction
 {
@@ -134,7 +135,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentReceiptSubconWasteP
 
                     foreach (var item in model.Items)
                     {
-                        GarmentReceiptWasteProductions receiptWaste = await DbContext.GarmentReceiptWasteProductions.Where(x => x.Id == item.GarmentReceiptWasteId).FirstOrDefaultAsync();
+                        GarmentSubconReceiptWasteProductions receiptWaste = await DbContext.GarmentSubconReceiptWasteProductions.Where(x => x.Id == item.GarmentReceiptWasteId).FirstOrDefaultAsync();
 
                         receiptWaste.IsUsed = true;
                         receiptWaste.FlagForUpdate(IdentityService.Username, UserAgent);
@@ -193,7 +194,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentReceiptSubconWasteP
                     foreach (var item in existingModel.Items)
                     {
 
-                        GarmentReceiptWasteProductions receiptWaste = await DbContext.GarmentReceiptWasteProductions.Where(x => x.Id == item.GarmentReceiptWasteId).FirstOrDefaultAsync();
+                        GarmentSubconReceiptWasteProductions receiptWaste = await DbContext.GarmentSubconReceiptWasteProductions.Where(x => x.Id == item.GarmentReceiptWasteId).FirstOrDefaultAsync();
                         receiptWaste.FlagForUpdate(IdentityService.Username, UserAgent);
                         receiptWaste.IsUsed = false;
 
@@ -204,8 +205,8 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentReceiptSubconWasteP
 
                     foreach (var item in model.Items)
                     {
-                     
-                        GarmentReceiptWasteProductions receiptWaste = await DbContext.GarmentReceiptWasteProductions.Where(x => x.Id == item.GarmentReceiptWasteId).FirstOrDefaultAsync();
+
+                        GarmentSubconReceiptWasteProductions receiptWaste = await DbContext.GarmentSubconReceiptWasteProductions.Where(x => x.Id == item.GarmentReceiptWasteId).FirstOrDefaultAsync();
                         receiptWaste.FlagForUpdate(IdentityService.Username, UserAgent);
                         receiptWaste.IsUsed = true;
                         
@@ -258,7 +259,7 @@ namespace Com.Danliris.Service.Inventory.Lib.Services.GarmentReceiptSubconWasteP
                     model.FlagForDelete(IdentityService.Username, UserAgent);
                     foreach (var item in model.Items)
                     {
-                        GarmentReceiptWasteProductions receiptWaste = await DbContext.GarmentReceiptWasteProductions.Where(x => x.Id == item.GarmentReceiptWasteId).FirstOrDefaultAsync();
+                        GarmentSubconReceiptWasteProductions receiptWaste = await DbContext.GarmentSubconReceiptWasteProductions.Where(x => x.Id == item.GarmentReceiptWasteId).FirstOrDefaultAsync();
 
                         receiptWaste.IsUsed = false;
                         receiptWaste.FlagForUpdate(IdentityService.Username, UserAgent);
