@@ -56,6 +56,7 @@ using Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.Repor
 using Com.Danliris.Service.Inventory.Lib.Services.GarmentWasteProduction;
 using Com.Danliris.Service.Inventory.Lib.Services.LogHistories;
 using Com.Danliris.Service.Inventory.Lib.Services.GarmentReceiptSubconWasteProduction;
+using Com.Danliris.Service.Inventory.Lib.Services.GarmentWasteProduction.Report;
 
 namespace Com.Danliris.Service.Inventory.WebApi
 {
@@ -155,7 +156,8 @@ namespace Com.Danliris.Service.Inventory.WebApi
                 .AddScoped<IdentityService>()
                 .AddScoped<HttpClientService>()
                 .AddScoped<ValidateService>()
-                .AddScoped<ILogHistoryService, LogHistoryService>();
+                .AddScoped<ILogHistoryService, LogHistoryService>()
+                .AddScoped<IGarmentWasteReportService, GarmentWasteReportService>();
         }
 
 
