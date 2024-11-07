@@ -1,5 +1,7 @@
 ﻿using Com.Danliris.Service.Inventory.Lib.Services;
 using Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.Report.Bookkeeping;
+using Com.Danliris.Service.Inventory.Lib.Services.GarmentLeftoverWarehouse.Report.Monitoring;
+using Com.Danliris.Service.Inventory.Lib.ViewModels.GarmentLeftoverWarehouse.Monitoring;
 using Com.Danliris.Service.Inventory.WebApi.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -20,13 +22,16 @@ namespace Com.Danliris.Service.Inventory.WebApi.Controllers.v1.GarmentLeftoverWa
         protected IIdentityService IdentityService;
         protected readonly IValidateService ValidateService;
         protected readonly IGarmentLeftoverWarehouseRecapStockReportService Service;
+        protected readonly IGarmentLeftoverWarehouseMonitoringBCService _ServicegarmentLeftoverWarehouseMonitoringBC;
+
         protected const string ApiVersion = "1.0.0";
 
-        public GarmentLeftoverWarehouseRecapStockReportController(IIdentityService identityService, IValidateService validateService, IGarmentLeftoverWarehouseRecapStockReportService service)
+        public GarmentLeftoverWarehouseRecapStockReportController(IIdentityService identityService, IValidateService validateService, IGarmentLeftoverWarehouseRecapStockReportService service, IGarmentLeftoverWarehouseMonitoringBCService garmentLeftoverWarehouseMonitoringBC)
         {
             IdentityService = identityService;
             ValidateService = validateService;
             Service = service;
+            _ServicegarmentLeftoverWarehouseMonitoringBC = garmentLeftoverWarehouseMonitoringBC;
         }
 
         [HttpGet("recapStock")]
@@ -90,6 +95,34 @@ namespace Com.Danliris.Service.Inventory.WebApi.Controllers.v1.GarmentLeftoverWa
                 return StatusCode(General.INTERNAL_ERROR_STATUS_CODE, Result);
             }
 
+        }
+
+        [HttpGet("monitoringBC")]
+        public IActionResult GetMonitoringBC([FromBody]List<GarmentLeftoverWarehouseMonitoringParameterViewModel> param)
+        {
+            try
+            {
+
+                int offset = Convert.ToInt32(Request.Headers["x-timezone-offset"]);
+
+                var data = _ServicegarmentLeftoverWarehouseMonitoringBC.GetReportQuery(param);
+
+                return Ok(new
+                {
+                    apiVersion = ApiVersion,
+                    data = data,
+                    info = new { total = data.Count },
+                    message = General.OK_MESSAGE,
+                    statusCode = General.OK_STATUS_CODE
+                });
+            }
+            catch (Exception e)
+            {
+                Dictionary<string, object> Result =
+                    new ResultFormatter(ApiVersion, General.INTERNAL_ERROR_STATUS_CODE, e.Message)
+                    .Fail();
+                return StatusCode(General.INTERNAL_ERROR_STATUS_CODE, Result);
+            }
         }
 
     }
